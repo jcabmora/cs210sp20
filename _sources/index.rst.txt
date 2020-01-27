@@ -1,0 +1,21 @@
+.. Introduction to Unix - CS210 documentation master file, created by
+   sphinx-quickstart on Sat Dec 24 11:05:51 2016.
+   You can adapt this file completely to your liking, but it should at least
+   contain the root `toctree` directive.
+
+Welcome to Introduction to Unix - CS210!
+========================================
+
+.. toctree::
+   :maxdepth: 2
+
+   syllabus
+   conv/conv
+   lab01/lab01
+
+Indices and tables
+==================
+
+* :ref:`genindex`
+* :ref:`modindex`
+* :ref:`search`

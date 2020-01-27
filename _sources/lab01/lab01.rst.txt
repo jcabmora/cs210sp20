@@ -1,0 +1,218 @@
+*********
+Lab No. 1
+*********
+
+After completing this lab, students will be able to:
+
+* Understand how to login to a remote system
+* Describe what a shell is.
+* Login and end a shell session (``ssh``, ``logout`` and ``exit``)
+* Execute and edit commands on a shell.
+* Distinguish between commands, command options and arguments when providing input to the shell
+
+
+The Shell
+=========
+
+A shell is interactive command interpreter: a  program that takes text input from the user in the form of commands and arguments, instructs the operating system to execute the tasks specified by the user input, and provides output that results from the execution of the commands by the operating system.
+
+Access to a shell is typically obtained though software known as a *terminal emulator*, which is ususally simply referred to as a *terminal*.
+A `Terminal emulator <https://en.wikipedia.org/wiki/Terminal_emulator>`_ is software that emulates a `physical video terminal <https://en.wikipedia.org/wiki/Computer_terminal>`_ and allows users to interact with a system using a command line interface.
+A Terminal emulator is executed on the host that you are physically interacting with.
+
+Examples of terminal emulators are:
+* The *Terminal* and *iTerm* applications in MacOS
+* The *gnome-terminal*, *xterm* and *konsole* applications in Linux
+* *Putty* and *mintty* for Windows. 
+
+Just as there are many terminal applications, there are also several shells.  Examples of shells are:
+
+* The *Bourne Shell* (`sh`)
+* The *Bourne Again Shell* (`bash`)
+* The *TC shell* (`tcsh`)
+* The *Z Shell* (`zsh`)
+* The *Debian Almquist Shell* (`dash`)
+
+A shell is more than just an interactive command interpreter.
+It is capable of also interpreting input from files (called *shell scripts*).
+A shell also provides a high-level programming language that can be used to specify complex tasks to operating system.
+
+
+Logging into a shell
+--------------------
+
+Open the terminal emulator application that is available in your computer.
+If you are using a MacOS or Linux system, the Terminal application will immediately create a *shell session* with your local operating system.
+
+In this course, however, you are required to complete the lab work while logged into the ``blue.cs.sonoma.edu`` host. 
+That means, you need to gain access to a *remote shell*.
+
+In the old days, users would interact with remote systems through the `Telnet Protocol <https://en.wikipedia.org/wiki/Telnet>`_.
+Telnet is unsecure (as it is unencrypted), and instead it has been pretty much replaced by the `SSH <https://en.wikipedia.org/wiki/Secure_Shell>`_ which is the defacto standard to get access and interact with remote Linux systems.
+
+To establish a remote session with "blue", you will use the ``ssh`` command.
+The basic syntax for this command is ``ssh <username>@<host>``, where *username* corresponds to your user and *host* to the name or *IP address* of the remote host. Type the following, substituting *me* with your username.
+
+.. parsed-literal::
+
+    [jorge\@localhost ~]$ :command:`ssh me@blue.cs.sonoma.edu`
+    me\@blue.cs.sonoma.edu's password: 
+    Last login: Sat Jan 21 20:11:54 2020 from 172.17.0.1
+    [me\@blue ~]$ 
+
+
+.. note::
+    
+    You might be asked to confirm the authenticity of the host ``blue.cs.sonoma.edu``.
+    If you are connected to the University's network, it is safe to accept by typing :command:`yes`.
+
+    The *welcome* message might also be different from the example output.
+
+The shell prompt
+----------------
+
+Notice that after launching the *terminal emulator* and after logging into a remote system, you get a short sequence of characters before the cursor.
+In the example above you can see the  ``[jorge@localhost ~]$`` prompt in the local shell and ``[me@blue ~]$`` prompt in the ``blue.cs.sonoma.edu`` remote shell.  
+You do not have to type the prompt in the examples.  The prompt is the way for the shell to tell you that it is ready to accept input.
+Prompts are customizable, and you will see later in this course that they can be very useful.
+In the example output, the prompt from ``blue.cs.sonoma.edu`` lets you know that the user *me* is logged in the *blue* host and that the current working directory is :file:`~` (We will go into the details of directories pretty soon).
+
+Executing commands
+------------------
+
+You can enter an edit commands in the shell after the *prompt*.
+Once you have typed the command, you need to press :kbd:`ENTER` to trigger the execution of the command.
+Try running the ``date`` command: 
+
+.. parsed-literal::
+    [me\@blue ~]$ :command:`date`
+    Sun Jan 19 00:10:43 UTC 2020
+
+Notice how the shell wrote back to the screen the result of the command.
+
+Commands can be entered by themselves, as the previous example.
+Most commands accept arguments when we need the command to perform an action with a certain input.
+For example, the ``echo`` command can be used to write text on the screen:
+
+.. parsed-literal::
+
+    [me\@blue ~]$ :command:`echo 'Hello World'`
+    Hello World
+
+Here ``echo`` is the *command name* (sometimes referred to as utility or program), and ``'Hello World'`` is the *argument*.  
+
+Commands typically accept *options* (sometimes called *flags*) that modify the behavior of the command.
+For example, the ``-n`` option causes the ``echo`` command to not append a new line to the output: 
+
+.. parsed-literal::
+
+    [me\@blue ~]$ :command:`echo -n 'Hello World'`
+    Hello World[me\@blue ~]$ 
+
+Getting Help
+------------
+
+You can obtain more information about commands by using the ``man`` utility.  For example, to access the *man page* for the ``date`` command that we just executed:
+
+.. parsed-literal::
+
+    [me\@blue ~]$ :command:`man date`
+
+this will present a screen like this:
+
+.. image:: man.png
+
+Scroll through the *man page* (by using the :kbd:`UP` and :kbd:`DOWN` keys, and see how the command's syntax and options are explained in detail.
+To exit the *man page* type :command:`q`, this will cause the session to return to the *shell prompt*.
+
+
+Editing Efficiently
+-------------------
+
+``bash`` has several special key combinations that allow easy and fast command editing.
+
+.. cssclass:: table-striped
+
+=============================   =====
+keys                            Function   
+=============================   =====
+:kbd:`LEFT` and :kbd:`RIGHT`    Move the cursor in the command line 
+:kbd:`UP` and :kbd:`DOWN`       Scroll through the command history
+:kbd:`CTRL+a`                   Move the cursor to the begining of the command line
+:kbd:`CTRL+e`                   Move the cursor to the end of the command line
+:kbd:`META+f`                   Move forward one word
+:kbd:`META+b`                   Move backward one word
+:kbd:`CTRL+k`                   Kill (delete) the text from cursor to the end of the line
+:kbd:`CTRL+u`                   Kill the text from cursor to the beginning of theline
+:kbd:`META+d`                   Kill the current word
+:kbd:`META+r`                   Undo all changes made to the line
+:kbd:`CTRL+l`                   Clear the screen
+:kbd:`CTRL+r`                   Search command history
+:kbd:`TAB`                      Command or filename completion
+=============================   =====
+
+.. note::
+    The :kbd:`META` key is not included in most modern keyboard layouts, however, the :kbd:`ESC` key is used to *"metafy"* the next typed character. We maintain the reference to the :kbd:`META` key for consistency with official documentation.
+
+To practice these shortcuts, we are going to use the ``curl`` command and ``python`` to use the *shell* and the *internet* for our entertainment.  Type the following command (if you make any mistakes use the :kbd:`LEFT` and :kbd:`RIGHT` to move the cursor to the right place and use :kbd:`BACKSPACE` to remove unwanted characters)
+
+.. parsed-literal::
+
+    [me\@blue ~]$ curl -s  \http://api.icndb.com/jokes/random?exlude=%5Bexplicit%5D | python -m json.tool
+
+
+That command should return one of things that I personally find most amusing from the internet: a random Chuck Norris joke.
+However, having to type all that is not fun and it takes a lot of time.  Luckily for us, there is an easy way to get another random joke without little effort: press the :kbd:`UP` one time, and press the :kbd:`ENTER` key. Feel free to repeat this a few times.
+
+One of my favorite Chuck Norris jokes is joke number 458. We can get a specific joke by replacing `random` with the joke number,  as an example: 
+
+.. parsed-literal::
+
+    [me\@blue ~]$ curl -s  \http://api.icndb.com/jokes/458?exlude=%5Bexplicit%5D | python -m json.tool
+    {
+        "type": "success",
+        "value": {
+            "categories": [
+                "nerdy"
+            ],
+            "id": 458,
+            "joke": "Chuck Norris can write infinite recursion functions and have them return."
+        }
+    }
+
+
+Instead of typing everything again, try the following key strokes: 
+
+* :kbd:`UP` : recall the last command you ran
+* :kbd:`META-b` : moves the cursor one word back.  You will need to do this at least 8 times, until the cursor is locaded under the "*r*" key from "random".  Notice how words are identified in terms of spaces and special characters.
+* :kbd:`META-d` : deletes the *random* word
+* :kbd:`478`: the joke that we want
+* :kbd:`ENTER`: to read joke 458
+
+Moving back word by word is definitely more eficient than one character at a time.  However, we can move faster by moving to the especific place in the command that we want to edit. Joke 479 is pretty good too. Let's see how we can get it quickly:
+
+* :kbd:`UP` : recall the previous command
+* :kbd:`CTRL+r`: enter reverse history search mode
+* :kbd:`8`: to position the cursor under the 9 character
+* :kbd:`LEFT`: to exit reverse history search mode
+* :kbd:`BACKSPACE`: to remove the ``8`` character
+* :kbd:`9`: to complete the joke number we want (459)
+* :kbd:`ENTER`: to read joke 459
+
+
+Exiting the shell
+-----------------
+
+To exit a shell session, type :command:``exit``. Note that if you are connected to *blue*, when you execute the ``exit`` you will be back in your workstation's shell session.
+
+
+.. admonition:: Worksheet
+    :class: worksheet
+
+    #. What happens if you run the command :command:`echo -e 'Hello\\nWorld'`? What is the purpose of the ``-e`` option? What is the meaning of the ``\n`` in the command's argument? What happens if you remove the single quotes that enclose the argument?
+    #. What command can be used to print the system date in the *UTC* timezone?
+    #. What is the purpose of the :command:`hostname` command?  What is the output when you execute this in ``blue``?  Compare this with the output when you are not connected to ``blue``.  What is effect of using the ``-i`` option with this command?  Again, compare the output of running this command when executed in ``blue`` and when run locally.
+    #. Execute the command :command:`echo Hello\\nLinux`. This prints the text ``HellonLinux` in a single line.  Provide a sequence of keystrokes that will cause the shell to print the word ``Hello`` in one line, and the word ``Linux`` on the next line. 
+
+
+
