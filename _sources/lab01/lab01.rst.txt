@@ -203,7 +203,7 @@ Moving back word by word is definitely more eficient than one character at a tim
 Exiting the shell
 -----------------
 
-To exit a shell session, type :command:``exit``. Note that if you are connected to *blue*, when you execute the ``exit`` you will be back in your workstation's shell session.
+To exit a shell session, type :command:`exit`. Note that if you are connected to *blue*, when you execute ``exit`` you will be back in your workstation's shell session.
 
 
 .. admonition:: Worksheet
@@ -212,7 +212,7 @@ To exit a shell session, type :command:``exit``. Note that if you are connected 
     #. What happens if you run the command :command:`echo -e 'Hello\\nWorld'`? What is the purpose of the ``-e`` option? What is the meaning of the ``\n`` in the command's argument? What happens if you remove the single quotes that enclose the argument?
     #. What command can be used to print the system date in the *UTC* timezone?
     #. What is the purpose of the :command:`hostname` command?  What is the output when you execute this in ``blue``?  Compare this with the output when you are not connected to ``blue``.  What is effect of using the ``-i`` option with this command?  Again, compare the output of running this command when executed in ``blue`` and when run locally.
-    #. Execute the command :command:`echo Hello\\nLinux`. This prints the text ``HellonLinux` in a single line.  Provide a sequence of keystrokes that will cause the shell to print the word ``Hello`` in one line, and the word ``Linux`` on the next line. 
+    #. Execute the command :command:`echo Hello\\nLinux`. This prints the text ``HellonLinux`` in a single line.  Provide a sequence of keystrokes that will cause the shell to print the word ``Hello`` in one line, and the word ``Linux`` on the next line. 
 
 
 
