@@ -1,0 +1,77 @@
+*****************************
+Course Schedule and Materials
+*****************************
+
+
+.. list-table::
+    :widths: 10 50 20 20
+    :header-rows: 1
+
+    * - Week
+      - Lab (due week after)
+      - Solutions
+      - Reading assigment (due week after)
+    * - 1 - 01/27
+      - :doc:`labs/lab01/lab01`
+      -
+      - TLCL, Chapter 1
+    * - 2 - 02/03
+      - :doc:`labs/lab02/lab02`
+      -
+      - TLCL, Chapters 2, 3 ,4
+    * - 3 - 02/10
+      - 
+      -
+      - 
+    * - 4 - 02/17
+      -
+      -
+      - 
+    * - 5 - 02/24
+      - 
+      -
+      -
+    * - 6 - 03/02
+      -
+      -
+      -
+    * - 7 - 03/09
+      - Midterm
+      -
+      -
+    * - 8 - 03/16
+      - Spring Break
+      -  
+      -
+    * - 9 - 03/23
+      -
+      -
+      -
+    * - 10 - 03/30
+      -
+      -
+      -
+    * - 11 - 04/06
+      -
+      -
+      -
+    * - 12 - 04/13
+      -
+      -
+      -
+    * - 13 - 04/20
+      -
+      -
+      -
+    * - 14 - 04/27
+      -
+      -
+      -
+    * - 15 - 05/04
+      -
+      -
+      -
+    * - 16 - 05/11
+      - Final Exam
+      -
+      -

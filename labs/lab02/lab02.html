@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Lab No. 2: The File System and Working with Files &#8212; CS210 Introduction to Unix  documentation</title>
+    <link rel="stylesheet" href="../../_static/bootstrap-sphinx.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="../../_static/js/jquery-1.11.0.min.js"></script>
+    <script type="text/javascript" src="../../_static/js/jquery-fix.js"></script>
+    <script type="text/javascript" src="../../_static/bootstrap-3.3.7/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../../_static/bootstrap-sphinx.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+<link href="https://fonts.googleapis.com/css?family=Lusitana|Roboto|Roboto+Mono" rel="stylesheet">
+
+  </head>
+  <body>
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../../index.html">
+          CS210 Introduction to Unix</a>
+        <span class="navbar-text navbar-version pull-left"><b></b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../../index.html">Site <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><ul>
+<li class="toctree-l1"><a class="reference internal" href="../../syllabus.html">CS210 Introduction to Unix - Spring 2020</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../conv/conv.html">Conventions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../schedule.html">Course Schedule and Materials</a></li>
+</ul>
+</ul>
+</li>
+              
+                <li class="dropdown">
+  <a role="button"
+     id="dLabelLocalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="#">Page <b class="caret"></b></a>
+  <ul class="dropdown-menu localtoc"
+      role="menu"
+      aria-labelledby="dLabelLocalToc"><ul>
+<li><a class="reference internal" href="#">Lab No. 2: The File System and Working with Files</a><ul>
+<li><a class="reference internal" href="#the-file-system">The File System</a><ul>
+<li><a class="reference internal" href="#file-system-navigation">File system navigation</a></li>
+<li><a class="reference internal" href="#creating-directories-and-files">Creating directories and files</a></li>
+<li><a class="reference internal" href="#moving-files">Moving files</a></li>
+<li><a class="reference internal" href="#copying-files">Copying files</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</ul>
+</li>
+              
+            
+            
+              
+                
+              
+            
+            
+            
+            
+              <li class="hidden-sm">
+<div id="sourcelink">
+  <a href="../../_sources/labs/lab02/lab02.rst.txt"
+     rel="nofollow">Source</a>
+</div></li>
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="../../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+    <div class="col-md-12 content">
+      
+  <div class="section" id="lab-no-2-the-file-system-and-working-with-files">
+<h1>Lab No. 2: The File System and Working with Files<a class="headerlink" href="#lab-no-2-the-file-system-and-working-with-files" title="Permalink to this headline">¶</a></h1>
+<p>After completing this lab, students will be able to:</p>
+<ul class="simple">
+<li>Inspect and navigate the linux filesystem</li>
+<li>Create, remove and alter files and directories</li>
+</ul>
+<div class="section" id="the-file-system">
+<h2>The File System<a class="headerlink" href="#the-file-system" title="Permalink to this headline">¶</a></h2>
+<p>A file system is a method for organizing and storing data. Without a file sytem, the operating sytem (and the users) would have a hard time locating files that are needed to perform tasks.
+The file system consists of files and their attributes and relationships between files.</p>
+<p>The Linux file system is composed of <strong>files</strong> and <strong>directories</strong>.
+A file is a collection of data that is logically related, and it is the smallest unit of storage in the Unix file system.
+Directories are also file, but they are special since they may contain other files and other directories (a physical analogy isa folder or envelope where you can use to organize and store papers, or other envelopes).
+In this way, the files sytem is organized in a hierarchical structure that resembles a tree, typically represented upside down (in the same fashion as a <em>family tree</em>).
+The top directory in a Linux file system is called the <strong>root directory</strong>, or simply, the <strong>root</strong>, and it is represented by the <code class="docutils literal"><span class="pre">/</span></code> (slash) character.</p>
+<img alt="../../_images/fhs.svg" src="../../_images/fhs.svg" /><p>The standard hierarchy of Linux Filesystems is published by the Linux Foundation as a specification (available under  <a class="reference external" href="https://refspecs.linuxfoundation.org/fhs.shtml">https://refspecs.linuxfoundation.org/fhs.shtml</a>).
+The following directories are required by the standard (Refer to Table 3-4 in TLCL for more details)</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="11%" />
+<col width="89%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">&#160;</th>
+<th class="head">&#160;</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>Directory</td>
+<td>Description</td>
+</tr>
+<tr class="row-odd"><td>/</td>
+<td>root directory</td>
+</tr>
+<tr class="row-even"><td>/bin</td>
+<td>Essential command that must be present for boot/recovery</td>
+</tr>
+<tr class="row-odd"><td>/boot</td>
+<td>Contains the boot loader and kernel files</td>
+</tr>
+<tr class="row-even"><td>/dev</td>
+<td>Device files.</td>
+</tr>
+<tr class="row-odd"><td>/etc</td>
+<td>System configuration</td>
+</tr>
+<tr class="row-even"><td>/home</td>
+<td>Users directories and files</td>
+</tr>
+<tr class="row-odd"><td>/lib</td>
+<td>Essential shared libraries and kernel modules</td>
+</tr>
+<tr class="row-even"><td>/media</td>
+<td>Mount point for removable media (USB Drives, CD-ROMS)</td>
+</tr>
+<tr class="row-odd"><td>/mnt</td>
+<td>Mount point for mounting a filesystem manually</td>
+</tr>
+<tr class="row-even"><td>/opt</td>
+<td>Add-on application software packages (“optional”)</td>
+</tr>
+<tr class="row-odd"><td>/proc</td>
+<td>Process information pseudo-file system (contains runtime information).</td>
+</tr>
+<tr class="row-even"><td>/root</td>
+<td>Home directory for the “root” user.</td>
+</tr>
+<tr class="row-odd"><td>/run</td>
+<td>Data required by running processes</td>
+</tr>
+<tr class="row-even"><td>/sbin</td>
+<td>System binaries.</td>
+</tr>
+<tr class="row-odd"><td>/tmp</td>
+<td>Temporary files</td>
+</tr>
+<tr class="row-even"><td>/usr</td>
+<td>All the programs and support files to be used by regular users</td>
+</tr>
+<tr class="row-odd"><td>/var</td>
+<td>Variable data (logs, user mail, spool files, etc).</td>
+</tr>
+</tbody>
+</table>
+<div class="section" id="file-system-navigation">
+<h3>File system navigation<a class="headerlink" href="#file-system-navigation" title="Permalink to this headline">¶</a></h3>
+<p>In Linux all files must have a name. The following rules apply when naming a file:</p>
+<ol class="arabic simple">
+<li>File names are case sensitive</li>
+<li>File names can only contain uppercase and lowercase characters, numbers, the dot and the underscore symbols.</li>
+<li>File names are limited to 255 characters</li>
+</ol>
+<p>To be able to work with a file, we need to know it’s file name, but we also need to know the exact location of a file within the file system hierarchy.
+A <em>pathname</em> is the trail through the directory hierarchy to a file or directory.
+A <em>pathname</em> can be:</p>
+<ol class="arabic simple">
+<li><em>absolute</em> when it traces a path from the <em>root directory</em> (<code class="docutils literal"><span class="pre">/</span></code>). This is complete and unambiguous. Absolute pathnames <strong>always</strong> begin with <code class="docutils literal"><span class="pre">/</span></code>.</li>
+<li><em>relative</em> when it traces a path from the user’s current position or location on the filesystem (known as the <em>current working directory</em>). The beginning (left-most) part of a relative path name is either an ordinary file, a directory or a reference to the parent of the current directory.</li>
+</ol>
+<p>The following characters have special meaning when used in pathname:</p>
+<ol class="arabic simple">
+<li>A single dot <code class="docutils literal"><span class="pre">.</span></code>: refers to the current directory</li>
+<li>A double dot <code class="docutils literal"><span class="pre">..</span></code>: which refers to a parent directory.</li>
+<li>The tilde character (<code class="docutils literal"><span class="pre">~</span></code>) which is expanded to the current user’s home  directoriy.</li>
+</ol>
+<p>There are several commands that help you to navigate the file system.</p>
+<p>Unix systems have the concept of the <em>working directory</em> (also referred as <em>current directory</em>), which determines the directory within the tree that your session is currently associated with.
+The <code class="docutils literal"><span class="pre">pwd</span></code> command prints your <em>current directory</em>.</p>
+<pre class="literal-block">
+[user&#64;blue ~]$ <strong class="command">pwd</strong>
+/home/student/user
+</pre>
+<p>When you login into Unix systems, your <em>current directory</em> is set to your <em>home directory</em> by default.  The <code class="docutils literal"><span class="pre">~</span></code> in the prompt means that your current working directory is your <em>home directory</em>.
+As mentioned before, home directories for most users are typically located under <code class="docutils literal"><span class="pre">/home</span></code> (On  MacOS, home directories are located in <code class="docutils literal"><span class="pre">/Users</span></code>.)</p>
+<p>You can change your current directory with the <code class="docutils literal"><span class="pre">cd</span></code> command, which takes as an argument the <em>pathname</em> of the desired directory.
+If no argument is provided, then <code class="docutils literal"><span class="pre">cd</span></code> will change the working directory to the user’s <em>home directory</em>.</p>
+<p>Execute the following command to change your current working directory to the root directory:</p>
+<pre class="literal-block">
+[user&#64;blue ~]$ <strong class="command">cd /</strong>
+[user&#64;blue /]$
+</pre>
+<p>The cd command does not provide any output. However, you can see that the prompt changed to <code class="docutils literal"><span class="pre">/</span></code> instead of <code class="docutils literal"><span class="pre">~</span></code>.
+Let’s see what is the output of the <code class="docutils literal"><span class="pre">pwd</span></code> command:</p>
+<pre class="literal-block">
+[user&#64;blue /]$ <strong class="command">pwd</strong>
+/
+[user&#64;blue /]$
+</pre>
+<p>Let’s check the content of the root directory in <strong>blue</strong>, so we can compare it with the standard list of directories under root.
+In order to do this, we can use the <code class="docutils literal"><span class="pre">ls</span></code> commands which lists the contents of a directory.</p>
+<pre class="literal-block">
+[user&#64;blue /]$ <strong class="command">ls</strong>
+bin   boot  etc   kirby   lib    lost+found  media  netatalk  proc  run   srv  target   tmp  var
+blue  dev   home  kodiak  lib64  mamer       mnt    opt       root  sbin  sys  thekeep  usr
+</pre>
+<p>When <code class="docutils literal"><span class="pre">ls</span></code> is executed without any arguments, it lists the contents of the current directory.  You can also specify a directory to lists its contents without having to change directory. Let’s check the contents of the <code class="docutils literal"><span class="pre">/usr</span></code> directory:</p>
+<pre class="literal-block">
+[user&#64;blue /]$ <strong class="command">ls /usr</strong>
+arm64-linux-gnu    avr            etc               include  libexec     man                sbin   tmp
+arm-linux-gnu      bin            games             lib      local       powerpc-linux-gnu  share  x86_64-w64-mingw32
+arm-linux-gnueabi  &#64;DATADIRNAME&#64;  i686-w64-mingw32  lib64    lost+found  s390-linux-gnu     src    x86-linux-gnu
+</pre>
+<p>Sometimes it is useful to have a listing where each item is listed on it’s one line. Let’s see how that looks:</p>
+<pre class="literal-block">
+[user&#64;blue /]$ <strong class="command">ls -l /usr</strong>
+total 604
+drwxr-xr-x.   3 root root   4096 Jul  2  2018 arm64-linux-gnu
+drwxr-xr-x.   4 root root   4096 Jul  2  2018 arm-linux-gnu
+drwxr-xr-x    3 root root   4096 Sep 19  2018 arm-linux-gnueabi
+drwxr-xr-x.   6 root root   4096 Jul 12  2018 avr
+dr-xr-xr-x.   2 root root 143360 Nov  4 11:46 bin
+drwxr-xr-x    3 root root   4096 Aug  7  2018 &#64;DATADIRNAME&#64;
+drwxr-xr-x    2 root root   4096 Dec 26  2018 etc
+drwxr-xr-x.   2 root root   4096 Aug  2  2017 games
+drwxr-xr-x    4 root root   4096 Aug  9  2018 i686-w64-mingw32
+drwxr-xr-x. 333 root root  20480 Aug  7 12:00 include
+dr-xr-xr-x.  82 root root  20480 Mar 15  2019 lib
+dr-xr-xr-x. 382 root root 270336 Aug  7 12:00 lib64
+drwxr-xr-x.  88 root root  20480 May  7  2019 libexec
+drwxr-xr-x.  16 root root   4096 Dec 13 11:14 local
+drwx------.   2 root root  16384 Jun 26  2018 lost+found
+drwxr-xr-x    3 root root   4096 Feb 22  2019 man
+drwxr-xr-x.   3 root root   4096 Jul  2  2018 powerpc-linux-gnu
+drwxr-xr-x.   3 root root   4096 Jul  2  2018 s390-linux-gnu
+dr-xr-xr-x.   2 root root  36864 Aug  7 11:28 sbin
+drwxr-xr-x. 691 root root  20480 May 23  2019 share
+drwxr-xr-x.   8 root root   4096 Aug  7 11:29 src
+lrwxrwxrwx.   1 root root     10 Aug  2  2017 tmp -&gt; ../var/tmp
+drwxr-xr-x    3 root root   4096 Aug  9  2018 x86_64-w64-mingw32
+drwxr-xr-x.   3 root root   4096 Jul  2  2018 x86-linux-gnu
+</pre>
+<p>Notice that adding the <code class="docutils literal"><span class="pre">-l</span></code> (which stands for long listing format) changes the behavior of the command.
+(There is a lot of useful information packed in the output of that command, we will learn about those in later exercises)
+As we saw in Lab 01, these additional instructions are called <strong>options</strong> and almost every command allows users to specify different options to control the behavior of the command.
+As a refresher from Lab 01, let’s use the <code class="docutils literal"><span class="pre">man</span></code> utility (which opens the manual pages, or normally referred as the <strong>man pages</strong>) for the <code class="docutils literal"><span class="pre">ls</span></code> command:</p>
+<pre class="literal-block">
+[user&#64;blue /]$ <strong class="command">man ls</strong>
+</pre>
+<div class="highlight-default"><div class="highlight"><pre><span></span>LS(1)                                                  User Commands                                                 LS(1)
+
+NAME
+       ls - list directory contents
+
+SYNOPSIS
+       ls [OPTION]... [FILE]...
+
+DESCRIPTION
+       List information about the FILEs (the current directory by default).  Sort entries alphabetically if none of -cftu‐
+       vSUX nor --sort is specified.
+
+       Mandatory arguments to long options are mandatory for short options too.
+
+       -a, --all
+              do not ignore entries starting with .
+</pre></div>
+</div>
+<p>Scroll down the <em>man page</em> for the <code class="docutils literal"><span class="pre">ls</span></code> command and find the <code class="docutils literal"><span class="pre">-l</span></code> option.
+Also, review the description of the <code class="docutils literal"><span class="pre">-1</span></code> and the <code class="docutils literal"><span class="pre">-s</span></code> options.
+Exit by pressing <code class="kbd docutils literal"><span class="pre">q</span></code>.
+Command options can usually be combined.
+Let’s see this in action by invoking <code class="docutils literal"><span class="pre">ls</span></code> with the <code class="docutils literal"><span class="pre">-1s</span></code> option:</p>
+<pre class="literal-block">
+[user&#64;blue /]$ <strong class="command">ls /usr -s1</strong>
+total 604
+  4 arm64-linux-gnu
+  4 arm-linux-gnu
+  4 arm-linux-gnueabi
+  4 avr
+144 bin
+  4 &#64;DATADIRNAME&#64;
+  4 etc
+  4 games
+  4 i686-w64-mingw32
+ 20 include
+ 20 lib
+268 lib64
+ 20 libexec
+  4 local
+ 16 lost+found
+  4 man
+  4 powerpc-linux-gnu
+  4 s390-linux-gnu
+ 36 sbin
+ 20 share
+  4 src
+  0 tmp
+  4 x86_64-w64-mingw32
+  4 x86-linux-gnu
+</pre>
+<p>Let’s try now changing to the <cite>/usr/local/bin</cite> directory:</p>
+<pre class="literal-block">
+[user&#64;blue /]$ <strong class="command">cd /usr/local/bin</strong>
+[user&#64;blue bin]$ <strong class="command">ls</strong>
+istatserver  n  node  npm  npx  update_rubygems
+</pre>
+<p>If we wanted to change directory to <code class="docutils literal"><span class="pre">/usr/local</span></code> which is the parent directory of <code class="docutils literal"><span class="pre">/usr/local/bin</span></code> we could change directory by using the absolute path, which is what we have done so far.
+However, we can use the special characters that we mentioned before.
+The parent directory can be referenced by using the <code class="docutils literal"><span class="pre">..</span></code> (dot-dot) character:</p>
+<pre class="literal-block">
+[user&#64;blue bin]$ <strong class="command">cd ..</strong>
+[user&#64;blue local]$ <strong class="command">pwd</strong>
+/usr/local
+</pre>
+<p>Suppose we wanted to look at the contents of the <code class="docutils literal"><span class="pre">/usr/local/bin</span></code> directory that we just visited. We could again use the absolute path.
+But, since we are on the parent (<code class="docutils literal"><span class="pre">/usr/local</span></code>) it is a lot easier to use a relative path:</p>
+<pre class="literal-block">
+[user&#64;blue local]$ <strong class="command">ls bin</strong>
+istatserver  n  node  npm  npx  update_rubygems
+</pre>
+<p>An alternative, more explicit way to refer to the current directory is using the <code class="docutils literal"><span class="pre">.</span></code> (dot) character:</p>
+<pre class="literal-block">
+[user&#64;blue local]$ <strong class="command">ls ./bin</strong>
+istatserver  n  node  npm  npx  update_rubygems
+</pre>
+<p>In this case, the <code class="docutils literal"><span class="pre">.</span></code> character does not make a difference.
+You will learn later (when we talk about <strong>wildcards</strong>) how the <code class="docutils literal"><span class="pre">.</span></code> character can become quite useful.</p>
+<p>Let’s change the directory back to your home directory, using relative paths (replace <code class="docutils literal"><span class="pre">user</span></code> with your username)</p>
+<pre class="literal-block">
+[user&#64;blue local]$ <strong class="command">cd ../../home/student/user</strong>
+[user&#64;blue ~]$
+</pre>
+<p>You can also use the <code class="docutils literal"><span class="pre">-</span></code> option of the <code class="docutils literal"><span class="pre">cd</span></code> command to change directory back to the previous working directory:</p>
+<pre class="literal-block">
+[user&#64;blue ~]$ <strong class="command">cd -</strong>
+[user&#64;blue local]$ <strong class="command">pwd</strong>
+/usr/local
+</pre>
+<p>And if you execute it again, it will take you back to your previous working directory:</p>
+<pre class="literal-block">
+[user&#64;blue local]$ <strong class="command">cd -</strong>
+[user&#64;blue ~]$
+</pre>
+</div>
+<div class="section" id="creating-directories-and-files">
+<h3>Creating directories and files<a class="headerlink" href="#creating-directories-and-files" title="Permalink to this headline">¶</a></h3>
+<p>The <code class="docutils literal"><span class="pre">mkdir</span></code> utility creates new directories. It requires as arguments the pathnames of the directories to be created.  The following example shows the commands required to generate the directory structure shown below (the shown output assumes that your home directory is empty. If that is not the case, then existing files will show in the output of the <code class="docutils literal"><span class="pre">ls</span></code> command.)</p>
+<img alt="../../_images/cars.svg" src="../../_images/cars.svg" /><pre class="literal-block">
+[user&#64;blue ~]$ <strong class="command">ls</strong>
+[user&#64;blue ~]$ <strong class="command">mkdir vehicles</strong>
+[user&#64;blue ~]$ <strong class="command">ls</strong>
+vehicles
+[user&#64;blue ~]$ <strong class="command">mkdir -p vehicles/cars/sedan</strong>
+[user&#64;blue ~]$ <strong class="command">ls vehicles/cars</strong>
+sedan
+[user&#64;blue ~]$ <strong class="command">mkdir -p vehicles/cars/pickup vehicles/cars/suv</strong>
+[user&#64;blue ~]$ <strong class="command">ls vehicles/cars</strong>
+pickup  sedan  suv
+</pre>
+<p>Notice that we did not create the <code class="docutils literal"><span class="pre">cars</span></code> directory directly, and instead we used the <code class="docutils literal"><span class="pre">-p</span></code> option to instruct the <code class="docutils literal"><span class="pre">mkdir</span></code> command to make any non-existing intermeditate directories.
+Note also that you can create more than one directory at a time.</p>
+<p>The <code class="docutils literal"><span class="pre">tree</span></code> command is useful to have a directory listing in a tree like structure:</p>
+<pre class="literal-block">
+[user&#64;blue ~]$ <strong class="command">tree vehicles</strong>
+vehicles
+└── cars
+    ├── pickup
+    ├── sedan
+    └── suv
+
+ 4 directories, 0 files
+</pre>
+<p>To remove directories you can use the <code class="docutils literal"><span class="pre">rmdir</span></code> command.
+Just as <code class="docutils literal"><span class="pre">mkdir</span></code>, it requires the pathnames of the directories to be removed.
+However, <code class="docutils literal"><span class="pre">rmdir</span></code> has the limitation that it only works with empty directories.
+To remove directories that are not empty, you can use the <code class="docutils literal"><span class="pre">rm</span> <span class="pre">-r</span></code> command.</p>
+<p>Let’s remove the <code class="docutils literal"><span class="pre">./vehicles/cars/suv</span></code> directory:</p>
+<pre class="literal-block">
+[user&#64;blue ~]$ <strong class="command">rmdir vehicles/cars/suv</strong>
+[user&#64;blue ~]$ <strong class="command">rm -r vehicles/cars/pickup</strong>
+[user&#64;blue ~]$ <strong class="command">tree vehicles</strong>
+vehicles
+└── cars
+    └── sedan
+
+2 directories, 0 files
+</pre>
+</div>
+<div class="section" id="moving-files">
+<h3>Moving files<a class="headerlink" href="#moving-files" title="Permalink to this headline">¶</a></h3>
+<p>The <code class="docutils literal"><span class="pre">mv</span></code> command can be used for two purposes: rename a file/directory, or move the file/directory to another path.
+Let’s rename the <code class="docutils literal"><span class="pre">sedan</span></code> directory to <code class="docutils literal"><span class="pre">coupe</span></code>:</p>
+<pre class="literal-block">
+[user&#64;blue ~]$ <strong class="command">mv vehicles/cars/sedan vehicles/cars/coupe</strong>
+[user&#64;blue ~]$ <strong class="command">tree vehicles</strong>
+vehicles
+└── cars
+    └── coupe
+
+ 2 directories, 0 files
+</pre>
+<p>Noticed that the first argument is the source file or directory and the second is the destination directory or file.
+In this case, since the destination did not exist, then it perfoms a “rename”</p>
+<p>To see how the <code class="docutils literal"><span class="pre">mv</span></code> command can be used to move files, let’s recreate the <code class="docutils literal"><span class="pre">sedan</span></code>  directory and and empty file under it:</p>
+<pre class="literal-block">
+[user&#64;blue ~]$ <strong class="command">mkdir vehicles/cars/sedan</strong>
+[user&#64;blue ~]$ <strong class="command">touch vehicles/cars/sedan/shelby</strong>
+[user&#64;blue ~]$ <strong class="command">tree vehicles</strong>
+vehicles
+└── cars
+    ├── coupe
+    └── sedan
+        └── shelby
+
+3 directories, 1 file
+</pre>
+<p>Let’s move <code class="docutils literal"><span class="pre">shelby</span></code> from the <code class="docutils literal"><span class="pre">sedan</span></code> directory to the <code class="docutils literal"><span class="pre">coupe</span></code> directory (where it belongs, obviously).</p>
+<pre class="literal-block">
+[user&#64;blue ~]$ <strong class="command">mv vehicles/cars/sedan/shelby vehicles/cars/coupe</strong>
+[user&#64;blue ~]$ <strong class="command">tree vehicles</strong>
+vehicles/
+└── cars
+    ├── coupe
+    │&nbsp;&nbsp; └── shelby
+    └── sedan
+
+3 directories, 1 file
+</pre>
+<p>Notice that in this case, the destination exists, and it is a directory, so the result of the command is that the file is move to the destination directory.</p>
+</div>
+<div class="section" id="copying-files">
+<h3>Copying files<a class="headerlink" href="#copying-files" title="Permalink to this headline">¶</a></h3>
+<p>The <code class="docutils literal"><span class="pre">cp</span></code> command is used to copy files or directories. In the following example, a file is created by redirecting the output of the <code class="docutils literal"><span class="pre">echo</span></code> command into a file called <code class="docutils literal"><span class="pre">original</span></code>.
+The <code class="docutils literal"><span class="pre">cat</span></code> command reads that file and prints that on the screen, this is done as a verification step.
+<code class="docutils literal"><span class="pre">original</span></code> is then copied into a file called <code class="docutils literal"><span class="pre">clone</span></code>.  Notice how the contents of <code class="docutils literal"><span class="pre">clone</span></code> are the same as the contents of <code class="docutils literal"><span class="pre">original</span></code>.</p>
+<pre class="literal-block">
+[user&#64;blue ~]$ <strong class="command">echo &quot;This text is the content&quot; &gt; original</strong>
+[user&#64;blue ~]$ <strong class="command">ls</strong>
+original vehicles
+[user&#64;blue ~]$ <strong class="command">cat original</strong>
+This text is the content
+[user&#64;blue ~]$ <strong class="command">cp original clone</strong>
+[user&#64;blue ~]$ <strong class="command">ls</strong>
+clone  original vehicles
+[user&#64;blue ~]$ <strong class="command">cat clone</strong>
+This text is the content
+</pre>
+<p>In order to copy directories, you need to provide the <code class="docutils literal"><span class="pre">-r</span></code> option to the <code class="docutils literal"><span class="pre">cp</span></code> command.  This option stands for <em>recursive</em>, and basically it means that it will traverse the whole tree under the directory that you want to copy.</p>
+<div class="worksheet admonition">
+<p class="first admonition-title"><strong>Lab Report</strong></p>
+<ol class="arabic simple">
+<li>There is a directory named <code class="docutils literal"><span class="pre">mail</span></code> inside the <code class="docutils literal"><span class="pre">/var/log</span></code> directory. What is the relative path to that directory if you are in your home directory?</li>
+<li>Absolute and relative pathnames can be mixed.  Consider the following path:<code class="docutils literal"><span class="pre">/usr/include/curl/./././///../boost/random/../math</span></code>.  Simplify that path so it does not use relative references (hint: try it with the <code class="docutils literal"><span class="pre">cd</span></code> command).</li>
+</ol>
+<p>The following diagram corresponds to a portion of the filesystem in <code class="docutils literal"><span class="pre">blue</span></code>.  Fill out the empty elements in <code class="docutils literal"><span class="pre">A</span></code>, <code class="docutils literal"><span class="pre">B</span></code>, <code class="docutils literal"><span class="pre">C</span></code> and <code class="docutils literal"><span class="pre">D</span></code>.</p>
+<img alt="../../_images/navfill.svg" src="../../_images/navfill.svg" /><ol class="arabic simple" start="3">
+<li>A</li>
+<li>B</li>
+<li>C</li>
+<li>D</li>
+<li>What is the oldest file in the <code class="docutils literal"><span class="pre">/usr/bin</span></code> directory?</li>
+<li>What is the newest kernel file in <strong>blue</strong> (kernel files are named with the suffix <code class="docutils literal"><span class="pre">vmlinuz</span></code>)?</li>
+<li>We want to make a backup of the <code class="docutils literal"><span class="pre">vehicles</span></code> directory into a directory called <code class="docutils literal"><span class="pre">vehicles_backup</span></code>.  What command will serve this purpose?</li>
+<li>Provide a series of commands to create the following directory structure?</li>
+</ol>
+<div class="highlight-default"><div class="highlight"><pre><span></span>transport
+├── bicycles
+│   └── mountain
+├── cars
+│   ├── pickup
+│   ├── sedan
+│   │   └── compact
+│   └── suv
+└── jet
+    ├── cargo
+    └── fighter
+</pre></div>
+</div>
+<p class="last">11. Make your <em>home</em> the working directory.  Run the following command: <strong class="command">tar -xf /tmp/vehicles.tar</strong>.  This will create three files with names of transportation vehicles in your working directory. Provide a list of commands that will result in moving the files to the corresponding directory within the <code class="docutils literal"><span class="pre">transport</span></code> directory (durango is an SUV, prius a compact sedan, and stumpjumper is a mountain bike).
+13. The three files should contain the <em>Wikipedia</em> link that corresponds to the name of the file.  However, the file named <code class="docutils literal"><span class="pre">prius</span></code> is incorrect.  Provide a single command that will make the file name reflect the content of the file (e.g. the file name should be <code class="docutils literal"><span class="pre">fseries</span></code> instead of <code class="docutils literal"><span class="pre">prius</span></code>) and will place the file under the correct directory (<code class="docutils literal"><span class="pre">~/transport/cars/pickup</span></code>)</p>
+</div>
+</div>
+</div>
+</div>
+
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+    </p>
+    <p>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

@@ -11,7 +11,7 @@ Welcome to CS210 - Introduction to Unix!
 
    syllabus
    conv/conv
-   lab01/lab01
+   schedule
 
 Indices and tables
 ==================
