@@ -426,7 +426,7 @@ In order to copy directories, you need to provide the ``-r`` option to the ``cp`
     7. What is the oldest file in the ``/usr/bin`` directory? 
     8. What is the newest kernel file in **blue** (kernel files are named with the suffix ``vmlinuz``)?
     9. We want to make a backup of the ``vehicles`` directory into a directory called ``vehicles_backup``.  What command will serve this purpose?
-    10. Provide a series of commands to create the following directory structure?
+    10. Provide a series of commands to create the following directory structure in your current working directory?
 
     .. parsed-literal::
 
@@ -444,4 +444,4 @@ In order to copy directories, you need to provide the ``-r`` option to the ``cp`
 
 
     11. Make your *home* the working directory.  Run the following command: :command:`tar -xf /tmp/vehicles.tar`.  This will create three files with names of transportation vehicles in your working directory. Provide a list of commands that will result in moving the files to the corresponding directory within the ``transport`` directory (durango is an SUV, prius a compact sedan, and stumpjumper is a mountain bike).
-    13. The three files should contain the *Wikipedia* link that corresponds to the name of the file.  However, the file named ``prius`` is incorrect.  Provide a single command that will make the file name reflect the content of the file (e.g. the file name should be ``fseries`` instead of ``prius``) and will place the file under the correct directory (``~/transport/cars/pickup``)
+    12. The three files should contain the *Wikipedia* link that corresponds to the name of the file.  However, the file named ``prius`` is incorrect.  Provide a single command that will make the file name reflect the content of the file (e.g. the file name should be ``fseries`` instead of ``prius``) and will place the file under the correct directory (``~/transport/cars/pickup``)
