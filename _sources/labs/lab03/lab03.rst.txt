@@ -23,7 +23,7 @@ Then type the following commands to setup a the Virtual Machine:
 
 .. parsed-literal::
 
-    :command:`vagrant init ubuntu/trusty`
+    :command:`vagrant init ubuntu/trusty64`
 
 This will start downloaded a VM image. Once the process is completed, then type the following command to *start* te virtual machine:
 
