@@ -1,0 +1,898 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Lab No. 3: Working with Files &#8212; CS210 Introduction to Unix  documentation</title>
+    <link rel="stylesheet" href="../../_static/bootstrap-sphinx.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="../../_static/js/jquery-1.11.0.min.js"></script>
+    <script type="text/javascript" src="../../_static/js/jquery-fix.js"></script>
+    <script type="text/javascript" src="../../_static/bootstrap-3.3.7/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../../_static/bootstrap-sphinx.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+<link href="https://fonts.googleapis.com/css?family=Lusitana|Roboto|Roboto+Mono" rel="stylesheet">
+
+  </head>
+  <body>
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../../index.html">
+          CS210 Introduction to Unix</a>
+        <span class="navbar-text navbar-version pull-left"><b></b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../../index.html">Site <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><ul>
+<li class="toctree-l1"><a class="reference internal" href="../../syllabus.html">CS210 Introduction to Unix - Spring 2020</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../conv/conv.html">Conventions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../schedule.html">Course Schedule and Materials</a></li>
+</ul>
+</ul>
+</li>
+              
+                <li class="dropdown">
+  <a role="button"
+     id="dLabelLocalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="#">Page <b class="caret"></b></a>
+  <ul class="dropdown-menu localtoc"
+      role="menu"
+      aria-labelledby="dLabelLocalToc"><ul>
+<li><a class="reference internal" href="#">Lab No. 3: Working with Files</a><ul>
+<li><a class="reference internal" href="#lab-preparation">Lab Preparation</a></li>
+<li><a class="reference internal" href="#file-permissions">File Permissions</a><ul>
+<li><a class="reference internal" href="#users-and-groups">Users and Groups</a></li>
+<li><a class="reference internal" href="#ownership-and-membership">Ownership and Membership</a></li>
+<li><a class="reference internal" href="#changing-file-permissions">Changing File Permissions</a></li>
+<li><a class="reference internal" href="#default-permissions">Default Permissions</a></li>
+<li><a class="reference internal" href="#putting-it-together">Putting it together</a></li>
+<li><a class="reference internal" href="#symbolic-links">Symbolic Links</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</ul>
+</li>
+              
+            
+            
+              
+                
+              
+            
+            
+            
+            
+              <li class="hidden-sm">
+<div id="sourcelink">
+  <a href="../../_sources/labs/lab03/lab03.rst.txt"
+     rel="nofollow">Source</a>
+</div></li>
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="../../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+    <div class="col-md-12 content">
+      
+  <div class="section" id="lab-no-3-working-with-files">
+<h1>Lab No. 3: Working with Files<a class="headerlink" href="#lab-no-3-working-with-files" title="Permalink to this headline">¶</a></h1>
+<p>In this lab we will:</p>
+<ul class="simple">
+<li>learn about file permissions</li>
+<li>learn to create symbolic links and hard links</li>
+<li>learn how to find files using wildcards</li>
+<li>learn how to use wildcards to perform bulk file operations</li>
+</ul>
+<div class="section" id="lab-preparation">
+<h2>Lab Preparation<a class="headerlink" href="#lab-preparation" title="Permalink to this headline">¶</a></h2>
+<p>Since this Lab requires you to experiment with permissions, we will work with a Virtual Machine instead of working on <strong>blue.cs.sonoma.edu</strong> in order to work on a system where we have administrator rights.
+Each one of the Mac machines in the Lab has the software that we require to quickly setup a VM for this lab: VirtualBox which is a Virtual Machine hypervisor, and Vagrant, which is an automation tool that will allow us to set up a Virtual Machine quickly by using a precreated VM (instead of creating a new blank VM and installing the OS from scratch).</p>
+<p>Open a terminal session on your Mac workstation. While on your Mac (this means, <strong>do not log into blue</strong>), create a directory called <code class="docutils literal"><span class="pre">cs210lab3</span></code> in the default home directory and change your current directory into it.</p>
+<p>Then type the following commands to setup a the Virtual Machine:</p>
+<pre class="literal-block">
+<strong class="command">vagrant init envimation/ubuntu-xenial</strong>
+</pre>
+<p>This will start downloaded a VM image. Once the process is completed, then type the following command to <em>start</em> te virtual machine:</p>
+<pre class="literal-block">
+<strong class="command">vagrant up</strong>
+</pre>
+<p>The VM will be running in the background.  To connect to it type:</p>
+<pre class="literal-block">
+<strong class="command">vagrant ssh</strong>
+Welcome to Ubuntu 16.04.3 LTS (GNU/Linux 4.4.0-109-generic x86_64)
+
+ * Documentation:  <a class="reference external" href="https://help.ubuntu.com">https://help.ubuntu.com</a>
+ * Management:     <a class="reference external" href="https://landscape.canonical.com">https://landscape.canonical.com</a>
+ * Support:        <a class="reference external" href="https://ubuntu.com/advantage">https://ubuntu.com/advantage</a>
+vagrant&#64;base-debootstrap:~$
+</pre>
+<p>Notice how the prompt changed.
+If your prompt does not look like <code class="docutils literal"><span class="pre">vagrant&#64;base-debootstrap:~$</span></code> ask your instructor for help.
+If your prompt looks correct, then you are effectively connected to the VM as the <code class="docutils literal"><span class="pre">vagrant</span></code> user, which can perform administrative tasks such as creating users, groups, and change permissions of any files within the Virtual Machine’s File system.</p>
+<p>We need to install a few utilies to finish the rest of lab, so execute these commands (their output is ommitted for brevity).</p>
+<pre class="literal-block">
+vagrant&#64;base-debootstrap:~$ <strong class="command">sudo apt-get update</strong>
+vagrant&#64;base-debootstrap:~$ <strong class="command">sudo apt-get -y install less</strong>
+</pre>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">The rest of the lab requires you to work on this Virtual Machine, not in <strong>blue.cs.sonoma.edu</strong></p>
+</div>
+</div>
+<div class="section" id="file-permissions">
+<h2>File Permissions<a class="headerlink" href="#file-permissions" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="users-and-groups">
+<h3>Users and Groups<a class="headerlink" href="#users-and-groups" title="Permalink to this headline">¶</a></h3>
+<p>Linux supports several methods of controlling access to files an directories.
+In this lab we are going to learn about the Unix access control model that is based based on the concepts of:</p>
+<ul class="simple">
+<li><strong>file ownership</strong></li>
+<li><strong>group membership</strong></li>
+<li><strong>read, write and execute permissions</strong></li>
+</ul>
+<p>A <em>user</em> is an individual access account.
+A <em>group</em> is a set of users.
+When user accounts are created, they are assigned a <em>username</em> and a <em>user id</em> (or <em>uid</em>), and also a primary group which defaults to the same as the user id.</p>
+<p>To find out your <em>uid</em> and the groups that your account is associated with, use the <code class="docutils literal"><span class="pre">id</span></code> command:</p>
+<pre class="literal-block">
+vagrant&#64;base-debootstrap:~$ <strong class="command">id</strong>
+uid=1000(vagrant) gid=1000(vagrant) groups=1000(vagrant)
+</pre>
+<p>User account information is stored in the <code class="docutils literal"><span class="pre">/etc/passwd</span></code> file. Each line on this file corresponds to a user record, which contains 7 fields separated by a colon (<code class="docutils literal"><span class="pre">:</span></code>):</p>
+<ul class="simple">
+<li><strong>username</strong>: the name used to login into the system. It should be between 1 to 32 charcters long.</li>
+<li><strong>password</strong>: a value of x indicates the account has an encrypted password stored in <code class="docutils literal"><span class="pre">/etc/shadow</span></code>.</li>
+<li><strong>user ID (UID)</strong>: user identification number. By default UID 0 is reserved for root user and UID’s ranging from 1-99 are reserved for other predefined accounts. Further UID’s ranging from 100-999 are reserved for system accounts and groups.</li>
+<li><strong>group ID (GID)</strong>: primary group ID.</li>
+<li><strong>user info</strong>: This field is optional and allow you to define extra information about the user. Tipically contains the account’s full name.</li>
+<li><strong>home directory</strong>: The absolute path of the user’s home directory.</li>
+<li><strong>shell</strong>: The absolute path of the user’s default shell.</li>
+</ul>
+<p>You can inspect this file with the less command (to exit type <code class="kbd docutils literal"><span class="pre">q</span></code>):</p>
+<pre class="literal-block">
+vagrant&#64;base-debootstrap: ~$ <strong class="command">less /etc/passwd</strong>
+</pre>
+<p>Every Linux distribution has a different set of accounts that are added during installation.
+One account that is always created is <code class="docutils literal"><span class="pre">root</span></code>, and it is the most privileged account on a Linux/Unix system.
+This account has unrestricted access to any file or task in the system.
+This account is tipically rarely used in production systems, and instead other accounts are granted specific admin privileges using security policies (such as the <code class="docutils literal"><span class="pre">sudoers</span></code> security policy - more on this later on this lab).</p>
+</div>
+<div class="section" id="ownership-and-membership">
+<h3>Ownership and Membership<a class="headerlink" href="#ownership-and-membership" title="Permalink to this headline">¶</a></h3>
+<p>Under the Unix security model, users can own files and directories and they can belong to one or more <em>groups</em></p>
+<p>When a user owns a file or directory, they have control over its access.
+When a user belongs to a group, they can be given access to files and directories by their owners.
+A user can also get access to files and directories whose owner has granted access to the world (also known as “others”).</p>
+<p>Every file in a Unix system is <em>owned</em> by a user and it is also associated with a group.
+Access to files can be specified based on:</p>
+<ul class="simple">
+<li>the file’s <strong>Owner</strong>: The user account that owns the file.  By default, the owner of a file is set as the user that created the file.  Ownership and permisions of a file can only be changed by the file owner or by the <em>root</em> account.</li>
+<li>the file’s <strong>Group</strong>: Each file has a group associated, and group permissions apply to all the users that are members of the file’s group.</li>
+<li>the rest of the world (<strong>Other</strong>): Any other account that is not the owner or part of the file’s group.</li>
+</ul>
+<p>There are three types of permissions that can be granted or revoked for a file:  <strong>Read</strong>, <strong>Write</strong> and <strong>Execute</strong>.
+These permission types have a different meaning depending of the file type:</p>
+<table border="1" class="table-striped docutils">
+<colgroup>
+<col width="8%" />
+<col width="32%" />
+<col width="60%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Access Type</th>
+<th class="head">Regular Files</th>
+<th class="head">Directories</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td><strong>read</strong></td>
+<td>Read the contents of the file</td>
+<td>List the contents of a directory</td>
+</tr>
+<tr class="row-odd"><td><strong>write</strong></td>
+<td>Modify the contents of a file</td>
+<td>Create or remove files in the directory</td>
+</tr>
+<tr class="row-even"><td><strong>execute</strong></td>
+<td>Run a file as a program</td>
+<td>Set the directory as working directory / copy files from the directory (sticky bit restrictions apply)</td>
+</tr>
+</tbody>
+</table>
+<p>The easiest way to inspect a file’s ownership and permission attributes is by running the <code class="docutils literal"><span class="pre">ls</span></code> command with the long listing option that you learned in the previous Lab (<code class="docutils literal"><span class="pre">ls</span> <span class="pre">-l</span></code>):</p>
+<pre class="literal-block">
+vagrant&#64;base-debootstrap:~$ <strong class="command">ls -l /etc/apt</strong>
+total 44
+drwxr-xr-x 2 root root  4096 Jan 18  2018 apt.conf.d
+drwxr-xr-x 2 root root  4096 Apr 14  2016 preferences.d
+-rw------- 1 root root   194 Jan 18  2018 sources.list
+drwxr-xr-x 2 root root  4096 Apr 14  2016 sources.list.d
+-rw-r--r-- 1 root root 12255 Jan 18  2018 trusted.gpg
+-rw-r--r-- 1 root root  9044 Jan 18  2018 trusted.gpg~
+drwxr-xr-x 2 root root  4096 Apr 14  2016 trusted.gpg.d
+</pre>
+<p>The leftmost field of each line contains the following file attributes:</p>
+<img alt="../../_images/permissions.png" src="../../_images/permissions.png" />
+<dl class="docutils">
+<dt>File Type:</dt>
+<dd>The type of file according to this table:</dd>
+</dl>
+<table border="1" class="minitable docutils">
+<colgroup>
+<col width="33%" />
+<col width="67%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Attribute</th>
+<th class="head">File Type</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>-</td>
+<td>Regular File</td>
+</tr>
+<tr class="row-odd"><td>d</td>
+<td>Directory</td>
+</tr>
+<tr class="row-even"><td>l</td>
+<td>Symbolic link</td>
+</tr>
+<tr class="row-odd"><td>s</td>
+<td>Socket</td>
+</tr>
+<tr class="row-even"><td>p</td>
+<td>Pipe</td>
+</tr>
+<tr class="row-odd"><td>c</td>
+<td>Character device file</td>
+</tr>
+<tr class="row-even"><td>b</td>
+<td>Block file</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="changing-file-permissions">
+<h3>Changing File Permissions<a class="headerlink" href="#changing-file-permissions" title="Permalink to this headline">¶</a></h3>
+<p>File permission attributes are assigned through the <code class="docutils literal"><span class="pre">chmod</span></code>  (“change file mode”) command. There are two ways of specifying file permissions: <em>octal</em> and <em>symbolic</em> representation.</p>
+<p>The following table shows the octal representation of the different permission modes:</p>
+<table border="1" class="minitable docutils">
+<colgroup>
+<col width="31%" />
+<col width="38%" />
+<col width="31%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Octal</th>
+<th class="head">Binary</th>
+<th class="head">Mode</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>0</td>
+<td>000</td>
+<td>—</td>
+</tr>
+<tr class="row-odd"><td>1</td>
+<td>001</td>
+<td>–x</td>
+</tr>
+<tr class="row-even"><td>2</td>
+<td>010</td>
+<td>-w-</td>
+</tr>
+<tr class="row-odd"><td>3</td>
+<td>011</td>
+<td>-wx</td>
+</tr>
+<tr class="row-even"><td>4</td>
+<td>100</td>
+<td>r–</td>
+</tr>
+<tr class="row-odd"><td>5</td>
+<td>101</td>
+<td>r-x</td>
+</tr>
+<tr class="row-even"><td>6</td>
+<td>110</td>
+<td>rw-</td>
+</tr>
+<tr class="row-odd"><td>7</td>
+<td>111</td>
+<td>rwx</td>
+</tr>
+</tbody>
+</table>
+<p>When setting the mode for a file using the octal notation, we need to specify the mode for the owner, group and others; we can not just specify a value for only one of those permission classes.</p>
+<p>Let’s try creating a file called <code class="docutils literal"><span class="pre">file_one</span></code> and observe its permission attributes (also known as the <strong>permission bits</strong>):</p>
+<pre class="literal-block">
+vagrant&#64;base-debootstrap: ~$ <strong class="command">touch file_one</strong>
+vagrant&#64;base-debootstrap: ~$ <strong class="command">ls -l</strong>
+total 0
+-rw-rw-r-- 1 vagrant vagrant 0 Feb  1 01:47 file_one
+</pre>
+<p>The current permissions <code class="docutils literal"><span class="pre">-rw-rw-r--</span></code> for <code class="docutils literal"><span class="pre">file_one</span></code> mean that the file can be read and written by the <cite>vagrant</cite> user, by members of the <cite>vagrant</cite> group, and any other user can read it.
+Lets change the permission bits of <code class="docutils literal"><span class="pre">file_one</span></code> so any  user can also write to it.
+In order to do this, we want to set the permissions to <code class="docutils literal"><span class="pre">-rw-rw-rw-</span></code>, which correspond to <code class="docutils literal"><span class="pre">666</span></code> in octal:</p>
+<pre class="literal-block">
+vagrant&#64;base-debootstrap:~$ <strong class="command">chmod 666 file_one</strong>
+vagrant&#64;base-debootstrap:~$ <strong class="command">ls -l</strong>
+total 0
+-rw-rw-rw- 1 vagrant vagrant 0 Feb  1 01:47 file_one
+</pre>
+<p>In the previous example, we used the octal mode notation.
+Let’s experiment using the symbolic mode notation.</p>
+<p>With the symbolic notation we do not have to specify all the permission classes.
+Instead, we use the symbols <strong>u</strong> for owner(user), <strong>g</strong> for owner, <strong>o</strong> for others and <strong>a</strong> for all (that is, to apply the same change to all <strong>u</strong>, <strong>g</strong> and <strong>o</strong> at the same time), and then the <strong>+</strong> character to indicate the grant of one or more of the permissions (<strong>r</strong>, <strong>w</strong> or <strong>x</strong>), the <strong>-</strong> character to revoke a permission, or the <strong>=</strong> character to set the permissions as stated (adds the passed permissions and removes the ommitted ones).
+The following example creates a file called <code class="docutils literal"><span class="pre">file_two</span></code> and uses symbolic notation to apply the same changes we made earlier using octal notation:</p>
+<pre class="literal-block">
+vagrant&#64;base-debootstrap:~$ <strong class="command">touch file_two</strong>
+vagrant&#64;base-debootstrap:~$ <strong class="command">ls -l</strong>
+total 0
+-rw-rw-rw- 1 vagrant vagrant 0 Feb  1 01:47 file_one
+-rw-rw-r-- 1 vagrant vagrant 0 Feb  1 01:48 file_two
+vagrant&#64;base-debootstrap:~$ <strong class="command">chmod o+w file_two</strong>
+vagrant&#64;base-debootstrap:~$ <strong class="command">ls -l</strong>
+total 0
+-rw-rw-rw- 1 vagrant vagrant 0 Feb  1 01:47 file_one
+-rw-rw-rw- 1 vagrant vagrant 0 Feb  1 01:48 file_two
+</pre>
+<p>Here’s the same operation but using the <strong>=</strong> operation with symbolic notation:</p>
+<pre class="literal-block">
+vagrant&#64;base-debootstrap:~$ <strong class="command">touch file_three</strong>
+vagrant&#64;base-debootstrap:~$ <strong class="command">ls -l</strong>
+total 0
+-rw-rw-rw- 1 vagrant vagrant 0 Feb  1 01:47 file_one
+-rw-rw-r-- 1 vagrant vagrant 0 Feb  1 01:49 file_three
+-rw-rw-rw- 1 vagrant vagrant 0 Feb  1 01:48 file_two
+vagrant&#64;base-debootstrap:~$ <strong class="command">chmod o=rw file_three</strong>
+vagrant&#64;base-debootstrap:~$ <strong class="command">ls -l</strong>
+total 0
+-rw-rw-rw- 1 vagrant vagrant 0 Feb  1 01:47 file_one
+-rw-rw-rw- 1 vagrant vagrant 0 Feb  1 01:49 file_three
+-rw-rw-rw- 1 vagrant vagrant 0 Feb  1 01:48 file_two
+</pre>
+</div>
+<div class="section" id="default-permissions">
+<h3>Default Permissions<a class="headerlink" href="#default-permissions" title="Permalink to this headline">¶</a></h3>
+<p>You might have noticed when you created the three previous files, they all had their mode set to <code class="docutils literal"><span class="pre">664</span></code> by default.
+This is controlled by the <em>file creation mode mask</em>.
+You can verify the currently active file creation mode mask with the <code class="docutils literal"><span class="pre">umask</span></code> command:</p>
+<pre class="literal-block">
+vagrant&#64;base-debootstrap:~$ <strong class="command">umask</strong>
+0002
+</pre>
+<p>How does that work? We can figure it out by looking at the following table</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">Default</span> <span class="n">regular</span> <span class="n">file</span> <span class="n">permissions</span> <span class="n">octal</span>          <span class="mi">6</span>   <span class="mi">6</span>   <span class="mi">6</span>
+<span class="n">Symbolic</span> <span class="n">notation</span>                             <span class="n">rw</span><span class="o">-</span> <span class="n">rw</span><span class="o">-</span> <span class="n">rw</span><span class="o">-</span>
+<span class="p">(</span><span class="n">A</span><span class="p">)</span>  <span class="n">Binary</span>                                   <span class="mi">110</span> <span class="mi">110</span> <span class="mi">110</span>
+<span class="o">---------------------------------------------------------</span>
+<span class="n">umask</span> <span class="n">octal</span>                                     <span class="mi">0</span>   <span class="mi">0</span>   <span class="mi">2</span>
+<span class="n">Binary</span>                                        <span class="mi">000</span> <span class="mi">000</span> <span class="mi">010</span>
+<span class="p">(</span><span class="n">B</span><span class="p">)</span> <span class="n">binary</span> <span class="n">negated</span>                            <span class="mi">111</span> <span class="mi">111</span> <span class="mi">101</span>
+<span class="o">---------------------------------------------------------</span>
+<span class="n">bitwise</span> <span class="n">A</span> <span class="o">&amp;</span> <span class="n">B</span>                                 <span class="mi">110</span> <span class="mi">110</span> <span class="mi">100</span>
+<span class="n">final</span> <span class="n">permissions</span> <span class="n">Symbolic</span>                    <span class="n">rw</span><span class="o">-</span> <span class="n">rw</span><span class="o">-</span> <span class="n">r</span><span class="o">--</span>
+</pre></div>
+</div>
+<p>To test this, lets change the <strong>permissions mask</strong> and create a new file:</p>
+<pre class="literal-block">
+vagrant&#64;base-debootstrap:~$ <strong class="command">umask 277</strong>
+vagrant&#64;base-debootstrap:~$ <strong class="command">touch file_four</strong>
+vagrant&#64;base-debootstrap:~$ <strong class="command">ls -l</strong>
+total 0
+-r-------- 1 vagrant vagrant 0 Feb  1 02:11 file_four
+-rw-rw-rw- 1 vagrant vagrant 0 Feb  1 01:47 file_one
+-rw-rw-rw- 1 vagrant vagrant 0 Feb  1 01:49 file_three
+-rw-rw-rw- 1 vagrant vagrant 0 Feb  1 01:48 file_two
+</pre>
+<p>To continuer working on this lab, change the umask back to its default:</p>
+<pre class="literal-block">
+vagrant&#64;base-debootstrap:~$ <strong class="command">umask 002</strong>
+</pre>
+</div>
+<div class="section" id="putting-it-together">
+<h3>Putting it together<a class="headerlink" href="#putting-it-together" title="Permalink to this headline">¶</a></h3>
+<p>In this part  of the lab, we are going to test how permissions work.</p>
+<p>First, we are doing to create users.
+User administration requires admin (obviously!) rights, which the <strong>vagrant</strong> account does not have.
+If we try to create a new user account, the operation will not succeed:</p>
+<pre class="literal-block">
+vagrant&#64;base-debootstrap:~$ <strong class="command">adduser john</strong>
+adduser: Only root may add a user or group to the system.
+</pre>
+<p>However, we can use the <code class="docutils literal"><span class="pre">sudo</span></code> command which allows the current user to execute commands as other users as long as there is a security policy that enables it.
+The VM that we are using has a security policty that enables the <strong>vagrant</strong> account to perform any task or access any file as superuser (if you are curious about this, inspect the last line of the <code class="docutils literal"><span class="pre">/etc/sudoers</span></code> file).
+In this case we will use it to create a user named <strong>curly</strong> (enter “curly” as password when prompted, accept all the other prompts as the defaults):</p>
+<pre class="literal-block">
+vagrant&#64;base-debootstrap:~$ <strong class="command">sudo adduser curly</strong>
+Adding user `curly' ...
+Adding new group `curly' (1001) ...
+Adding new user `curly' (1001) with group `curly' ...
+Creating home directory `/home/curly' ...
+Copying files from `/etc/skel' ...
+Enter new UNIX password:
+Retype new UNIX password:
+passwd: password updated successfully
+Changing the user information for curly
+Enter the new value, or press ENTER for the default
+        Full Name []:
+        Room Number []:
+        Work Phone []:
+        Home Phone []:
+        Other []:
+Is the information correct? [Y/n] Y
+</pre>
+<p>We can use the following command to confirm that <strong>curly</strong> was created:</p>
+<pre class="literal-block">
+vagrant&#64;base-debootstrap:~$ <strong class="command">cat /etc/passwd | grep curly</strong>
+curly:x:1001:1001:,,,:/home/curly:/bin/bash
+</pre>
+<p>The <code class="docutils literal"><span class="pre">getent</span></code> command can also be used to <em>get entries</em> from several files, among them the <code class="docutils literal"><span class="pre">passwd</span></code> file:</p>
+<pre class="literal-block">
+vagrant&#64;base-debootstrap:~$ <strong class="command">getent passwd curly</strong>
+curly:x:1001:1001:,,,:/home/curly:/bin/bash
+</pre>
+<p>Another alternative to verify an accound details is the <code class="docutils literal"><span class="pre">id</span></code> command:</p>
+<pre class="literal-block">
+vagrant&#64;base-debootstrap:~$ <strong class="command">id curly</strong>
+uid=1001(curly) gid=1001(curly) groups=1001(curly)
+</pre>
+<p>Create the following users: <strong>larry</strong>, <strong>moe</strong>, <strong>shemp</strong> and <strong>joe</strong> following the same procedure.</p>
+<p>We are now going to create a group, using the <code class="docutils literal"><span class="pre">addgroup</span></code> command:</p>
+<pre class="literal-block">
+vagrant&#64;base-debootstrap:~$ <strong class="command">sudo addgroup stooges</strong>
+Adding group `stooges' (GID 1006) ...
+Done.
+</pre>
+<p>We can verify the group was added by inspecting the <code class="docutils literal"><span class="pre">/etc/group</span></code> file.
+Since every user also gets a group created with the same name, then we should see 6 new entries added at the end of this file:</p>
+<pre class="literal-block">
+vagrant&#64;base-debootstrap:~$ <strong class="command">cat /etc/group | tail -6</strong>
+curly:x:1001:
+larry:x:1002:
+moe:x:1003:
+shemp:x:1004:
+joe:x:1005:
+stooges:x:1006:
+</pre>
+<p>If you noticed that the user id and group id matched for each one of the users we just created, don’t think that is always the case.
+That is simply a coincidence.
+For example, now that we created a standalone group (<strong>stooges</strong>), if we create a new user named <strong>harold</strong> his user id and group id will not match:</p>
+<pre class="literal-block">
+vagrant&#64;base-debootstrap:~$ <strong class="command">sudo adduser harold</strong>
+Adding user `harold' ...
+Adding new group `harold' (1007) ...
+Adding new user `harold' (1006) with group `harold' ...
+Creating home directory `/home/harold' ...
+Copying files from `/etc/skel' ...
+Enter new UNIX password:
+Retype new UNIX password:
+passwd: password updated successfully
+Changing the user information for harold
+Enter the new value, or press ENTER for the default
+        Full Name []:
+        Room Number []:
+        Work Phone []:
+        Home Phone []:
+        Other []:
+Is the information correct? [Y/n]
+vagrant&#64;base-debootstrap:~$ <strong class="command">id harold</strong>
+uid=1006(harold) gid=1007(harold) groups=1007(harold)
+</pre>
+<p>Let’s make <strong>curly</strong>, <strong>larry</strong> and <strong>moe</strong> part of the <strong>stooges</strong> group:</p>
+<pre class="literal-block">
+vagrant&#64;base-debootstrap:~$ <strong class="command">sudo adduser curly stooges</strong>
+Adding user `curly' to group `stooges' ...
+Adding user curly to group stooges
+Done.
+vagrant&#64;base-debootstrap:~$ <strong class="command">sudo adduser larry stooges</strong>
+Adding user `larry' to group `stooges' ...
+Adding user larry to group stooges
+Done.
+vagrant&#64;base-debootstrap:~$ <strong class="command">sudo adduser moe stooges</strong>
+Adding user `moe' to group `stooges' ...
+Adding user moe to group stooges
+Done.
+</pre>
+<p>To verify the previous operations:</p>
+<pre class="literal-block">
+vagrant&#64;base-debootstrap:~$ <strong class="command">cat /etc/group | grep stooges</strong>
+stooges:x:1006:curly,larry,moe
+</pre>
+<p>Let’s impersonate <strong>curly</strong>. For this, we will use the <code class="docutils literal"><span class="pre">su</span></code> command, which is used to start a shell as another user (make sure you enter curly’s password when prompted).</p>
+<pre class="literal-block">
+vagrant&#64;base-debootstrap:~$ <strong class="command">su - curly</strong>
+Password:
+curly&#64;base-debootstrap:~$ <strong class="command">pwd</strong>
+/home/curly
+</pre>
+<p>Noticed how the prompt changed letting you know that you are now acting as user <strong>curly</strong> and also that your current working directory is he home directory of <strong>curly</strong>.</p>
+<p>Now that we are acting as <strong>curly</strong>, let’s create a file,</p>
+<pre class="literal-block">
+curly&#64;base-debootstrap:~$ <strong class="command">cat &lt;&lt; EOF &gt; curlyfile.txt</strong>
+&gt; <strong class="command">This is curly's secret file.</strong>
+&gt; <strong class="command">EOF</strong>
+curly&#64;base-debootstrap:~$ <strong class="command">ls -l</strong>
+total 4
+-rw-rw-r-- 1 curly curly 29 Feb  1 07:55 curlyfile.txt
+</pre>
+<p>Currently, that file is readable by anyone. Let’s confirm that with users <strong>moe</strong> and <strong>harold</strong>:</p>
+<pre class="literal-block">
+curly&#64;base-debootstrap:~$ <strong class="command">exit</strong>
+logout
+vagrant&#64;base-debootstrap:~$ <strong class="command">su - moe</strong>
+Password:
+moe&#64;base-debootstrap:~$ <strong class="command">cat /home/curly/curlyfile.txt</strong>
+This is curly's secret file.
+moe&#64;base-debootstrap:~$ <strong class="command">exit</strong>
+logout
+vagrant&#64;base-debootstrap:~$ <strong class="command">su - harold</strong>
+Password:
+harold&#64;base-debootstrap:~$ <strong class="command">cat /home/curly/curlyfile.txt</strong>
+This is curly's secret file.
+harold&#64;base-debootstrap:~$ <strong class="command">exit</strong>
+logout
+</pre>
+<p>Let’s assume that <strong>curly</strong> wants to make that file available to only members of the <strong>stooges</strong> group.
+The first thing he needs to do is to change the file’s group:</p>
+<pre class="literal-block">
+vagrant&#64;base-debootstrap:~$ <strong class="command">su - curly</strong>
+Password:
+curly&#64;base-debootstrap:~$ <strong class="command">chgrp stooges curlyfile.txt</strong>
+curly&#64;base-debootstrap:~$ <strong class="command">ls -l</strong>
+total 4
+-rw-rw-r-- 1 curly stooges 29 Feb  1 07:55 curlyfile.txt
+</pre>
+<p>The next thing that we need to do is to remove the read access to others:</p>
+<pre class="literal-block">
+curly&#64;base-debootstrap:~$ <strong class="command">chmod o-r curlyfile.txt</strong>
+curly&#64;base-debootstrap:~$ <strong class="command">ls -l</strong>
+total 4
+-rw-rw---- 1 curly stooges 29 Feb  1 07:55 curlyfile.txt
+</pre>
+<p>After this change, <strong>moe</strong> should be able to still read the file (since he is a member of the <strong>stooges</strong> group) and <strong>harold</strong> should not:</p>
+<pre class="literal-block">
+curly&#64;base-debootstrap:~$ <strong class="command">exit</strong>
+logout
+vagrant&#64;base-debootstrap:~$ <strong class="command">su - moe</strong>
+Password:
+moe&#64;base-debootstrap:~$ <strong class="command">cat /home/curly/curlyfile.txt</strong>
+This is curly's secret file.
+moe&#64;base-debootstrap:~$ <strong class="command">exit</strong>
+logout
+vagrant&#64;base-debootstrap:~$ <strong class="command">su - harold</strong>
+Password:
+harold&#64;base-debootstrap:~$ <strong class="command">cat /home/curly/curlyfile.txt</strong>
+cat: /home/curly/curlyfile.txt: Permission denied
+harold&#64;base-debootstrap:~$ <strong class="command">exit</strong>
+logout
+</pre>
+<p>Let’s see now how directory permissions work. Let’s create a new directory under <strong>curly</strong> home directory and move the <code class="docutils literal"><span class="pre">curlyfile.txt</span></code> to this directory.</p>
+<pre class="literal-block">
+vagrant&#64;base-debootstrap:~$ <strong class="command">su - curly</strong>
+Password:
+curly&#64;base-debootstrap:~$ <strong class="command">mkdir secret</strong>
+curly&#64;base-debootstrap:~$ <strong class="command">ls -l</strong>
+total 8
+-rw-rw---- 1 curly stooges   29 Feb  1 07:55 curlyfile.txt
+drwxrwxr-x 2 curly curly   4096 Feb  1 08:30 secret
+curly&#64;base-debootstrap:~$ <strong class="command">mv curlyfile.txt secret</strong>
+</pre>
+<p>Let’s check if <strong>moe</strong> is still able to read the file:</p>
+<pre class="literal-block">
+curly&#64;base-debootstrap:~$ <strong class="command">exit</strong>
+logout
+vagrant&#64;base-debootstrap:~$ <strong class="command">su - moe</strong>
+Password:
+moe&#64;base-debootstrap:~$ <strong class="command">cat /home/curly/secret/curlyfile.txt</strong>
+This is curly's secret file.
+</pre>
+<p>So far, things still work, and this is because the newly created directory has <code class="docutils literal"><span class="pre">rwxrwxr-x</span></code> permissions. Lets get back as <strong>curly</strong> and change the permissions of the <code class="docutils literal"><span class="pre">/home/curly/secret</span></code> directory so other users can not read or execute from it:</p>
+<pre class="literal-block">
+moe&#64;base-debootstrap:~$ <strong class="command">exit</strong>
+logout
+vagrant&#64;base-debootstrap:~$ <strong class="command">su - curly</strong>
+Password:
+secret
+curly&#64;base-debootstrap:~$ <strong class="command">chmod o-rx secret</strong>
+curly&#64;base-debootstrap:~$ <strong class="command">exit</strong>
+logout
+vagrant&#64;base-debootstrap:~$ <strong class="command">su - moe</strong>
+Password:
+moe&#64;base-debootstrap:~$ <strong class="command">cat /home/curly/secret/curlyfile.txt</strong>
+cat: /home/curly/secret/curlyfile.txt: Permission denied
+</pre>
+<p>The reason why <strong>moe</strong> can not read the file anymore is because the directory that contains it is associated with the <strong>curly</strong> group, not with the <strong>stooges</strong> group. If we change the group associated with the <code class="docutils literal"><span class="pre">/home/curly/secret</span></code> directory to <strong>stooges</strong>, then <strong>moe</strong> should be able to read the file again.</p>
+<pre class="literal-block">
+moe&#64;base-debootstrap:~$ <strong class="command">exit</strong>
+logout
+vagrant&#64;base-debootstrap:~$ <strong class="command">su - curly</strong>
+Password:
+curly&#64;base-debootstrap:~$ <strong class="command">chgrp stooges secret</strong>
+curly&#64;base-debootstrap:~$ <strong class="command">exit</strong>
+logout
+vagrant&#64;base-debootstrap:~$ <strong class="command">su - moe</strong>
+Password:
+moe&#64;base-debootstrap:~$ <strong class="command">cat /home/curly/secret/curlyfile.txt</strong>
+This is curly's secret file.
+</pre>
+<p>Let’s see what happens when <strong>moe</strong> tries to list the contents for the <code class="docutils literal"><span class="pre">/home/curly/secret</span></code> directory</p>
+<pre class="literal-block">
+moe&#64;base-debootstrap:~$ <strong class="command">ls /home/curly/secret</strong>
+curlyfile.txt
+moe&#64;base-debootstrap:~$ <strong class="command">cp /home/curly/secret/curlyfile.txt .</strong>
+moe&#64;base-debootstrap:~$ <strong class="command">ls</strong>
+curlyfile.txt
+</pre>
+<p>Both operations succeeded. If <strong>curly</strong> wanted to prevent users from the <strong>stooges</strong> group from listing contents of it’s directory, then he needs to remove the <code class="docutils literal"><span class="pre">r</span></code> bit:</p>
+<pre class="literal-block">
+moe&#64;base-debootstrap:~$ <strong class="command">exit</strong>
+logout
+vagrant&#64;base-debootstrap:~$ <strong class="command">su - curly</strong>
+Password:
+curly&#64;base-debootstrap:~$ <strong class="command">chmod g-r secret</strong>
+curly&#64;base-debootstrap:~$ <strong class="command">exit</strong>
+logout
+vagrant&#64;base-debootstrap:~$ <strong class="command">su - moe</strong>
+Password:
+moe&#64;base-debootstrap:~$ <strong class="command">ls /home/curly/secret</strong>
+ls: cannot open directory '/home/curly/secret': Permission denied
+</pre>
+<p>After the last change that <strong>curly</strong> made to the <code class="docutils literal"><span class="pre">/home/curly/secret</span></code> directory, <strong>moe</strong> is not able to list the contents of the directory anymore.
+However, he can still read and copy the files contained in it:</p>
+<pre class="literal-block">
+moe&#64;base-debootstrap:~$ <strong class="command">cat /home/curly/secret/curlyfile.txt</strong>
+This is curly's secret file.
+moe&#64;base-debootstrap:~$ <strong class="command">cp /home/curly/secret/curlyfile.txt .</strong>
+</pre>
+<p>What if we now remove the <code class="docutils literal"><span class="pre">x</span></code> bit?</p>
+<pre class="literal-block">
+moe&#64;base-debootstrap:~$ <strong class="command">exit</strong>
+logout
+vagrant&#64;base-debootstrap:~$ <strong class="command">su - curly</strong>
+Password:
+curly&#64;base-debootstrap:~$ <strong class="command">chmod g-x secret</strong>
+curly&#64;base-debootstrap:~$ <strong class="command">ls -l</strong>
+total 4
+drwx-w---- 2 curly stooges 4096 Feb  1 08:30 secret
+curly&#64;base-debootstrap:~$ <strong class="command">exit</strong>
+logout
+vagrant&#64;base-debootstrap:~$ <strong class="command">su - moe</strong>
+Password:
+moe&#64;base-debootstrap:~$ <strong class="command">cp /home/curly/secret/curlyfile.txt .</strong>
+cp: cannot stat '/home/curly/secret/curlyfile.txt': Permission denied
+moe&#64;base-debootstrap:~$ <strong class="command">cat /home/curly/secret/curlyfile.txt</strong>
+cat: /home/curly/secret/curlyfile.txt: Permission denied
+</pre>
+<p>One thing we haven’t tried is to have <strong>moe</strong> create files in the <code class="docutils literal"><span class="pre">/home/curly/secret</span></code> directory:</p>
+<pre class="literal-block">
+moe&#64;base-debootstrap:~$ <strong class="command">cat &lt;&lt; EOF &gt; /home/curly/secret/moefile.txt</strong>
+&gt; <strong class="command">This is moe's secret file</strong>
+&gt; <strong class="command">EOF</strong>
+-su: /home/curly/secret/moefile.txt: Permission denied
+</pre>
+<p>Although the <code class="docutils literal"><span class="pre">/home/curly/secret/</span></code> directory still has the <code class="docutils literal"><span class="pre">w</span></code> bit set for the group, it won’t allow the creation of files, and this is because in order to do this we need the <code class="docutils literal"><span class="pre">x</span></code> bit set. If we add back the <code class="docutils literal"><span class="pre">x</span></code> permission, then <strong>moe</strong> will be able to create a file on it:</p>
+<pre class="literal-block">
+moe&#64;base-debootstrap:~$ <strong class="command">exit</strong>
+logout
+vagrant&#64;base-debootstrap:~$ <strong class="command">su - curly</strong>
+Password:
+curly&#64;base-debootstrap:~$ <strong class="command">chmod g+x secret</strong>
+curly&#64;base-debootstrap:~$ <strong class="command">exit</strong>
+logout
+vagrant&#64;base-debootstrap:~$ <strong class="command">su - moe</strong>
+Password:
+moe&#64;base-debootstrap:~$ <strong class="command">cat &lt;&lt; EOF &gt; /home/curly/secret/moefile.txt</strong>
+&gt; <strong class="command">This is moe's secret file</strong>
+&gt; <strong class="command">EOF</strong>
+moe&#64;base-debootstrap:~$ <strong class="command">exit</strong>
+logout
+</pre>
+<p>Let’s see now how execute permissions work for files. Assume <strong>curly</strong> wants to create script that prints the date:</p>
+<pre class="literal-block">
+vagrant&#64;base-debootstrap:~$ <strong class="command">su - curly</strong>
+Password:
+curly&#64;base-debootstrap:~$ <strong class="command">cat &lt;&lt; EOF &gt; secret/whatdate.sh</strong>
+&gt; <strong class="command">#!/bin/bash</strong>
+&gt; <strong class="command">echo &quot;Today is&quot; $(date)</strong>
+&gt; <strong class="command">EOF</strong>
+curly&#64;base-debootstrap:~$ <strong class="command">secret/whatdate.sh</strong>
+-su: secret/whatdate.sh: Permission denied
+</pre>
+<p>If <strong>curly</strong> created the <code class="docutils literal"><span class="pre">secret/whatdate.sh</span></code> script, how is it possible that he can’t execute it?
+The reason is the file’s <code class="docutils literal"><span class="pre">x</span></code> bit:</p>
+<pre class="literal-block">
+curly&#64;base-debootstrap:~$ <strong class="command">ls -ltrh secret</strong>
+total 12K
+-rw-rw---- 1 curly stooges 29 Feb  1 07:55 curlyfile.txt
+-rw-rw-r-- 1 moe   moe     26 Feb  1 09:09 moefile.txt
+-rw-rw-r-- 1 curly curly   57 Feb  1 09:17 whatdate.sh
+</pre>
+<p>Let’s update the permissions and try again:</p>
+<pre class="literal-block">
+curly&#64;base-debootstrap:~$ <strong class="command">chmod ug+x secret/whatdate.sh</strong>
+curly&#64;base-debootstrap:~$ <strong class="command">secret/whatdate.sh</strong>
+Today is Sat Feb  1 09:17:29 UTC 2020
+</pre>
+</div>
+<div class="section" id="symbolic-links">
+<h3>Symbolic Links<a class="headerlink" href="#symbolic-links" title="Permalink to this headline">¶</a></h3>
+<p>Symbolic links (also known as symlinks) are pointers to other files.  As we saw earlier, they can be identified by showing a file type of <strong>l</strong> in the long format output of the <code class="docutils literal"><span class="pre">ls</span></code> command.
+In the following example a file called <code class="docutils literal"><span class="pre">file_a</span></code> is created, and then a symbolic link <code class="docutils literal"><span class="pre">file_b</span></code> that points to <code class="docutils literal"><span class="pre">file_a</span></code> is created as well:</p>
+<pre class="literal-block">
+vagrant&#64;base-debootstrap:~$ <strong class="command">cat &lt;&lt; EOF &gt; file_a</strong>
+&gt; <strong class="command">This is file a</strong>
+&gt; <strong class="command">EOF</strong>
+vagrant&#64;base-debootstrap:~$ <strong class="command">ls -l</strong>
+total 4
+-rw-rw-r-- 1 vagrant vagrant 15 Feb 01 09:44 file_a
+vagrant&#64;base-debootstrap:~$ <strong class="command">ln -s file_a file_b</strong>
+vagrant&#64;base-debootstrap:~$ <strong class="command">ls -l</strong>
+total 4
+-rw-rw-r-- 1 vagrant vagrant 15 Feb  1 09:44 file_a
+lrwxrwxrwx 1 vagrant vagrant  6 Feb  1 09:44 file_b -&gt; file_a
+vagrant&#64;base-debootstrap:~$ <strong class="command">cat file_a</strong>
+This is file a
+vagrant&#64;base-debootstrap:~$ <strong class="command">cat file_b</strong>
+This is file a
+</pre>
+<p>Let’s see what happens if we change the mode of the symlink file:</p>
+<pre class="literal-block">
+vagrant&#64;base-debootstrap:~$ <strong class="command">ls -ltrh</strong>
+total 4.0K
+-rw-rw-r-- 1 vagrant vagrant 15 Feb  1 09:44 file_a
+lrwxrwxrwx 1 vagrant vagrant  6 Feb  1 09:44 file_b -&gt; file_a
+vagrant&#64;base-debootstrap:~$ <strong class="command">chmod u-wx file_b</strong>
+vagrant&#64;base-debootstrap:~$ <strong class="command">ls -ltrh</strong>
+total 4.0K
+-r--rw-r-- 1 vagrant vagrant 15 Feb  1 09:44 file_a
+lrwxrwxrwx 1 vagrant vagrant  6 Feb  1 09:44 file_b -&gt; file_a
+</pre>
+<p>Notice that even we changed the simlink, we effectively changed the permissions of the target file:</p>
+<pre class="literal-block">
+vagrant&#64;base-debootstrap:~$ <strong class="command">echo &quot;test&quot; &gt;&gt; file_a</strong>
+-bash: file_a: Permission denied
+</pre>
+<p>What happens if we now move <code class="docutils literal"><span class="pre">file_a</span></code> to another directory:</p>
+<pre class="literal-block">
+vagrant&#64;base-debootstrap:~$ <strong class="command">mkdir oldfiles</strong>
+vagrant&#64;base-debootstrap:~$ <strong class="command">mv file_a oldfiles</strong>
+vagrant&#64;base-debootstrap:~$ <strong class="command">ls -l</strong>
+total 4
+lrwxrwxrwx 1 vagrant vagrant    6 Feb  1 09:44 file_b -&gt; file_a
+drwxrwxr-x 2 vagrant vagrant 4096 Feb  1 09:49 oldfiles
+vagrant&#64;base-debootstrap:~$ <strong class="command">cat file_b</strong>
+cat: file_b: No such file or directory
+</pre>
+<div class="worksheet admonition">
+<p class="first admonition-title">chmod</p>
+<p>This part of the lab needs to be executed as the <strong>vagrant</strong> account.</p>
+<ol class="arabic simple">
+<li>Change directory to the home directy. Run the command <strong class="command">umask 077</strong>.  Create an empty file called <code class="docutils literal"><span class="pre">newfile</span></code>.  What are the permissions of this file?</li>
+<li>Complete the following table by providing the <code class="docutils literal"><span class="pre">chmod</span></code> command that will make the file <em>transition through</em> the permissions indicated in the column <em>Attributes</em>, or by providing the <em>Attributes</em> that would result from running the <code class="docutils literal"><span class="pre">chmod</span></code> command if specified. This means that the comands are run sequentially (i.e. for row <em>n</em> you need to call <code class="docutils literal"><span class="pre">chmod</span></code> so the file transtions from the attributes in row <em>n-1</em> to the attributes in row <em>n</em>).</li>
+</ol>
+<table border="1" class="worksheettable last docutils">
+<colgroup>
+<col width="28%" />
+<col width="15%" />
+<col width="57%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Attributes</th>
+<th class="head">Notation</th>
+<th class="head">chmod command</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td><code class="docutils literal"><span class="pre">-rwx------</span></code></td>
+<td>symbolic</td>
+<td>&#160;</td>
+</tr>
+<tr class="row-odd"><td><code class="docutils literal"><span class="pre">-r-x------</span></code></td>
+<td>octal</td>
+<td>&#160;</td>
+</tr>
+<tr class="row-even"><td><code class="docutils literal"><span class="pre">-rwxr--r--</span></code></td>
+<td>symbolic</td>
+<td>&#160;</td>
+</tr>
+<tr class="row-odd"><td>&#160;</td>
+<td>octal</td>
+<td><strong class="command">chmod 755 newfile</strong></td>
+</tr>
+<tr class="row-even"><td><code class="docutils literal"><span class="pre">-rwxrw----</span></code></td>
+<td>symbolic</td>
+<td>&#160;</td>
+</tr>
+<tr class="row-odd"><td><code class="docutils literal"><span class="pre">-r-xr--r-x</span></code></td>
+<td>octal</td>
+<td>&#160;</td>
+</tr>
+<tr class="row-even"><td>&#160;</td>
+<td>symbolic</td>
+<td><strong class="command">chmod ug+w,o=r newfile</strong></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="worksheet admonition">
+<p class="first admonition-title">symlinks</p>
+<ol class="last arabic simple" start="3">
+<li>In the example given in the “Symbolic Links” section of the lab, the link was broken once we moved the file to another directory. How would you rewrite the arguments of the command to create the symlink (<code class="docutils literal"><span class="pre">ln</span></code>) to avoid this problem?</li>
+</ol>
+</div>
+</div>
+</div>
+</div>
+
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+    </p>
+    <p>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

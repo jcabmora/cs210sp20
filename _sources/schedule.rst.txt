@@ -20,9 +20,9 @@ Course Schedule and Materials
       -
       - TLCL, Chapters 2, 3 ,4
     * - 3 - 02/10
-      - 
+      - :doc:`labs/lab03/lab03`
       -
-      - 
+      - TLCL, Chapters 4 and 9
     * - 4 - 02/17
       -
       -
