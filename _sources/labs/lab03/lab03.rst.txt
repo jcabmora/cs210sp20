@@ -1,16 +1,14 @@
 :orphan:
 
-*****************************
-Lab No. 3: Working with Files
-*****************************
+**********************************
+Lab No. 3: Working wit Permissions
+**********************************
 
 In this lab we will:
 
 
 * learn about file permissions
 * learn to create symbolic links and hard links
-* learn how to find files using wildcards
-* learn how to use wildcards to perform bulk file operations
 
 
 Lab Preparation
