@@ -227,7 +227,7 @@ In the previous example, we used the octal mode notation.
 Let's experiment using the symbolic mode notation.
 
 With the symbolic notation we do not have to specify all the permission classes.
-Instead, we use the symbols **u** for owner(user), **g** for owner, **o** for others and **a** for all (that is, to apply the same change to all **u**, **g** and **o** at the same time), and then the **+** character to indicate the grant of one or more of the permissions (**r**, **w** or **x**), the **-** character to revoke a permission, or the **=** character to set the permissions as stated (adds the passed permissions and removes the ommitted ones).
+Instead, we use the symbols **u** for owner(user), **g** for group, **o** for others and **a** for all (that is, to apply the same change to all **u**, **g** and **o** at the same time), and then the **+** character to indicate the grant of one or more of the permissions (**r**, **w** or **x**), the **-** character to revoke a permission, or the **=** character to set the permissions as stated (adds the passed permissions and removes the ommitted ones).
 The following example creates a file called ``file_two`` and uses symbolic notation to apply the same changes we made earlier using octal notation:
 
 
