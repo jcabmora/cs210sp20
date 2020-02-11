@@ -773,4 +773,4 @@ What happens if we now move ``file_a`` to another directory:
 .. admonition:: symlinks
     :class: worksheet
 
-    3. In the example given in the "Symbolic Links" section of the lab, the link was broken once we moved the file to another directory. Provide an ls command that will fix this issue (check the man pages / recall absolute and relative paths). 
+    3. In the example given in the "Symbolic Links" section of the lab, the link was broken once we moved the file to another directory. Provide an **ln** command that will fix this issue (check the man pages / recall absolute and relative paths). 
