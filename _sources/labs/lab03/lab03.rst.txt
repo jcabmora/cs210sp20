@@ -1,8 +1,8 @@
 :orphan:
 
-**********************************
-Lab No. 3: Working wit Permissions
-**********************************
+***********************************
+Lab No. 3: Working with Permissions
+***********************************
 
 In this lab we will:
 
