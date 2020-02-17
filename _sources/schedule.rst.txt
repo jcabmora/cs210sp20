@@ -24,9 +24,9 @@ Course Schedule and Materials
       -
       - TLCL, Chapters 4 and 9
     * - 4 - 02/17
+      - :doc:`labs/lab04/lab04`
       -
-      -
-      - 
+      - TLCL, Chapter 7
     * - 5 - 02/24
       - 
       -

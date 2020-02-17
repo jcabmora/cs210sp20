@@ -1,0 +1,516 @@
+:orphan:
+
+**************************
+Lab No. 4: Shell Expansion
+**************************
+
+After completing this lab, students will be able to:
+
+* use filename expansions to find files and perform bulk file operations
+
+This lab is meant to be completed on ``blue.cs.sonoma.edu``.
+
+For this lab you are going to use an archive that is located at : :download:`lab04.tar.gz<lab04.tar.gz>`
+Use the following command to download it to your home directory:
+
+.. parsed-literal::
+    [user\@blue ~]$ :command:`wget https://jcabmora.github.io/cs210sp20/_downloads/lab04.tar.gz -O ~/lab04.tar.gz`
+
+In case you are wondering, ``wget`` is a command line tool to download resources using the HTTP, HTTPS and FTP protocols. It is a simpler alternative to the ``curl`` command that you used in Lab 01.
+
+Once the archive has been downloaded, use the following command to extract its contents.
+Note that since the archive contains a directory called ``lab04``, this command checks for its existance and will only extract the contents if ``lab04`` does not exist in your current working directory.
+
+.. parsed-literal::
+    [user\@blue ~]$ :command:`if [[ -d lab04 ]]; then echo "Directory lab04 already exists, please remove or rename it"; else tar -xvzf lab04.tar.gz; fi`
+ 
+
+Filename Expansion
+==================
+
+In Lab No.2 we learned how to list (``ls``), move(``mv``), copy (``cp``) and remove (``rm`` and ``rmdir``) files and directories.
+Wildcard characters (also known as *globbing characters*) allow these commands (and many others) to perform file operations based on patterns in their names.
+
+The following list contains the ``bash`` wildcards:
+
+.. cssclass:: table-striped
+
+================= =========================================================================
+Character         Meaning                                               
+================= =========================================================================
+``*``             A sequence of zero or more length of any characters
+``?``             Any single character
+``[characters]``  Matches a single character included in the set *characters*
+``[!character]``  Matches a single character that *is not* included in the set *characters*
+================= =========================================================================
+
+When using the bash shell, you can use the following character classes to specify a set of characters:
+
+.. list-table::
+    :widths: 10 30 50
+    :header-rows: 1
+    
+    * - Class
+      - Equivalent to                              
+      - Description
+    * - ``[:alnum:]``   
+      - ``[A-Za-z0-9]``                            
+      - Digits, uppercase and lowercase letters
+    * - ``[:alpha:]``
+      - ``[A-Za-z]``
+      -  upper- and lowercase letters
+    * - ``[:ascii:]``
+      - ``[\x00-\x7F]``
+      - ASCII characters
+    * - ``[:blank:]``
+      - ``[ \t]``
+      - space and TAB characters only
+    * - ``[:cntrl:]``
+      - ``[\x00-\x1F\x7F]``
+      -  Control characters
+    * - ``[:digit:]``
+      - ``[0-9]``
+      -  digits
+    * - ``[:graph:]``
+      - ``[^[:cntrl:]]``
+      - graphic characters (all characters which have graphic representation)
+    * - ``[:lower:]``
+      - ``[a-z]``
+      -  lowercase letters
+    * - ``[:print:]``
+      - ``[[:graph] ]``
+      - graphic characters and space
+    * - ``[:punct:]``
+      - ``[-!"#$%&'()*+,./:;<=>?@[]^_`{|}~]``
+      - all punctuation characters (all graphic characters except letters and digits)
+    * - ``[:space:]``
+      - ``[ \t\n\r\f\v]``
+      - all blank (whitespace) characters, including spaces, tabs, new lines, carriage returns, form feeds, and vertical tabs
+    * - ``[:upper:]``
+      - ``[A-Z]``
+      - uppercase letters
+    * - ``[:word:]``
+      - ``[A-Za-z0-9_]``
+      - word characters
+    * - ``[:xdigit:]``
+      - ``[0-9A-Fa-f]``
+      - hexadecimal digits
+
+
+Wildcards work with all commands that accept a list of filenames as input (e.g. ``rm``, ``mv``, ``cp``, ``chmod``, etc).
+It is always a good idea to test your pattern with ``ls`` before applying it to a command that will make modifications.
+
+Let's see globbing characters in action.
+First, let's change our current working directory to ``lab04/logs`` and list its contents:
+
+.. parsed-literal::
+
+    [user\@blue ~]$ :command:`cd lab04/logs`
+    [user\@blue logs]$ :command:`ls`
+    afpd.log                  dnf.log-20200126      maillog                openvpnas.log     test
+    boot.log                  dnf.log-20200202      maillog-20200126       openvpnas.log.1   vbox-setup.log
+    btmp                      dnf.log-20200209      maillog-20200202       README            vbox-setup.log.01
+    btmp-20200201             dnf.log-20200216      maillog-20200209       secure            vbox-setup.log.02
+    cron                      dnf.rpm.log           maillog-20200216       secure-20191202   vbox-setup.log.03
+    cron-20200102             dnf.rpm.log-20200126  mediawiki-updates.log  secure-20200102   vbox-setup.log.04
+    cron-20200108             dnf.rpm.log-20200202  messages               secure-20200115   vbox-setup.log.4
+    cron-20200111             dnf.rpm.log-20200209  messages-20190902      secure-20200125   vmware-vmusr.log
+    cron-20200126             dnf.rpm.log-20200216  messages-20191202      secure-20200126   wtmp
+    cron-20200202             dpkg.log              messages-20200102      secure-20200202   wtmp-20200201
+    cron-20200209             firewalld             messages-20200108      secure-20200209   xferlog
+    cron-20200216             grubby                messages-20200109      secure-20200216   xferlog-20200126
+    dnf                       hawkey.log            messages-20200112      sendmail.log      xferlog-20200202
+    dnf.librepo.log           hawkey.log-20200126   messages-20200121      spooler           xferlog-20200209
+    dnf.librepo.log-20200126  hawkey.log-20200202   messages-20200125      spooler-20200126  xferlog-20200216
+    dnf.librepo.log-20200202  hawkey.log-20200209   messages-20200126      spooler-20200202  Xorg.0.log
+    dnf.librepo.log-20200209  hawkey.log-20200216   messages-20200202      spooler-20200209  Xorg.0.log.old
+    dnf.librepo.log-20200216  kern                  messages-20200209      spooler-20200216  Xorg.1.log
+    dnf.log                   lastlog               messages-20200216      tallylog          Xorg.1.log.old
+
+
+That is quite a lot of files.
+To get an idea, let's use the ``wc`` utility to count the number of files.
+In the following command, the **pipe** operator (the ``|`` character ) instructs the shell to take the output of the ``ls`` command, and "feed" it to the ``wc`` command :
+
+.. parsed-literal::
+    [user\@blue logs]$ :command:`ls -1 | wc`
+          95      95    1428
+
+The first item in the output of ``wc`` is the count of words (95) which is equal to the second item, the count of lines (95). Finally, the third item (1428) is the count of characters. So, knowing that ``ls -1`` outputs a line for each file that it finds, then we know that we have a total of 95 files.
+
+These are all files created after actual log files from **blue.cs.sonoma.edu** (they are all empty, since we just care about their names).
+In this example, the file names that have and ending portion composed by 8 digits is a timestamp in the format **YYYYMMDD** (**YYYY** = 4 digit year, **MM** = 2 digit month, **DD** = 2 digit day of the month).
+
+On Linux systems, instead of writing all logs to a single file, they are tipically split into multiple files, each one corresponding to a service or a group of services that are related.
+For example, ``dnf`` is a package manager.
+Let's use the ``*`` wildcard to list all the log files that are related to ``dnf``:
+
+.. parsed-literal::
+    [user\@blue logs]$ :command:`ls dnf*`
+    dnf                       dnf.librepo.log-20200209  dnf.log-20200202  dnf.rpm.log-20200126
+    dnf.librepo.log           dnf.librepo.log-20200216  dnf.log-20200209  dnf.rpm.log-20200202
+    dnf.librepo.log-20200126  dnf.log                   dnf.log-20200216  dnf.rpm.log-20200209
+    dnf.librepo.log-20200202  dnf.log-20200126          dnf.rpm.log       dnf.rpm.log-20200216
+
+The ``dnf*`` argument instructed the shell to look for files whose names start with ``dnf`` followed by any sequence of characters. Note that ``*`` matches zero characters, so the file named ``dnf`` was also matched.
+
+Instead of looking for files that *start* with a given string of characters, let's try looking for files that *end* with a given string.
+Using the timestamp naming convention that was explained before, let's list files that are timestamped on 2020-02-02:
+
+.. parsed-literal::
+    [user\@blue logs]$ :command:`ls \*20200202`
+    cron-20200202             dnf.log-20200202      hawkey.log-20200202  messages-20200202  spooler-20200202
+    dnf.librepo.log-20200202  dnf.rpm.log-20200202  maillog-20200202     secure-20200202    xferlog-20200202
+
+
+Let's assume now that we want to list all the files whose timestamp ends in the second day of any month:
+
+.. parsed-literal::
+    [user\@blue logs]$ :command:`ls \*02`
+    cron-20200102             dnf.log-20200202      maillog-20200202   messages-20200102  secure-20200102   vbox-setup.log.02
+    cron-20200202             dnf.rpm.log-20200202  messages-20190902  messages-20200202  secure-20200202   xferlog-20200202
+    dnf.librepo.log-20200202  hawkey.log-20200202   messages-20191202  secure-20191202    spooler-20200202
+
+
+Well, that did not work, because the file ``vbox-setup.log.02`` is included on the results, and we clearly don't want it.
+We can use other globbing characters to solve this problem.
+We know that any file that has a timestamp in its name has 8 digit characters at its end. 
+We can use the fact that those 8 digits start with ``20`` (if this system was started more than 20 years ago, we couldn't make this assumption), then they are followed by 4 digit characters, and finally, they should end with ``02``.
+We can use the ``?`` globbing character, which matches any single character, to come up with the following command to achieve what we are looking for:
+
+.. parsed-literal::
+    [user\@blue logs]$ :command:`ls \*20????02`
+    cron-20200102             dnf.log-20200202      maillog-20200202   messages-20200102  secure-20200102   xferlog-20200202
+    cron-20200202             dnf.rpm.log-20200202  messages-20190902  messages-20200202  secure-20200202
+    dnf.librepo.log-20200202  hawkey.log-20200202   messages-20191202  secure-20191202    spooler-20200202
+
+
+Great! We can see in the previous results that we got logs timestamped for any second day of the month.
+The output does not only contain files ending in ``0202``, but it also includes others such as ``0102``, ``0902``, ``1202``. 
+
+Suppose now that we are performing an audit, and we need to list all logs timestamped between 2020-01-03 and 2020-01-09.
+Let's try the expression ``*2020010?``
+
+.. parsed-literal::
+    [user\@blue logs]$ :command:`ls \*2020010?`
+    cron-20200102  cron-20200108  messages-20200102  messages-20200108  messages-20200109  secure-20200102
+
+That did not work, because it includes files outside the desired range (e.g. ``cron-20200102``)
+We can use ``[]`` globbing pattern to expecify a set of characters to match to solve this problem.
+We know that we want the last character to be either 3, 4, 5, 6, 7, 8 or 9.
+Then we can use this command:
+
+.. parsed-literal::
+    [user\@blue logs]$ :command:`ls \*2020010[3456789]`
+    cron-20200108  messages-20200108  messages-20200109
+
+Great! However, we can simplify things a bit. We can specify a range of characters using the ``-`` syntax:
+
+.. parsed-literal::
+    [user\@blue logs]$ :command:`ls \*2020010[3-9]`
+    cron-20200108  messages-20200108  messages-20200109
+
+We can also use the version that matches characters that are not pat of a set:
+
+.. parsed-literal::
+    [user\@blue logs]$ :command:`ls \*2020010[!0-2]`
+    cron-20200108  messages-20200108  messages-20200109
+
+
+Let's assume that we are now asked to provide the list of files timestamped between 2020-01-03 and 2020-02-25.
+That means that we can not restrict the last character to the ``3-9`` range because we would exclude files such as ``messages-20200112`` which is clearly withing the range.
+For this particular request, we can't create a "one size fits all" expression, but instead we can create multiple:
+
+.. parsed-literal::
+    [user\@blue logs]$ :command:`ls \*2020010[3-9] \*2020011? \*2020012[0-5]`
+    cron-20200108  messages-20200108  messages-20200112  messages-20200125  secure-20200125
+    cron-20200111  messages-20200109  messages-20200121  secure-20200115
+
+There is a little problem with the previous command. Create a file named ``messages-2020011a`` and rerun the previous command:
+
+.. parsed-literal::
+    [user\@blue logs]$ :command:`touch messages-2020011a`
+    [user\@blue logs]$ :command:`ls \*2020010[3-9] \*2020011? \*2020012[0-5]`
+    cron-20200108  messages-20200108  messages-20200112  messages-20200121  secure-20200115
+    cron-20200111  messages-20200109  messages-2020011a  messages-20200125  secure-20200125
+
+You can see that the newly created file is included in the results. We could fix that by using the full range of numbers:
+
+.. parsed-literal::
+    [user\@blue logs]$ :command:`ls \*2020010[3-9] \*2020011[0-9] \*2020012[0-5]`
+    cron-20200108  messages-20200108  messages-20200112  messages-20200125  secure-20200125
+    cron-20200111  messages-20200109  messages-20200121  secure-20200115
+
+Instead of using the ``[0-9]`` range of characters, we can use one of the built in character classes:
+
+.. parsed-literal::
+    [user\@blue logs]$  :command:`ls \*2020010[3-9] \*2020011[[:digit:]] \*2020012[0-5]`
+    cron-20200108  messages-20200108  messages-20200112  messages-20200125  secure-20200125
+    cron-20200111  messages-20200109  messages-20200121  secure-20200115
+
+Let's see another example of the usage of character classes. Let's list all files that begin with an uppercase letter:
+
+.. parsed-literal::
+    [user\@blue logs]$ :command:`ls [[:upper:]]*`
+    README  Xorg.0.log  Xorg.0.log.old  Xorg.1.log  Xorg.1.log.old
+
+
+
+Tilde expansion
+===============
+We have been using tilde expansion on a daily basis on previous labs.
+However, it is appropriate to introduce formally in this lab the basic rules that govern tilde expansion.
+
+When used by itself, it expands to the value of the ``HOME`` environment variable:
+
+.. parsed-literal::
+
+    [user\@blue dataset]$  :command:`echo ~`
+    /home/student/user
+
+When used at the beginning of a word (that is, before the first "slash: character (``/``), it expands into the pathname of the home directory of the user that matches the word.
+
+.. parsed-literal::
+
+    [user\@blue dataset]$ :command:`echo ~jmora`
+    /home/faculty/jmora
+
+
+* ``~+`` expands to the current working directory (the value of the ``PWD`` environment variable)
+
+.. parsed-literal::
+    [user\@blue dataset]$ :command:`cd /var/log`
+    [user\@blue log]$ :command:`echo ~+`
+    /var/log
+
+
+  
+* ``~-`` expands to the previous working directory (the value of the ``OLDPWD`` environment variable)
+
+.. parsed-literal::
+
+    [user\@blue log]$ :command:`pwd`
+    /var/log
+    [user\@blue log]$ :command:`cd /home`
+    [user\@blue home]$ :command:`echo ~-`
+    /var/log
+
+
+Brace expansion
+===============
+
+Brace expansion is used to generate arbitrary strings. 
+Patterns to be brace expanded take the form *PREAMBLE*{expression}*POSTSCRIPT*.
+The preamble is prefixed to each string generated by the expression within the braces, and the postcript is appended to each resulting string.
+Both the *preamble* and the *postscript* are optional.
+For an expression to be consider a brace expansion, it needs to be a list of string tokens.  
+You can use a comma to define an arbitrary list of string elements.
+
+Let's see some examples:
+
+.. parsed-literal::
+
+    [user\@blue ~]$ :command:`echo {ada,grace,allan}`
+    ada grace allan
+    [user\@blue ~]$ :command:`echo my_name_is_{ada,grace,allan}`
+    my_name_is_ada my_name_is_grace my_name_is_allan
+    [use\@blue ~]$ :command:`echo {ada,grace,allan}_is_my_name`
+    ada_is_my_name grace_is_my_name allan_is_my_name
+
+
+You can also define sequences by using an expression of the form ``{x..y}`` where ``x`` and ``y`` are either single characters or integers.
+
+.. parsed-literal::
+    [user\@blue ~]$ :command:`echo {1..5}`
+    1 2 3 4 5
+    [user\@blue ~]$ :command:`echo {a..g}`
+    a b c d e f g
+
+Note that the shell is smart to generate sequences in descending order:
+
+.. parsed-literal::
+
+    [user\@blue ~]$ :command:`echo {5..1}`
+    5 4 3 2 1
+    [user\@blue ~]$ :command:`echo {g..a}`
+    g f e d c b a
+
+
+You can skip elements from the sequence by using the form ``{x..y..z}`` where ``z`` is the number of elements to skip.
+
+.. parsed-literal::
+    [user\@blue ~]$ :command:`echo {a..g..2}`
+    a c e g
+
+
+Brace expansion is performed before any other expansions, which means that we can include other expressions that can be expanded as well.
+For example, going back to the ``lab04/logs`` directory; if we want to list all the ``dnf`` and ``messages`` files that have a timestamp in a single command, we could do the following:
+
+.. parsed-literal::
+
+    [user\@blue ~]$ :command:`cd ~/lab04/logs`
+    [user\@blue logs]$ :command:`ls {dnf,messages}*[[:digit:]]`
+    dnf.librepo.log-20200126  dnf.log-20200202      dnf.rpm.log-20200209  messages-20200108  messages-20200126
+    dnf.librepo.log-20200202  dnf.log-20200209      dnf.rpm.log-20200216  messages-20200109  messages-20200202
+    dnf.librepo.log-20200209  dnf.log-20200216      messages-20190902     messages-20200112  messages-20200209
+    dnf.librepo.log-20200216  dnf.rpm.log-20200126  messages-20191202     messages-20200121  messages-20200216
+    dnf.log-20200126          dnf.rpm.log-20200202  messages-20200102     messages-20200125
+
+Brace expansion is processed before any other type of expansion, and it is strictly textual, it does not process any characters that have any special interpretation (such as the wildcard characters).
+
+Braces expansion is very useful to avoid writing a repetitive set of arguments.
+Consider for example, that we want to enhance the current directory tree under ``lab04`` and add the ``lab04/logs/web/apache``, ``lab04/logs/web/nginx`` and ``lab04/logs/web/tomcat``. Instead of writing one command for each directory that we need to create, we can do it with just one using brace expansion:
+
+.. parsed-literal:: 
+    [user\@blue lab04]$ :command:`cd ~`
+    [user\@blue ~]$ :command:`tree -d lab04`
+    lab04
+    ├── dataset
+    └── logs
+
+    2 directories
+	[user\@blue ~]$ :command:`mkdir -p lab04/logs/web/{apache,tomcat,nginx}`
+	[user\@blue ~]$ :command:`tree -d lab04`
+	lab04
+	├── dataset
+	└── logs
+		└── web
+			├── apache
+			├── nginx
+			└── tomcat
+
+	6 directories
+
+Command substitution
+====================
+This type of expansion allows the output of a command to be used as input for other commands or to be assigned to a variable.  Command substitution has two forms:
+
+* ``$(command)``
+* ```command```
+
+
+Let's see this in an example.
+Suppose you want to output a "human friendly" message with a list of the IP Addresses of the users logged into a system.
+We can get that information with the ``who`` command.
+
+.. parsed-literal::
+    [user\@blue ~]$ :command:`who`
+    raine    pts/0        2020-01-17 10:37 (130.157.113.179)
+    user     pts/1        2020-01-17 13:04 (73.202.227.12)
+    kraken   pts/2        2020-01-17 09:14 (130.157.112.185)
+
+
+In order to be able to only get the ip addresses, we are going to use ``awk`` to get the last column(which stands for ``$NF``) from the output of the ``who`` command, and the ``tr`` command to remove the parenthesis:
+
+.. parsed-literal::
+
+    [user\@blue ~]$ :command:`who | awk '{print $NF}' | tr -d '()'`
+    130.157.113.179
+    73.202.227.12
+    130.157.112.185
+
+Now, using command substitution, we can create a nicely formatted message:
+
+.. parsed-literal::
+    [user\@blue test]$ :command:`echo "The list of ip addresses is: " $(who | awk '{print $NF}' | tr -d '()')`
+    The list of ip addresses is:  130.157.113.179 73.202.227.12 130.157.112.185
+
+
+Parameter expansion
+===================
+Variables are a mechanism to asign a name to a value that we need to use later.
+Once we get to shell scripts, you will see that any script that goes beyond the most basic shell scripts will need to use variables. 
+The basic form of parameter expansion is the form ``${VARIABLE_NAME}``.
+Braces can be ommitted and use the form ``$VARIABLE_NAME`` except when it needs to be concatenated with other strings (and also if ``VARIABLE_NAME`` refers to a positional parameter in a script that requires more than one digit, but we will discuss that in a later lab).
+
+Following the example from command substitutuion, let's assign the ip addresses to a variable:
+
+.. parsed-literal::
+    [user\@blue test]$ :command:`ipaddresses=$(who | awk '{print $NF}' | tr -d '()')`
+    [user\@blue test]$ :command:`echo $ipaddresses`
+    130.157.113.179 73.202.227.12 130.157.112.185
+    [user\@blue test]$ :command:`echo ${ipaddresses}`
+    130.157.113.179 73.202.227.12 130.157.112.185
+
+Parameter expansion is a very long topic and we are barely scratching the surface in this section. We will cover this in more depth once we start working with scripts.
+
+
+.. _envvariables:
+
+Environment variables
+---------------------
+We are at a point were we can introduce formally the concept of environment variables.
+When you start a session, the shell creates a set of variables that describe the session, in what is called the environment.
+
+The data stored in the environment is used by many programs to determine how they need to function.
+The environment provides a very consistent and centralized way to access some of the most elemental configuration parameters.  
+
+Most programming languages provide an API that allows you to get access to the variables in the environment.
+Examples of the most common environment variables are the username, the home directory, the language, the current working directory, and the path where executables can be found.
+
+Many programs require you to define environment variables so they can work.
+If you have done any python programming you will probably had to set the ``PYTHONPATH`` variable, if you are a java programmer you must have seen the ``JAVA_HOME`` and the ``CLASSPATH`` environment variables, if you a C++ programmer, you must have seen the ``CPATH`` environment variable, if you are a golang programmer, then surely you are familiar with ``GOPATH``.
+
+In Linux the ``env`` command prints a list of the environment variables. Examine the output for your session:
+
+.. parsed-literal::
+    [user\@blue ~]$ :command:`env`
+    (output ommitted for brevity)
+
+
+You can get the value of any specific variable using variable expansion, for example instead of using the command :command:`cd ~` to change to your home directory, you could also the (longer but equivalent) command :command:`cd $HOME`.
+
+.. parsed-literal::
+    [user\@blue ~]$ :command:`echo $HOME`
+    /home/student/user
+    [user\@blue ~]$ :command:`echo $PWD`
+    /home/stutdent/user
+    [user\@blue ~]$ :command:`echo $SHELL`
+    /bin/bash
+    [user\@blue ~]$ :command:`cd /var/log/`
+    [user\@blue log]$ :command:`cd $HOME`
+    [user\@blue ~]$ :command:`pwd`
+    /home/student/user
+
+
+To set an environment variable so it can be accessible to other commands (the correct term is other *child processes*, but we have not talked about processes yet)  during your active session you use the ``export`` command.
+We will revisit this in a later lab when we cover processes.
+
+
+.. admonition:: Part 1
+    :class: worksheet
+    
+    For this part of the lab, you will use the files that are located in the ``lab04/dataset`` directory. 
+    The files contained in this directory simulate a dataset where each file is associated with a single benchmark job.
+    Each job can have two types of files associated with it:
+
+    * ``.dat`` are **data files**. Every job always has one of these.
+    * ``.err`` are **error files** and they are only present if there was an error during the job execution.
+
+    The file names in this directory follow certain semantics.
+    A typical file in the ``dataset`` directory will look like this: ``andromeda_8cores_min-20170125.err``.
+    The file name is comprised of several elements: 
+
+    * The first part of the file (before the first underscore, "andromeda" in the example), corresponds to the machine where the benchmark was run. Other values are "chronos", "leo", "ursaminor", "ursamajor".
+    * The second part (before the second underscore) indicates the number of cores used during the benchmark execution. Options are "8cores","4cores","2cores" and "1core"
+    * The part between the second underscore and the hyphen, corresponds to the benchmark code.  The available options are **fft1d**, **fft2d**, **max** and **min**.
+    * The element after the hyphen and before the file extension, correspond to the job timestamp in the format **YYYYMMDD**.
+    * The last element (The one after the period) corresponds to the extension (``.dat`` or ``.err``)
+
+    Provide commands whose output will answer the following questions:
+
+    1. How many job executions are included the dataset?
+    2. How many job executions used less than 4 cores?
+    3. How many job executions of the **fft1* and *fft2** benchmarks were completed in a February?
+    4. How many data files were generated in **leo** and  **chonos** in 2017 in the first half of the month (before the fifteen day of the month)?
+    
+.. admonition:: Part 2
+    :class: worksheet
+    
+    5. Write a command that will create all the following files (within your current working directory). Each file corresponds to a month-year combination (from January 2010 until December 2012)
+    
+.. parsed-literal::
+    [user@blue test]$ ls
+    2010-01  2010-04  2010-07  2010-10  2011-01  2011-04  2011-07  2011-10  2012-01  2012-04  2012-07  2012-10
+    2010-02  2010-05  2010-08  2010-11  2011-02  2011-05  2011-08  2011-11  2012-02  2012-05  2012-08  2012-11
+    2010-03  2010-06  2010-09  2010-12  2011-03  2011-06  2011-09  2011-12  2012-03  2012-06  2012-09  2012-12

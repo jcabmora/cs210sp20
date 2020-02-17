@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Lab No. 4: Shell Expansion &#8212; CS210 Introduction to Unix  documentation</title>
+    <link rel="stylesheet" href="../../_static/bootstrap-sphinx.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="../../_static/js/jquery-1.11.0.min.js"></script>
+    <script type="text/javascript" src="../../_static/js/jquery-fix.js"></script>
+    <script type="text/javascript" src="../../_static/bootstrap-3.3.7/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../../_static/bootstrap-sphinx.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+<link href="https://fonts.googleapis.com/css?family=Lusitana|Roboto|Roboto+Mono" rel="stylesheet">
+
+  </head>
+  <body>
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../../index.html">
+          CS210 Introduction to Unix</a>
+        <span class="navbar-text navbar-version pull-left"><b></b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../../index.html">Site <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><ul>
+<li class="toctree-l1"><a class="reference internal" href="../../syllabus.html">CS210 Introduction to Unix - Spring 2020</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../conv/conv.html">Conventions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../schedule.html">Course Schedule and Materials</a></li>
+</ul>
+</ul>
+</li>
+              
+                <li class="dropdown">
+  <a role="button"
+     id="dLabelLocalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="#">Page <b class="caret"></b></a>
+  <ul class="dropdown-menu localtoc"
+      role="menu"
+      aria-labelledby="dLabelLocalToc"><ul>
+<li><a class="reference internal" href="#">Lab No. 4: Shell Expansion</a><ul>
+<li><a class="reference internal" href="#filename-expansion">Filename Expansion</a></li>
+<li><a class="reference internal" href="#tilde-expansion">Tilde expansion</a></li>
+<li><a class="reference internal" href="#brace-expansion">Brace expansion</a></li>
+<li><a class="reference internal" href="#command-substitution">Command substitution</a></li>
+<li><a class="reference internal" href="#parameter-expansion">Parameter expansion</a><ul>
+<li><a class="reference internal" href="#environment-variables">Environment variables</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</ul>
+</li>
+              
+            
+            
+              
+                
+              
+            
+            
+            
+            
+              <li class="hidden-sm">
+<div id="sourcelink">
+  <a href="../../_sources/labs/lab04/lab04.rst.txt"
+     rel="nofollow">Source</a>
+</div></li>
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="../../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+    <div class="col-md-12 content">
+      
+  <div class="section" id="lab-no-4-shell-expansion">
+<h1>Lab No. 4: Shell Expansion<a class="headerlink" href="#lab-no-4-shell-expansion" title="Permalink to this headline">¶</a></h1>
+<p>After completing this lab, students will be able to:</p>
+<ul class="simple">
+<li>use filename expansions to find files and perform bulk file operations</li>
+</ul>
+<p>This lab is meant to be completed on <code class="docutils literal"><span class="pre">blue.cs.sonoma.edu</span></code>.</p>
+<p>For this lab you are going to use an archive that is located at : <a class="reference download internal" href="../../_downloads/lab04.tar.gz" download=""><code class="xref download docutils literal"><span class="pre">lab04.tar.gz</span></code></a>
+Use the following command to download it to your home directory:</p>
+<pre class="literal-block">
+[user&#64;blue ~]$ <strong class="command">wget https://jcabmora.github.io/cs210sp20/_downloads/lab04.tar.gz -O ~/lab04.tar.gz</strong>
+</pre>
+<p>In case you are wondering, <code class="docutils literal"><span class="pre">wget</span></code> is a command line tool to download resources using the HTTP, HTTPS and FTP protocols. It is a simpler alternative to the <code class="docutils literal"><span class="pre">curl</span></code> command that you used in Lab 01.</p>
+<p>Once the archive has been downloaded, use the following command to extract its contents.
+Note that since the archive contains a directory called <code class="docutils literal"><span class="pre">lab04</span></code>, this command checks for its existance and will only extract the contents if <code class="docutils literal"><span class="pre">lab04</span></code> does not exist in your current working directory.</p>
+<pre class="literal-block">
+[user&#64;blue ~]$ <strong class="command">if [[ -d lab04 ]]; then echo &quot;Directory lab04 already exists, please remove or rename it&quot;; else tar -xvzf lab04.tar.gz; fi</strong>
+</pre>
+<div class="section" id="filename-expansion">
+<h2>Filename Expansion<a class="headerlink" href="#filename-expansion" title="Permalink to this headline">¶</a></h2>
+<p>In Lab No.2 we learned how to list (<code class="docutils literal"><span class="pre">ls</span></code>), move(<code class="docutils literal"><span class="pre">mv</span></code>), copy (<code class="docutils literal"><span class="pre">cp</span></code>) and remove (<code class="docutils literal"><span class="pre">rm</span></code> and <code class="docutils literal"><span class="pre">rmdir</span></code>) files and directories.
+Wildcard characters (also known as <em>globbing characters</em>) allow these commands (and many others) to perform file operations based on patterns in their names.</p>
+<p>The following list contains the <code class="docutils literal"><span class="pre">bash</span></code> wildcards:</p>
+<table border="1" class="table-striped docutils">
+<colgroup>
+<col width="19%" />
+<col width="81%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Character</th>
+<th class="head">Meaning</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td><code class="docutils literal"><span class="pre">*</span></code></td>
+<td>A sequence of zero or more length of any characters</td>
+</tr>
+<tr class="row-odd"><td><code class="docutils literal"><span class="pre">?</span></code></td>
+<td>Any single character</td>
+</tr>
+<tr class="row-even"><td><code class="docutils literal"><span class="pre">[characters]</span></code></td>
+<td>Matches a single character included in the set <em>characters</em></td>
+</tr>
+<tr class="row-odd"><td><code class="docutils literal"><span class="pre">[!character]</span></code></td>
+<td>Matches a single character that <em>is not</em> included in the set <em>characters</em></td>
+</tr>
+</tbody>
+</table>
+<p>When using the bash shell, you can use the following character classes to specify a set of characters:</p>
+<table border="1" class="colwidths-given docutils">
+<colgroup>
+<col width="11%" />
+<col width="33%" />
+<col width="56%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Class</th>
+<th class="head">Equivalent to</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td><code class="docutils literal"><span class="pre">[:alnum:]</span></code></td>
+<td><code class="docutils literal"><span class="pre">[A-Za-z0-9]</span></code></td>
+<td>Digits, uppercase and lowercase letters</td>
+</tr>
+<tr class="row-odd"><td><code class="docutils literal"><span class="pre">[:alpha:]</span></code></td>
+<td><code class="docutils literal"><span class="pre">[A-Za-z]</span></code></td>
+<td>upper- and lowercase letters</td>
+</tr>
+<tr class="row-even"><td><code class="docutils literal"><span class="pre">[:ascii:]</span></code></td>
+<td><code class="docutils literal"><span class="pre">[\x00-\x7F]</span></code></td>
+<td>ASCII characters</td>
+</tr>
+<tr class="row-odd"><td><code class="docutils literal"><span class="pre">[:blank:]</span></code></td>
+<td><code class="docutils literal"><span class="pre">[</span> <span class="pre">\t]</span></code></td>
+<td>space and TAB characters only</td>
+</tr>
+<tr class="row-even"><td><code class="docutils literal"><span class="pre">[:cntrl:]</span></code></td>
+<td><code class="docutils literal"><span class="pre">[\x00-\x1F\x7F]</span></code></td>
+<td>Control characters</td>
+</tr>
+<tr class="row-odd"><td><code class="docutils literal"><span class="pre">[:digit:]</span></code></td>
+<td><code class="docutils literal"><span class="pre">[0-9]</span></code></td>
+<td>digits</td>
+</tr>
+<tr class="row-even"><td><code class="docutils literal"><span class="pre">[:graph:]</span></code></td>
+<td><code class="docutils literal"><span class="pre">[^[:cntrl:]]</span></code></td>
+<td>graphic characters (all characters which have graphic representation)</td>
+</tr>
+<tr class="row-odd"><td><code class="docutils literal"><span class="pre">[:lower:]</span></code></td>
+<td><code class="docutils literal"><span class="pre">[a-z]</span></code></td>
+<td>lowercase letters</td>
+</tr>
+<tr class="row-even"><td><code class="docutils literal"><span class="pre">[:print:]</span></code></td>
+<td><code class="docutils literal"><span class="pre">[[:graph]</span> <span class="pre">]</span></code></td>
+<td>graphic characters and space</td>
+</tr>
+<tr class="row-odd"><td><code class="docutils literal"><span class="pre">[:punct:]</span></code></td>
+<td><code class="docutils literal"><span class="pre">[-!&quot;#$%&amp;'()*+,./:;&lt;=&gt;?&#64;[]^_`{|}~]</span></code></td>
+<td>all punctuation characters (all graphic characters except letters and digits)</td>
+</tr>
+<tr class="row-even"><td><code class="docutils literal"><span class="pre">[:space:]</span></code></td>
+<td><code class="docutils literal"><span class="pre">[</span> <span class="pre">\t\n\r\f\v]</span></code></td>
+<td>all blank (whitespace) characters, including spaces, tabs, new lines, carriage returns, form feeds, and vertical tabs</td>
+</tr>
+<tr class="row-odd"><td><code class="docutils literal"><span class="pre">[:upper:]</span></code></td>
+<td><code class="docutils literal"><span class="pre">[A-Z]</span></code></td>
+<td>uppercase letters</td>
+</tr>
+<tr class="row-even"><td><code class="docutils literal"><span class="pre">[:word:]</span></code></td>
+<td><code class="docutils literal"><span class="pre">[A-Za-z0-9_]</span></code></td>
+<td>word characters</td>
+</tr>
+<tr class="row-odd"><td><code class="docutils literal"><span class="pre">[:xdigit:]</span></code></td>
+<td><code class="docutils literal"><span class="pre">[0-9A-Fa-f]</span></code></td>
+<td>hexadecimal digits</td>
+</tr>
+</tbody>
+</table>
+<p>Wildcards work with all commands that accept a list of filenames as input (e.g. <code class="docutils literal"><span class="pre">rm</span></code>, <code class="docutils literal"><span class="pre">mv</span></code>, <code class="docutils literal"><span class="pre">cp</span></code>, <code class="docutils literal"><span class="pre">chmod</span></code>, etc).
+It is always a good idea to test your pattern with <code class="docutils literal"><span class="pre">ls</span></code> before applying it to a command that will make modifications.</p>
+<p>Let’s see globbing characters in action.
+First, let’s change our current working directory to <code class="docutils literal"><span class="pre">lab04/logs</span></code> and list its contents:</p>
+<pre class="literal-block">
+[user&#64;blue ~]$ <strong class="command">cd lab04/logs</strong>
+[user&#64;blue logs]$ <strong class="command">ls</strong>
+afpd.log                  dnf.log-20200126      maillog                openvpnas.log     test
+boot.log                  dnf.log-20200202      maillog-20200126       openvpnas.log.1   vbox-setup.log
+btmp                      dnf.log-20200209      maillog-20200202       README            vbox-setup.log.01
+btmp-20200201             dnf.log-20200216      maillog-20200209       secure            vbox-setup.log.02
+cron                      dnf.rpm.log           maillog-20200216       secure-20191202   vbox-setup.log.03
+cron-20200102             dnf.rpm.log-20200126  mediawiki-updates.log  secure-20200102   vbox-setup.log.04
+cron-20200108             dnf.rpm.log-20200202  messages               secure-20200115   vbox-setup.log.4
+cron-20200111             dnf.rpm.log-20200209  messages-20190902      secure-20200125   vmware-vmusr.log
+cron-20200126             dnf.rpm.log-20200216  messages-20191202      secure-20200126   wtmp
+cron-20200202             dpkg.log              messages-20200102      secure-20200202   wtmp-20200201
+cron-20200209             firewalld             messages-20200108      secure-20200209   xferlog
+cron-20200216             grubby                messages-20200109      secure-20200216   xferlog-20200126
+dnf                       hawkey.log            messages-20200112      sendmail.log      xferlog-20200202
+dnf.librepo.log           hawkey.log-20200126   messages-20200121      spooler           xferlog-20200209
+dnf.librepo.log-20200126  hawkey.log-20200202   messages-20200125      spooler-20200126  xferlog-20200216
+dnf.librepo.log-20200202  hawkey.log-20200209   messages-20200126      spooler-20200202  Xorg.0.log
+dnf.librepo.log-20200209  hawkey.log-20200216   messages-20200202      spooler-20200209  Xorg.0.log.old
+dnf.librepo.log-20200216  kern                  messages-20200209      spooler-20200216  Xorg.1.log
+dnf.log                   lastlog               messages-20200216      tallylog          Xorg.1.log.old
+</pre>
+<p>That is quite a lot of files.
+To get an idea, let’s use the <code class="docutils literal"><span class="pre">wc</span></code> utility to count the number of files.
+In the following command, the <strong>pipe</strong> operator (the <code class="docutils literal"><span class="pre">|</span></code> character ) instructs the shell to take the output of the <code class="docutils literal"><span class="pre">ls</span></code> command, and “feed” it to the <code class="docutils literal"><span class="pre">wc</span></code> command :</p>
+<pre class="literal-block">
+[user&#64;blue logs]$ <strong class="command">ls -1 | wc</strong>
+      95      95    1428
+</pre>
+<p>The first item in the output of <code class="docutils literal"><span class="pre">wc</span></code> is the count of words (95) which is equal to the second item, the count of lines (95). Finally, the third item (1428) is the count of characters. So, knowing that <code class="docutils literal"><span class="pre">ls</span> <span class="pre">-1</span></code> outputs a line for each file that it finds, then we know that we have a total of 95 files.</p>
+<p>These are all files created after actual log files from <strong>blue.cs.sonoma.edu</strong> (they are all empty, since we just care about their names).
+In this example, the file names that have and ending portion composed by 8 digits is a timestamp in the format <strong>YYYYMMDD</strong> (<strong>YYYY</strong> = 4 digit year, <strong>MM</strong> = 2 digit month, <strong>DD</strong> = 2 digit day of the month).</p>
+<p>On Linux systems, instead of writing all logs to a single file, they are tipically split into multiple files, each one corresponding to a service or a group of services that are related.
+For example, <code class="docutils literal"><span class="pre">dnf</span></code> is a package manager.
+Let’s use the <code class="docutils literal"><span class="pre">*</span></code> wildcard to list all the log files that are related to <code class="docutils literal"><span class="pre">dnf</span></code>:</p>
+<pre class="literal-block">
+[user&#64;blue logs]$ <strong class="command">ls dnf*</strong>
+dnf                       dnf.librepo.log-20200209  dnf.log-20200202  dnf.rpm.log-20200126
+dnf.librepo.log           dnf.librepo.log-20200216  dnf.log-20200209  dnf.rpm.log-20200202
+dnf.librepo.log-20200126  dnf.log                   dnf.log-20200216  dnf.rpm.log-20200209
+dnf.librepo.log-20200202  dnf.log-20200126          dnf.rpm.log       dnf.rpm.log-20200216
+</pre>
+<p>The <code class="docutils literal"><span class="pre">dnf*</span></code> argument instructed the shell to look for files whose names start with <code class="docutils literal"><span class="pre">dnf</span></code> followed by any sequence of characters. Note that <code class="docutils literal"><span class="pre">*</span></code> matches zero characters, so the file named <code class="docutils literal"><span class="pre">dnf</span></code> was also matched.</p>
+<p>Instead of looking for files that <em>start</em> with a given string of characters, let’s try looking for files that <em>end</em> with a given string.
+Using the timestamp naming convention that was explained before, let’s list files that are timestamped on 2020-02-02:</p>
+<pre class="literal-block">
+[user&#64;blue logs]$ <strong class="command">ls *20200202</strong>
+cron-20200202             dnf.log-20200202      hawkey.log-20200202  messages-20200202  spooler-20200202
+dnf.librepo.log-20200202  dnf.rpm.log-20200202  maillog-20200202     secure-20200202    xferlog-20200202
+</pre>
+<p>Let’s assume now that we want to list all the files whose timestamp ends in the second day of any month:</p>
+<pre class="literal-block">
+[user&#64;blue logs]$ <strong class="command">ls *02</strong>
+cron-20200102             dnf.log-20200202      maillog-20200202   messages-20200102  secure-20200102   vbox-setup.log.02
+cron-20200202             dnf.rpm.log-20200202  messages-20190902  messages-20200202  secure-20200202   xferlog-20200202
+dnf.librepo.log-20200202  hawkey.log-20200202   messages-20191202  secure-20191202    spooler-20200202
+</pre>
+<p>Well, that did not work, because the file <code class="docutils literal"><span class="pre">vbox-setup.log.02</span></code> is included on the results, and we clearly don’t want it.
+We can use other globbing characters to solve this problem.
+We know that any file that has a timestamp in its name has 8 digit characters at its end.
+We can use the fact that those 8 digits start with <code class="docutils literal"><span class="pre">20</span></code> (if this system was started more than 20 years ago, we couldn’t make this assumption), then they are followed by 4 digit characters, and finally, they should end with <code class="docutils literal"><span class="pre">02</span></code>.
+We can use the <code class="docutils literal"><span class="pre">?</span></code> globbing character, which matches any single character, to come up with the following command to achieve what we are looking for:</p>
+<pre class="literal-block">
+[user&#64;blue logs]$ <strong class="command">ls *20????02</strong>
+cron-20200102             dnf.log-20200202      maillog-20200202   messages-20200102  secure-20200102   xferlog-20200202
+cron-20200202             dnf.rpm.log-20200202  messages-20190902  messages-20200202  secure-20200202
+dnf.librepo.log-20200202  hawkey.log-20200202   messages-20191202  secure-20191202    spooler-20200202
+</pre>
+<p>Great! We can see in the previous results that we got logs timestamped for any second day of the month.
+The output does not only contain files ending in <code class="docutils literal"><span class="pre">0202</span></code>, but it also includes others such as <code class="docutils literal"><span class="pre">0102</span></code>, <code class="docutils literal"><span class="pre">0902</span></code>, <code class="docutils literal"><span class="pre">1202</span></code>.</p>
+<p>Suppose now that we are performing an audit, and we need to list all logs timestamped between 2020-01-03 and 2020-01-09.
+Let’s try the expression <code class="docutils literal"><span class="pre">*2020010?</span></code></p>
+<pre class="literal-block">
+[user&#64;blue logs]$ <strong class="command">ls *2020010?</strong>
+cron-20200102  cron-20200108  messages-20200102  messages-20200108  messages-20200109  secure-20200102
+</pre>
+<p>That did not work, because it includes files outside the desired range (e.g. <code class="docutils literal"><span class="pre">cron-20200102</span></code>)
+We can use <code class="docutils literal"><span class="pre">[]</span></code> globbing pattern to expecify a set of characters to match to solve this problem.
+We know that we want the last character to be either 3, 4, 5, 6, 7, 8 or 9.
+Then we can use this command:</p>
+<pre class="literal-block">
+[user&#64;blue logs]$ <strong class="command">ls *2020010[3456789]</strong>
+cron-20200108  messages-20200108  messages-20200109
+</pre>
+<p>Great! However, we can simplify things a bit. We can specify a range of characters using the <code class="docutils literal"><span class="pre">-</span></code> syntax:</p>
+<pre class="literal-block">
+[user&#64;blue logs]$ <strong class="command">ls *2020010[3-9]</strong>
+cron-20200108  messages-20200108  messages-20200109
+</pre>
+<p>We can also use the version that matches characters that are not pat of a set:</p>
+<pre class="literal-block">
+[user&#64;blue logs]$ <strong class="command">ls *2020010[!0-2]</strong>
+cron-20200108  messages-20200108  messages-20200109
+</pre>
+<p>Let’s assume that we are now asked to provide the list of files timestamped between 2020-01-03 and 2020-02-25.
+That means that we can not restrict the last character to the <code class="docutils literal"><span class="pre">3-9</span></code> range because we would exclude files such as <code class="docutils literal"><span class="pre">messages-20200112</span></code> which is clearly withing the range.
+For this particular request, we can’t create a “one size fits all” expression, but instead we can create multiple:</p>
+<pre class="literal-block">
+[user&#64;blue logs]$ <strong class="command">ls *2020010[3-9] *2020011? *2020012[0-5]</strong>
+cron-20200108  messages-20200108  messages-20200112  messages-20200125  secure-20200125
+cron-20200111  messages-20200109  messages-20200121  secure-20200115
+</pre>
+<p>There is a little problem with the previous command. Create a file named <code class="docutils literal"><span class="pre">messages-2020011a</span></code> and rerun the previous command:</p>
+<pre class="literal-block">
+[user&#64;blue logs]$ <strong class="command">touch messages-2020011a</strong>
+[user&#64;blue logs]$ <strong class="command">ls *2020010[3-9] *2020011? *2020012[0-5]</strong>
+cron-20200108  messages-20200108  messages-20200112  messages-20200121  secure-20200115
+cron-20200111  messages-20200109  messages-2020011a  messages-20200125  secure-20200125
+</pre>
+<p>You can see that the newly created file is included in the results. We could fix that by using the full range of numbers:</p>
+<pre class="literal-block">
+[user&#64;blue logs]$ <strong class="command">ls *2020010[3-9] *2020011[0-9] *2020012[0-5]</strong>
+cron-20200108  messages-20200108  messages-20200112  messages-20200125  secure-20200125
+cron-20200111  messages-20200109  messages-20200121  secure-20200115
+</pre>
+<p>Instead of using the <code class="docutils literal"><span class="pre">[0-9]</span></code> range of characters, we can use one of the built in character classes:</p>
+<pre class="literal-block">
+[user&#64;blue logs]$  <strong class="command">ls *2020010[3-9] *2020011[[:digit:]] *2020012[0-5]</strong>
+cron-20200108  messages-20200108  messages-20200112  messages-20200125  secure-20200125
+cron-20200111  messages-20200109  messages-20200121  secure-20200115
+</pre>
+<p>Let’s see another example of the usage of character classes. Let’s list all files that begin with an uppercase letter:</p>
+<pre class="literal-block">
+[user&#64;blue logs]$ <strong class="command">ls [[:upper:]]*</strong>
+README  Xorg.0.log  Xorg.0.log.old  Xorg.1.log  Xorg.1.log.old
+</pre>
+</div>
+<div class="section" id="tilde-expansion">
+<h2>Tilde expansion<a class="headerlink" href="#tilde-expansion" title="Permalink to this headline">¶</a></h2>
+<p>We have been using tilde expansion on a daily basis on previous labs.
+However, it is appropriate to introduce formally in this lab the basic rules that govern tilde expansion.</p>
+<p>When used by itself, it expands to the value of the <code class="docutils literal"><span class="pre">HOME</span></code> environment variable:</p>
+<pre class="literal-block">
+[user&#64;blue dataset]$  <strong class="command">echo ~</strong>
+/home/student/user
+</pre>
+<p>When used at the beginning of a word (that is, before the first “slash: character (<code class="docutils literal"><span class="pre">/</span></code>), it expands into the pathname of the home directory of the user that matches the word.</p>
+<pre class="literal-block">
+[user&#64;blue dataset]$ <strong class="command">echo ~jmora</strong>
+/home/faculty/jmora
+</pre>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">~+</span></code> expands to the current working directory (the value of the <code class="docutils literal"><span class="pre">PWD</span></code> environment variable)</li>
+</ul>
+<pre class="literal-block">
+[user&#64;blue dataset]$ <strong class="command">cd /var/log</strong>
+[user&#64;blue log]$ <strong class="command">echo ~+</strong>
+/var/log
+</pre>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">~-</span></code> expands to the previous working directory (the value of the <code class="docutils literal"><span class="pre">OLDPWD</span></code> environment variable)</li>
+</ul>
+<pre class="literal-block">
+[user&#64;blue log]$ <strong class="command">pwd</strong>
+/var/log
+[user&#64;blue log]$ <strong class="command">cd /home</strong>
+[user&#64;blue home]$ <strong class="command">echo ~-</strong>
+/var/log
+</pre>
+</div>
+<div class="section" id="brace-expansion">
+<h2>Brace expansion<a class="headerlink" href="#brace-expansion" title="Permalink to this headline">¶</a></h2>
+<p>Brace expansion is used to generate arbitrary strings.
+Patterns to be brace expanded take the form <em>PREAMBLE*{expression}*POSTSCRIPT</em>.
+The preamble is prefixed to each string generated by the expression within the braces, and the postcript is appended to each resulting string.
+Both the <em>preamble</em> and the <em>postscript</em> are optional.
+For an expression to be consider a brace expansion, it needs to be a list of string tokens.
+You can use a comma to define an arbitrary list of string elements.</p>
+<p>Let’s see some examples:</p>
+<pre class="literal-block">
+[user&#64;blue ~]$ <strong class="command">echo {ada,grace,allan}</strong>
+ada grace allan
+[user&#64;blue ~]$ <strong class="command">echo my_name_is_{ada,grace,allan}</strong>
+my_name_is_ada my_name_is_grace my_name_is_allan
+[use&#64;blue ~]$ <strong class="command">echo {ada,grace,allan}_is_my_name</strong>
+ada_is_my_name grace_is_my_name allan_is_my_name
+</pre>
+<p>You can also define sequences by using an expression of the form <code class="docutils literal"><span class="pre">{x..y}</span></code> where <code class="docutils literal"><span class="pre">x</span></code> and <code class="docutils literal"><span class="pre">y</span></code> are either single characters or integers.</p>
+<pre class="literal-block">
+[user&#64;blue ~]$ <strong class="command">echo {1..5}</strong>
+1 2 3 4 5
+[user&#64;blue ~]$ <strong class="command">echo {a..g}</strong>
+a b c d e f g
+</pre>
+<p>Note that the shell is smart to generate sequences in descending order:</p>
+<pre class="literal-block">
+[user&#64;blue ~]$ <strong class="command">echo {5..1}</strong>
+5 4 3 2 1
+[user&#64;blue ~]$ <strong class="command">echo {g..a}</strong>
+g f e d c b a
+</pre>
+<p>You can skip elements from the sequence by using the form <code class="docutils literal"><span class="pre">{x..y..z}</span></code> where <code class="docutils literal"><span class="pre">z</span></code> is the number of elements to skip.</p>
+<pre class="literal-block">
+[user&#64;blue ~]$ <strong class="command">echo {a..g..2}</strong>
+a c e g
+</pre>
+<p>Brace expansion is performed before any other expansions, which means that we can include other expressions that can be expanded as well.
+For example, going back to the <code class="docutils literal"><span class="pre">lab04/logs</span></code> directory; if we want to list all the <code class="docutils literal"><span class="pre">dnf</span></code> and <code class="docutils literal"><span class="pre">messages</span></code> files that have a timestamp in a single command, we could do the following:</p>
+<pre class="literal-block">
+[user&#64;blue ~]$ <strong class="command">cd ~/lab04/logs</strong>
+[user&#64;blue logs]$ <strong class="command">ls {dnf,messages}*[[:digit:]]</strong>
+dnf.librepo.log-20200126  dnf.log-20200202      dnf.rpm.log-20200209  messages-20200108  messages-20200126
+dnf.librepo.log-20200202  dnf.log-20200209      dnf.rpm.log-20200216  messages-20200109  messages-20200202
+dnf.librepo.log-20200209  dnf.log-20200216      messages-20190902     messages-20200112  messages-20200209
+dnf.librepo.log-20200216  dnf.rpm.log-20200126  messages-20191202     messages-20200121  messages-20200216
+dnf.log-20200126          dnf.rpm.log-20200202  messages-20200102     messages-20200125
+</pre>
+<p>Brace expansion is processed before any other type of expansion, and it is strictly textual, it does not process any characters that have any special interpretation (such as the wildcard characters).</p>
+<p>Braces expansion is very useful to avoid writing a repetitive set of arguments.
+Consider for example, that we want to enhance the current directory tree under <code class="docutils literal"><span class="pre">lab04</span></code> and add the <code class="docutils literal"><span class="pre">lab04/logs/web/apache</span></code>, <code class="docutils literal"><span class="pre">lab04/logs/web/nginx</span></code> and <code class="docutils literal"><span class="pre">lab04/logs/web/tomcat</span></code>. Instead of writing one command for each directory that we need to create, we can do it with just one using brace expansion:</p>
+<pre class="literal-block">
+[user&#64;blue lab04]$ <strong class="command">cd ~</strong>
+[user&#64;blue ~]$ <strong class="command">tree -d lab04</strong>
+lab04
+├── dataset
+└── logs
+
+2 directories
+    [user&#64;blue ~]$ <strong class="command">mkdir -p lab04/logs/web/{apache,tomcat,nginx}</strong>
+    [user&#64;blue ~]$ <strong class="command">tree -d lab04</strong>
+    lab04
+    ├── dataset
+    └── logs
+            └── web
+                    ├── apache
+                    ├── nginx
+                    └── tomcat
+
+    6 directories
+</pre>
+</div>
+<div class="section" id="command-substitution">
+<h2>Command substitution<a class="headerlink" href="#command-substitution" title="Permalink to this headline">¶</a></h2>
+<p>This type of expansion allows the output of a command to be used as input for other commands or to be assigned to a variable.  Command substitution has two forms:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">$(command)</span></code></li>
+<li><code class="docutils literal"><span class="pre">`command`</span></code></li>
+</ul>
+<p>Let’s see this in an example.
+Suppose you want to output a “human friendly” message with a list of the IP Addresses of the users logged into a system.
+We can get that information with the <code class="docutils literal"><span class="pre">who</span></code> command.</p>
+<pre class="literal-block">
+[user&#64;blue ~]$ <strong class="command">who</strong>
+raine    pts/0        2020-01-17 10:37 (130.157.113.179)
+user     pts/1        2020-01-17 13:04 (73.202.227.12)
+kraken   pts/2        2020-01-17 09:14 (130.157.112.185)
+</pre>
+<p>In order to be able to only get the ip addresses, we are going to use <code class="docutils literal"><span class="pre">awk</span></code> to get the last column(which stands for <code class="docutils literal"><span class="pre">$NF</span></code>) from the output of the <code class="docutils literal"><span class="pre">who</span></code> command, and the <code class="docutils literal"><span class="pre">tr</span></code> command to remove the parenthesis:</p>
+<pre class="literal-block">
+[user&#64;blue ~]$ <strong class="command">who | awk '{print $NF}' | tr -d '()'</strong>
+130.157.113.179
+73.202.227.12
+130.157.112.185
+</pre>
+<p>Now, using command substitution, we can create a nicely formatted message:</p>
+<pre class="literal-block">
+[user&#64;blue test]$ <strong class="command">echo &quot;The list of ip addresses is: &quot; $(who | awk '{print $NF}' | tr -d '()')</strong>
+The list of ip addresses is:  130.157.113.179 73.202.227.12 130.157.112.185
+</pre>
+</div>
+<div class="section" id="parameter-expansion">
+<h2>Parameter expansion<a class="headerlink" href="#parameter-expansion" title="Permalink to this headline">¶</a></h2>
+<p>Variables are a mechanism to asign a name to a value that we need to use later.
+Once we get to shell scripts, you will see that any script that goes beyond the most basic shell scripts will need to use variables.
+The basic form of parameter expansion is the form <code class="docutils literal"><span class="pre">${VARIABLE_NAME}</span></code>.
+Braces can be ommitted and use the form <code class="docutils literal"><span class="pre">$VARIABLE_NAME</span></code> except when it needs to be concatenated with other strings (and also if <code class="docutils literal"><span class="pre">VARIABLE_NAME</span></code> refers to a positional parameter in a script that requires more than one digit, but we will discuss that in a later lab).</p>
+<p>Following the example from command substitutuion, let’s assign the ip addresses to a variable:</p>
+<pre class="literal-block">
+[user&#64;blue test]$ <strong class="command">ipaddresses=$(who | awk '{print $NF}' | tr -d '()')</strong>
+[user&#64;blue test]$ <strong class="command">echo $ipaddresses</strong>
+130.157.113.179 73.202.227.12 130.157.112.185
+[user&#64;blue test]$ <strong class="command">echo ${ipaddresses}</strong>
+130.157.113.179 73.202.227.12 130.157.112.185
+</pre>
+<p>Parameter expansion is a very long topic and we are barely scratching the surface in this section. We will cover this in more depth once we start working with scripts.</p>
+<div class="section" id="environment-variables">
+<span id="envvariables"></span><h3>Environment variables<a class="headerlink" href="#environment-variables" title="Permalink to this headline">¶</a></h3>
+<p>We are at a point were we can introduce formally the concept of environment variables.
+When you start a session, the shell creates a set of variables that describe the session, in what is called the environment.</p>
+<p>The data stored in the environment is used by many programs to determine how they need to function.
+The environment provides a very consistent and centralized way to access some of the most elemental configuration parameters.</p>
+<p>Most programming languages provide an API that allows you to get access to the variables in the environment.
+Examples of the most common environment variables are the username, the home directory, the language, the current working directory, and the path where executables can be found.</p>
+<p>Many programs require you to define environment variables so they can work.
+If you have done any python programming you will probably had to set the <code class="docutils literal"><span class="pre">PYTHONPATH</span></code> variable, if you are a java programmer you must have seen the <code class="docutils literal"><span class="pre">JAVA_HOME</span></code> and the <code class="docutils literal"><span class="pre">CLASSPATH</span></code> environment variables, if you a C++ programmer, you must have seen the <code class="docutils literal"><span class="pre">CPATH</span></code> environment variable, if you are a golang programmer, then surely you are familiar with <code class="docutils literal"><span class="pre">GOPATH</span></code>.</p>
+<p>In Linux the <code class="docutils literal"><span class="pre">env</span></code> command prints a list of the environment variables. Examine the output for your session:</p>
+<pre class="literal-block">
+[user&#64;blue ~]$ <strong class="command">env</strong>
+(output ommitted for brevity)
+</pre>
+<p>You can get the value of any specific variable using variable expansion, for example instead of using the command <strong class="command">cd ~</strong> to change to your home directory, you could also the (longer but equivalent) command <strong class="command">cd $HOME</strong>.</p>
+<pre class="literal-block">
+[user&#64;blue ~]$ <strong class="command">echo $HOME</strong>
+/home/student/user
+[user&#64;blue ~]$ <strong class="command">echo $PWD</strong>
+/home/stutdent/user
+[user&#64;blue ~]$ <strong class="command">echo $SHELL</strong>
+/bin/bash
+[user&#64;blue ~]$ <strong class="command">cd /var/log/</strong>
+[user&#64;blue log]$ <strong class="command">cd $HOME</strong>
+[user&#64;blue ~]$ <strong class="command">pwd</strong>
+/home/student/user
+</pre>
+<p>To set an environment variable so it can be accessible to other commands (the correct term is other <em>child processes</em>, but we have not talked about processes yet)  during your active session you use the <code class="docutils literal"><span class="pre">export</span></code> command.
+We will revisit this in a later lab when we cover processes.</p>
+<div class="worksheet admonition">
+<p class="first admonition-title">Part 1</p>
+<p>For this part of the lab, you will use the files that are located in the <code class="docutils literal"><span class="pre">lab04/dataset</span></code> directory.
+The files contained in this directory simulate a dataset where each file is associated with a single benchmark job.
+Each job can have two types of files associated with it:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">.dat</span></code> are <strong>data files</strong>. Every job always has one of these.</li>
+<li><code class="docutils literal"><span class="pre">.err</span></code> are <strong>error files</strong> and they are only present if there was an error during the job execution.</li>
+</ul>
+<p>The file names in this directory follow certain semantics.
+A typical file in the <code class="docutils literal"><span class="pre">dataset</span></code> directory will look like this: <code class="docutils literal"><span class="pre">andromeda_8cores_min-20170125.err</span></code>.
+The file name is comprised of several elements:</p>
+<ul class="simple">
+<li>The first part of the file (before the first underscore, “andromeda” in the example), corresponds to the machine where the benchmark was run. Other values are “chronos”, “leo”, “ursaminor”, “ursamajor”.</li>
+<li>The second part (before the second underscore) indicates the number of cores used during the benchmark execution. Options are “8cores”,”4cores”,”2cores” and “1core”</li>
+<li>The part between the second underscore and the hyphen, corresponds to the benchmark code.  The available options are <strong>fft1d</strong>, <strong>fft2d</strong>, <strong>max</strong> and <strong>min</strong>.</li>
+<li>The element after the hyphen and before the file extension, correspond to the job timestamp in the format <strong>YYYYMMDD</strong>.</li>
+<li>The last element (The one after the period) corresponds to the extension (<code class="docutils literal"><span class="pre">.dat</span></code> or <code class="docutils literal"><span class="pre">.err</span></code>)</li>
+</ul>
+<p>Provide commands whose output will answer the following questions:</p>
+<ol class="last arabic simple">
+<li>How many job executions are included the dataset?</li>
+<li>How many job executions used less than 4 cores?</li>
+<li>How many job executions of the <strong>fft1* and *fft2</strong> benchmarks were completed in a February?</li>
+<li>How many data files were generated in <strong>leo</strong> and  <strong>chonos</strong> in 2017 in the first half of the month (before the fifteen day of the month)?</li>
+</ol>
+</div>
+<div class="worksheet admonition">
+<p class="first admonition-title">Part 2</p>
+<ol class="last arabic simple" start="5">
+<li>Write a command that will create all the following files (within your current working directory). Each file corresponds to a month-year combination (from January 2010 until December 2012)</li>
+</ol>
+</div>
+<div class="highlight-default"><div class="highlight"><pre><span></span>[user@blue test]$ ls
+2010-01  2010-04  2010-07  2010-10  2011-01  2011-04  2011-07  2011-10  2012-01  2012-04  2012-07  2012-10
+2010-02  2010-05  2010-08  2010-11  2011-02  2011-05  2011-08  2011-11  2012-02  2012-05  2012-08  2012-11
+2010-03  2010-06  2010-09  2010-12  2011-03  2011-06  2011-09  2011-12  2012-03  2012-06  2012-09  2012-12
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+    </p>
+    <p>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>
