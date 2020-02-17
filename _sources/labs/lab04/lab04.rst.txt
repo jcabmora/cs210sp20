@@ -369,17 +369,17 @@ Consider for example, that we want to enhance the current directory tree under `
     └── logs
 
     2 directories
-	[user\@blue ~]$ :command:`mkdir -p lab04/logs/web/{apache,tomcat,nginx}`
-	[user\@blue ~]$ :command:`tree -d lab04`
-	lab04
-	├── dataset
-	└── logs
-		└── web
-			├── apache
-			├── nginx
-			└── tomcat
+    [user\@blue ~]$ :command:`mkdir -p lab04/logs/web/{apache,tomcat,nginx}`
+    [user\@blue ~]$ :command:`tree -d lab04`
+    lab04
+    ├── dataset
+    └── logs
+        └── web
+            ├── apache
+            ├── nginx
+            └── tomcat
 
-	6 directories
+    6 directories
 
 Command substitution
 ====================
