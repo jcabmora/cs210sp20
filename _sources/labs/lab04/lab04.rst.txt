@@ -501,7 +501,7 @@ We will revisit this in a later lab when we cover processes.
 
     1. How many job executions are included the dataset?
     2. How many job executions used less than 4 cores?
-    3. How many job executions of the **fft1* and *fft2** benchmarks were completed in a February?
+    3. How many job executions of the **fft1d** and **fft2d** benchmarks were completed in a February?
     4. How many data files were generated in **leo** and  **chonos** in 2017 in the first half of the month (before the fifteen day of the month)?
     
 .. admonition:: Part 2
