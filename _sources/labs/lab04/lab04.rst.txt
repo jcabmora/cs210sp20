@@ -502,12 +502,12 @@ We will revisit this in a later lab when we cover processes.
     1. How many job executions are included the dataset?
     2. How many job executions used less than 4 cores?
     3. How many job executions of the **fft1d** and **fft2d** benchmarks were completed in a February?
-    4. How many data files were generated in **leo** and  **chonos** in 2017 in the first half of the month (before the fifteen day of the month)?
+    4. How many data files were generated in **leo** and  **chronos** in 2017 in the first half of the month (before the fifteen day of the month)?
     
 .. admonition:: Part 2
     :class: worksheet
     
-    5. Write a command that will create all the following files (within your current working directory). Each file corresponds to a month-year combination (from January 2010 until December 2012)
+    5. Write a command that will create all the following files (within your current working directory). Each file corresponds to a year-month combination (from January 2010 until December 2012)
     
 .. parsed-literal::
     [user@blue test]$ ls
