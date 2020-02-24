@@ -1,0 +1,422 @@
+:orphan:
+
+*****************************
+Lab No. 5: Vim editor and GDB
+*****************************
+
+Vim
+===
+
+Vim is referred to as a "modal" editor because it operates in different modes: the  **normal mode**, **insert mode**, **replace mode**, **command line mode** and **visual mode**. Understanding how the editor works under these different modes is usually the biggest hurdle that beginners have when learning Vim.
+
+Normal mode
+-----------
+
+This is the default mode.
+In this mode all the keystrokes are interpreted as commands instead of characters appended to the file you are editing. 
+Most navigation (movement) and manipulation commands are executed while at this mode.
+
+Insert Mode
+-----------
+This is the mode that you use when you want to insert new characters in a file (or erase as well with :kbd:`Backspace`).
+While on **insert mode**, keystrokes are interpreted directly as characters to be added or removed to the file.
+You enter **insert mode** when you are in **comand mode** and press one of the following keys (there are many more, but these are the most common):
+
+- :kbd:`i` to *insert* text before the current cursor position
+- :kbd:`I` to *insert* text at the beginning of the current line
+- :kbd:`a` to *append* text after the current cursor position
+- :kbd:`A` to *append* text at the end of the current line
+- :kbd:`o` to *open* a new line before the current line to add text
+- :kbd:`O` to *open* a new line after the current line to add text.
+- :kbd:`C` to *change* to the end of line.
+
+To exit out of **insert mode** and go back into **command mode** type :kbd:`Esc`.
+
+
+Replace Mode
+------------
+
+In this mode you can overwrite text. You enter this mode by pressing :kbd:`R`.
+
+
+Visual Modes
+------------
+
+This mode allows you to carry out commands based on selected text. 
+Once you are in one of the visual modes, select text using the arrow keys or ``hjkl`` and then type a command. The Command will be applied to the highlighted text.
+Examples of commands that can be applied on visual mode are deleting text, indenting lines, changing case.
+You exit any of the visual modes by typing :kbd:`Esc`.
+
+The first variation of this mode (known simply as **Visual mode**) allows you to create a contiguous selection of characters by using the arrow keys. You enter this mode by typing :kbd:`v` 
+
+There is also **Visual line mode**, which lets you select line by line using arrow keys.
+You enter this mode by using :kbd:`V` (that is capital V).
+
+Finally, there is the **Visual Block mode**, which lets you select rectangular blocks of text.
+You enter this mode by typing :kbd:`Ctrl+v` (Note: this won't work while on a terminal session running on Windows system since the Operating System has that key combination mapped to the global paste command).
+
+
+Command Line Mode
+-----------------
+
+While on **command line mode**, keystrokes are buffered as characters of a command that will be executed after you press :kbd:`Enter`.
+To enter this mode press :kbd:`:` (the bottom line changes to a colon prompt, where you can type commands).
+
+An example of a command that can be executed while at this mode is the *quit* command, which exits Vim.
+To issue this command, enter :kbd:`:q` and then press :kbd:`Enter`.
+In most Vim reference materials, any comand that is supposed to run using **command line mode** is specified by prepending the colon.
+
+If you have have made changes to a file that have not been saved, Vim will kindly let you know with this message:
+
+.. parsed-literal::
+    ~
+    ~
+    E37: No write since last change (add ! to override)
+    Press ENTER or type command to continue
+
+ 
+To exit without saving, then use the :kbd:`:q!` command. If you want to write and exit instead, use :kbd:`:wq`
+
+If you want to just save the current file you use :kbd:`:w`. If you want to save the file with a different name, then you use :kbd:`:w filename`.
+
+You can also enter command line mode in search mode, by pressing :kbd:`/` while in normal mode (or :kbd:`?` to search backwards).
+In this mode, you can perform searches by entering a word and then pressing :kbd:`Enter`.
+You can then cycle through the instances of the word by pressing :kbd:`n` to search forward or :kbd:`N` to search backward.
+
+
+Moving in Vim
+-------------
+
+Vim provides lots of options to move the cursor within a file, with the drawback that these are available while on **command mode**. If you are on **insert mode** you can still use the arrow keys on your keyboard, and the :kbd:`PageUp`, :kbd:`PageDown`, :kbd:`Home` and :kbd:`End` keys.
+
+The following are the most common commands available to move the cursor:
+
+- :kbd:`h` moves the cursor one character to the left.
+- :kbd:`j` moves the cursor down one line.
+- :kbd:`k` moves the cursor up one line.
+- :kbd:`l` moves the cursor one character to the right.
+- :kbd:`0` moves the cursor to the beginning of the line.
+- :kbd:`^` moves the cursor to the first non-blank character of the line.
+- :kbd:`$` moves the cursor to the end of the line.
+- :kbd:`w` move forward one word.
+- :kbd:`b` move backward one word.
+- :kbd:`ta` move to the character before the next instance of the character "a". Works with other characters as well.
+- :kbd:`fa` move to the next instance of the character "a". Works with other characters as well.
+- :kbd:`G` move to the end of the file.
+- :kbd:`123G` move to line 123
+- :kbd:`gg` move to the beginning of the file.
+- :kbd:`Ctrl f` move one page down (forward)
+- :kbd:`Ctrl b` move one page up (backward)
+- :kbd:`\`.` move to the last edit.
+
+One very useful feature while editing source code, is to have line numbers displayed.
+To turn these one, use the :kbd:`:set number` (or the short version :kbd:`set nu`)  command.
+If you have them on and want to turn them off, you need :kbd:`:set nonumber`.
+Once you know which line number you want to move the cursor, you can move to any line by entering it in **command line mode**.
+For example, suppose you want to move the cursor to line 123, then you use :kbd:`:123` (which is equivalent to :kbd:`123G`)
+
+
+Deleting Text
+-------------
+
+As mentioned before, you add text by entering **insert mode**. Here are some of the most basic commands to edit:
+
+- :kbd:`x` delete character under cursor
+- :kbd:`dw` delete from cursor to the end of the word
+- :kbd:`db` delete from the cursor to the beginning of the word (delete backward)
+- :kbd:`dd` delete line
+- :kbd:`d$` delete from the cursor to the end of the line
+- :kbd:`d0` delete from the cursor to the beginning of t he line
+- :kbd:`d^` delete from the cursor to the first non-blank character of the line.
+- :kbd:`di'` delete all text in between quotes
+- :kbd:`di"` delete all text in between double quotes
+- :kbd:`di}` delete all text in between braces
+- :kbd:`di]` delete all text in between brackets
+- :kbd:`dit` delete all text in between tags (useful for HTML/XML)
+
+
+Indenting
+---------
+- :kbd:`>` indent the current line
+- :kbd:`<` de-indent the current line
+
+
+Copy, Cut and Paste
+-------------------
+
+- :kbd:`y` yank (copy) the current selection (visual mode)
+- :kbd:`d` cut selection (visual mode)
+- :kbd:`Y` yank a whole line
+- :kbd:`p` paste after the cursor
+- :kbd:`P` paste before the cursor
+
+You can also perform copying and cutting in normal mode:
+
+- :kbd:`yy` yank the whole line, equivalent to :kbd:`Y`
+- :kbd:`dd` cut the whole line.
+- :kbd:`y$` yank from the cursor to the end of the line.
+- :kbd:`d$` cut from the cursor to the end of the line.
+- :kbd:`yw` yank the current word
+- :kbd:`dw` cut the current word
+
+Undo and Redo and repeat command
+--------------------------------
+
+- :kbd:`u` undo
+- :kbd:`Ctrl+r` redo
+- :kbd:`.`  repeat the previous command
+
+Indentation
+-----------
+
+- :kbd:`=` indent
+
+Search and Replace
+------------------
+
+We saw before that you can perform searches while on command line mode by pressing :kbd:`/`.
+While on normal mode, you can search for the word that is under the cursor with the combination :kbd:`g*`.
+As before, you can cycle through the instances of the word with :kbd:`n` or :kbd:`N` (backwards)
+
+To replace text on the current line, you use the syntax ``:[range]s/searchstring/replacestring/[mod]``.
+For example, to replace the word "apple" by "orange" on the current line you would type this combination :kbd:`:s/apple/orange`
+
+The range defaults to the current line as you just saw.
+You can specify a global search and replace by using ``%`` as range.
+For example :kbd:`:%s/apple/orange`.
+You can also specify a range of lines for example :kbd:`:8,20s/apple/orange` will apply from line 8 to line 10.
+
+
+By default, the replacement is only done to the first match in a given line.
+You can replace all the matches in a line by using the ``g`` modifier.
+For example :kbd:`:s/apple/orange/g`.
+If you want to ask for conformation, intead use ``gc`` instead.
+
+You can toggle case sensitivity by entering the :kbd:`:set ignorecase` or :kbd:`:set noignorecase` commands.
+
+
+.vimrc
+------
+The ``~/.vimrc`` file allows you to set preferences for vim.
+The following example show some basic preferences (yes, the author prefers spaces over tabs) (comment lines are preceded with ``"``)
+
+
+.. parsed-literal::
+
+    " Enable determine the file type and indentation
+    filetype plugin on
+    filetype indent on
+
+    " Enable syntax on
+    syntax on
+
+    " make stabs show as 4 characters
+    set tabstop=4
+
+    " indent as 4 characters
+    set shiftwidth=4
+
+    " use spaces instead of tabs
+    set expandtab
+
+
+Extending Vim
+-------------
+
+There are literally hundreds of plugins that can be used to enhance Vim's functionality.
+Plugins for code completion, syntax checking, code navigation, refactoring are available for most programming languages.
+
+
+GDB
+===
+
+``gdb``, the GNU Debugger, is an application that lets you run a program while having control of the execution of the program instructions and the ability to perform inspection of the memory used by the program. 
+More specifically, a debugger lets you:
+
+1. inspect the values stored in variables
+2. determine what line of the program is causing an error
+3. inspect the sequence of calls that led to a certain program state
+4. force a state in the program that otherwise is difficult to recreate
+
+
+Insertion Sort
+--------------
+
+In this Lab we are going to perform a debugging session with C++ simple program that (rather unsuccessufully) implements the insertion sort algorithm.
+
+Insertion sort is the most basic algorithm used to sort a list of elements.  The following is a description of how the algorithm works.  
+
+Imagine a list of *n* numbers arranged horizontally, and we want it to sort it in ascending order, from left to right. 
+
+1. Pick the second item of the array, and compare it with the first item. If the first item is greater than the second item, swap them. At this point the first two items of the array will be sorted, and the rest *n-2* numbers to the right will be unsorted.
+2. Pick the item in the next position, and find the first item in the sorted positions that is less than or equal to it. Shift one position all the sorted items to the right, and insert the item we picked at the position where we started shifting.
+3. Repeat step 2 until you have gone through all the *n* items.
+
+A compiled executable and functional version of the program is available at ``~jmora/lab/insort``. You can try it to see how the program is supposed to work:
+
+.. parsed-literal::
+
+    [user\@blue lab05]$ ~jmora/lab05/insort 13 17 2 0 3 1 8 23 2 7
+    0 1 2 2 3 7 8 13 17 23
+
+
+Using GDB
+---------
+
+In order to be able to debug a program, it needs to be compiled with debugging information.  If this prerequisite is not fulfilled, it is just not possible to use ``gdb``. In ``gcc`` and ``g++`` you enable this by tuning the ``-g`` flag.  Using this option saves the *symbol table* (the list of memory addresses that correspond to the variables and lines of code of your program) into the compiled executable.
+
+
+To do this, run this command
+
+.. parsed-literal::
+
+    [user\@blue lab05]$ g++ -std=c++11 -g insort.cpp -o insort
+
+
+GDB Commands
+------------
+
+The following table summarizes the most common gdb commands
+
+.. cssclass:: minitable
+
+=============   ==========
+Command         Funciton
+=============   ==========
+``run``         Starts the execution of a program.
+``print``       Prints the value of a variable
+``break``       Sets a breakpoint
+``clear``       Clears a breakpoint
+``watch``       Watches for changes in a variable
+``condition``   Adds a condition to a breakpoint
+``next``        Executes the next statement
+``step``        Executes the next statement, but stepping into a function call
+=============   ==========
+
+
+Debug our program
+-----------------
+
+In this procedure we are going to debug a buggy insertion sort program that you will be given. The source code contains three problems, and we are going to follow an iterative approach to find them.
+
+The buggy source code is presented next for convenience, you will be provided with a link to download.
+
+.. literalinclude:: src/insertion_sort.cpp
+    :language: c++
+    :linenos:
+
+#. The buggy C++ source file that is supposed to implement this algorithm is available at :download:`insertion_sort.cpp<src/insertion_sort.cpp>`. Create a directory called ``lab05`` within your home directory, and download (remember ``wget``?) the aforementioned file into it.
+
+#. Compile the program:
+
+   .. parsed-literal::
+
+        [user\@blue lab05]$ :command:`g++ -std=c++17 -g insort.cpp -o insort`
+
+#. The previous command will generate an executable called ``insort``. Run the executable:
+
+   .. parsed-literal::
+
+        [user\@blue lab05]$ :command:`./insort 3 4`
+
+#. It should be obvious that there is a problem in the source file, since the program does not complete and does not print any output. We are going to use ``gdb`` to fix the buggy program.
+
+#. Start ``gdb`` by typing the following command, you should see the following output:
+
+   .. parsed-literal::
+
+    [user\@blue lab05]$ :command:`gdb insort`
+    GNU gdb (GDB) Fedora 8.0.1-36.fc27
+    Copyright (C) 2017 Free Software Foundation, Inc.
+    License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>
+    This is free software: you are free to change and redistribute it.
+    There is NO WARRANTY, to the extent permitted by law.  Type "show copying"
+    and "show warranty" for details.
+    This GDB was configured as "x86_64-redhat-linux-gnu".
+    Type "show configuration" for configuration details.
+    For bug reporting instructions, please see:
+    <http://www.gnu.org/software/gdb/bugs/>.
+    Find the GDB manual and other documentation resources online at:
+    <http://www.gnu.org/software/gdb/documentation/>.
+    For help, type "help".
+    Type "apropos word" to search for commands related to "word"...
+    Reading symbols from insort...done.
+    (gdb)
+
+#. At this point the program has not been executed, to start the program with the arguments "6 2 5"  enter:
+
+   .. parsed-literal::
+
+    (gdb) :command:`run 6 2 5`
+    Starting program: /home/student/user/lab05/insort 6 2 5
+
+#. The program execution will start after the previous command, and again, it will not terminate or produce any output.  The difference is that now we can suspend the program execution.  To do this, press the :kbd:`CTRL+c` combination, and the program will suspend and will present you again with the ``(gdb)`` prompt.  Your screen should look something like the following listing where ``gdb`` is letting us know that the program's execution stopped at line number 21 of ``insort.cpp`` (the exact instruction where the program suspended the execution might be different): 
+
+   .. parsed-literal::
+
+    Starting program: /home/student/user/lab05/insort 6 2 5
+    :command:`^C`
+    Program received signal SIGINT, Interrupt.
+    0x0000000000400e46 in sort (values=0x7fffffffe290, length=3) at insort.cpp:21
+    21          for (int j = 0; j < length; j++)
+    (gdb)
+
+#. Experiment with the ``next`` command of gdb.  Run it several times, and notice how the line numbers change every time that you run the next command.
+
+#. Inspect the value of the variable ``j``.  Does the value of this variable change?  What values do you see being assigned to this variable?
+
+#. At this point you should be able to determine the bug that is causing the program to get stuck in an endless loop.  Exit ``gdb`` by typing the ``quit`` command.  
+
+#. Using ``vim``, edit the source code file to fix the bug (for consistency, do not add new line numbers to your program, or you won't be able to validate your answers in Moodle).  
+
+#. Recompile your program and run it again with different inputs.  For example:
+
+
+   .. parsed-literal::
+    [user\@blue lab05]$ :command:`./insort 6 5 2 3 7 4`
+    7 7 7 7 7 4
+    [user\@blue lab05]$ :command:`./insort 6 5 9 3 7 4`
+    9 9 9 7 7 4
+
+
+#. This time the program terminates and produces output, albeit an incorrect one. This time we are going to try placing a breakpoint. Execute the gdb command, but this time before running the program place a breakpoint in line 34:
+
+
+   .. parsed-literal::
+
+    (gdb) :command:`break 34`
+    Breakpoint 1 at 0x400da3: file insort.cpp, line 34.
+    (gdb) :command:`run 6 5 2 3 7 4`
+    Starting program: /home/student/user/lab05/insort 6 5 2 3 7 4
+
+    Breakpoint 1, sort (values=0x7fffffffe270, length=6) at insort.cpp:34
+    34              for (int k = 0; k < j; k++)
+    (gdb)
+
+#. Inspect the values stored in the array called ``values``, for example, you can do something like this:
+
+   .. parsed-literal::
+
+    (gdb) :command:`print values[0]`
+    $2 = 6
+    (gdb) :command:`print values[j]`
+    $3 = 5
+    (gdb) :command:`print j`
+    $4 = 1
+
+#. Trigger the execution of the next line, and inspect the values of the array at indices ``k`` and ``j``. 
+
+#. The next line to be executed should be line 36, which corresponds to ``if (values[k] <= values[j])``. Based on the details of the insertion sort algorithm, and the values that you observed in the previous step, does it make sense to go inside the block that starts on line 37?
+
+#. At this point you should have been able to find the second bug on your program.  Exit ``gdb``, make a modification to the source code (hint, it needs to be on line 36) and recompile.
+
+#. Test your program again, you should see output like this:
+
+   .. parsed-literal::
+
+    [user\@blue lab05]$ :command:`./insort 6 5 9 3 7 4`
+    3 3 3 3 4 4
+    [user\@blue lab05]$ :command:`./insort 6 5 2 3 7 4`
+    2 2 2 3 4 4
+
+#. Again, the output seems to be wrong.  Using a similar procedure we used, find the last bug.

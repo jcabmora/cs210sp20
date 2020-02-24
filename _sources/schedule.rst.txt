@@ -28,7 +28,7 @@ Course Schedule and Materials
       -
       - TLCL, Chapter 7
     * - 5 - 02/24
-      - 
+      - :doc:`labs/lab05/lab05`
       -
       -
     * - 6 - 03/02

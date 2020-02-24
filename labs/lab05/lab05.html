@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Lab No. 5: Vim editor and GDB &#8212; CS210 Introduction to Unix  documentation</title>
+    <link rel="stylesheet" href="../../_static/bootstrap-sphinx.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="../../_static/js/jquery-1.11.0.min.js"></script>
+    <script type="text/javascript" src="../../_static/js/jquery-fix.js"></script>
+    <script type="text/javascript" src="../../_static/bootstrap-3.3.7/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../../_static/bootstrap-sphinx.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+<link href="https://fonts.googleapis.com/css?family=Lusitana|Roboto|Roboto+Mono" rel="stylesheet">
+
+  </head>
+  <body>
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../../index.html">
+          CS210 Introduction to Unix</a>
+        <span class="navbar-text navbar-version pull-left"><b></b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../../index.html">Site <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><ul>
+<li class="toctree-l1"><a class="reference internal" href="../../syllabus.html">CS210 Introduction to Unix - Spring 2020</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../conv/conv.html">Conventions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../schedule.html">Course Schedule and Materials</a></li>
+</ul>
+</ul>
+</li>
+              
+                <li class="dropdown">
+  <a role="button"
+     id="dLabelLocalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="#">Page <b class="caret"></b></a>
+  <ul class="dropdown-menu localtoc"
+      role="menu"
+      aria-labelledby="dLabelLocalToc"><ul>
+<li><a class="reference internal" href="#">Lab No. 5: Vim editor and GDB</a><ul>
+<li><a class="reference internal" href="#vim">Vim</a><ul>
+<li><a class="reference internal" href="#normal-mode">Normal mode</a></li>
+<li><a class="reference internal" href="#insert-mode">Insert Mode</a></li>
+<li><a class="reference internal" href="#replace-mode">Replace Mode</a></li>
+<li><a class="reference internal" href="#visual-modes">Visual Modes</a></li>
+<li><a class="reference internal" href="#command-line-mode">Command Line Mode</a></li>
+<li><a class="reference internal" href="#moving-in-vim">Moving in Vim</a></li>
+<li><a class="reference internal" href="#deleting-text">Deleting Text</a></li>
+<li><a class="reference internal" href="#indenting">Indenting</a></li>
+<li><a class="reference internal" href="#copy-cut-and-paste">Copy, Cut and Paste</a></li>
+<li><a class="reference internal" href="#undo-and-redo-and-repeat-command">Undo and Redo and repeat command</a></li>
+<li><a class="reference internal" href="#indentation">Indentation</a></li>
+<li><a class="reference internal" href="#search-and-replace">Search and Replace</a></li>
+<li><a class="reference internal" href="#vimrc">.vimrc</a></li>
+<li><a class="reference internal" href="#extending-vim">Extending Vim</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#gdb">GDB</a><ul>
+<li><a class="reference internal" href="#insertion-sort">Insertion Sort</a></li>
+<li><a class="reference internal" href="#using-gdb">Using GDB</a></li>
+<li><a class="reference internal" href="#gdb-commands">GDB Commands</a></li>
+<li><a class="reference internal" href="#debug-our-program">Debug our program</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</ul>
+</li>
+              
+            
+            
+              
+                
+              
+            
+            
+            
+            
+              <li class="hidden-sm">
+<div id="sourcelink">
+  <a href="../../_sources/labs/lab05/lab05.rst.txt"
+     rel="nofollow">Source</a>
+</div></li>
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="../../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+    <div class="col-md-12 content">
+      
+  <div class="section" id="lab-no-5-vim-editor-and-gdb">
+<h1>Lab No. 5: Vim editor and GDB<a class="headerlink" href="#lab-no-5-vim-editor-and-gdb" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="vim">
+<h2>Vim<a class="headerlink" href="#vim" title="Permalink to this headline">¶</a></h2>
+<p>Vim is referred to as a “modal” editor because it operates in different modes: the  <strong>normal mode</strong>, <strong>insert mode</strong>, <strong>replace mode</strong>, <strong>command line mode</strong> and <strong>visual mode</strong>. Understanding how the editor works under these different modes is usually the biggest hurdle that beginners have when learning Vim.</p>
+<div class="section" id="normal-mode">
+<h3>Normal mode<a class="headerlink" href="#normal-mode" title="Permalink to this headline">¶</a></h3>
+<p>This is the default mode.
+In this mode all the keystrokes are interpreted as commands instead of characters appended to the file you are editing.
+Most navigation (movement) and manipulation commands are executed while at this mode.</p>
+</div>
+<div class="section" id="insert-mode">
+<h3>Insert Mode<a class="headerlink" href="#insert-mode" title="Permalink to this headline">¶</a></h3>
+<p>This is the mode that you use when you want to insert new characters in a file (or erase as well with <code class="kbd docutils literal"><span class="pre">Backspace</span></code>).
+While on <strong>insert mode</strong>, keystrokes are interpreted directly as characters to be added or removed to the file.
+You enter <strong>insert mode</strong> when you are in <strong>comand mode</strong> and press one of the following keys (there are many more, but these are the most common):</p>
+<ul class="simple">
+<li><code class="kbd docutils literal"><span class="pre">i</span></code> to <em>insert</em> text before the current cursor position</li>
+<li><code class="kbd docutils literal"><span class="pre">I</span></code> to <em>insert</em> text at the beginning of the current line</li>
+<li><code class="kbd docutils literal"><span class="pre">a</span></code> to <em>append</em> text after the current cursor position</li>
+<li><code class="kbd docutils literal"><span class="pre">A</span></code> to <em>append</em> text at the end of the current line</li>
+<li><code class="kbd docutils literal"><span class="pre">o</span></code> to <em>open</em> a new line before the current line to add text</li>
+<li><code class="kbd docutils literal"><span class="pre">O</span></code> to <em>open</em> a new line after the current line to add text.</li>
+<li><code class="kbd docutils literal"><span class="pre">C</span></code> to <em>change</em> to the end of line.</li>
+</ul>
+<p>To exit out of <strong>insert mode</strong> and go back into <strong>command mode</strong> type <code class="kbd docutils literal"><span class="pre">Esc</span></code>.</p>
+</div>
+<div class="section" id="replace-mode">
+<h3>Replace Mode<a class="headerlink" href="#replace-mode" title="Permalink to this headline">¶</a></h3>
+<p>In this mode you can overwrite text. You enter this mode by pressing <code class="kbd docutils literal"><span class="pre">R</span></code>.</p>
+</div>
+<div class="section" id="visual-modes">
+<h3>Visual Modes<a class="headerlink" href="#visual-modes" title="Permalink to this headline">¶</a></h3>
+<p>This mode allows you to carry out commands based on selected text.
+Once you are in one of the visual modes, select text using the arrow keys or <code class="docutils literal"><span class="pre">hjkl</span></code> and then type a command. The Command will be applied to the highlighted text.
+Examples of commands that can be applied on visual mode are deleting text, indenting lines, changing case.
+You exit any of the visual modes by typing <code class="kbd docutils literal"><span class="pre">Esc</span></code>.</p>
+<p>The first variation of this mode (known simply as <strong>Visual mode</strong>) allows you to create a contiguous selection of characters by using the arrow keys. You enter this mode by typing <code class="kbd docutils literal"><span class="pre">v</span></code></p>
+<p>There is also <strong>Visual line mode</strong>, which lets you select line by line using arrow keys.
+You enter this mode by using <code class="kbd docutils literal"><span class="pre">V</span></code> (that is capital V).</p>
+<p>Finally, there is the <strong>Visual Block mode</strong>, which lets you select rectangular blocks of text.
+You enter this mode by typing <code class="kbd docutils literal"><span class="pre">Ctrl+v</span></code> (Note: this won’t work while on a terminal session running on Windows system since the Operating System has that key combination mapped to the global paste command).</p>
+</div>
+<div class="section" id="command-line-mode">
+<h3>Command Line Mode<a class="headerlink" href="#command-line-mode" title="Permalink to this headline">¶</a></h3>
+<p>While on <strong>command line mode</strong>, keystrokes are buffered as characters of a command that will be executed after you press <code class="kbd docutils literal"><span class="pre">Enter</span></code>.
+To enter this mode press <code class="kbd docutils literal"><span class="pre">:</span></code> (the bottom line changes to a colon prompt, where you can type commands).</p>
+<p>An example of a command that can be executed while at this mode is the <em>quit</em> command, which exits Vim.
+To issue this command, enter <code class="kbd docutils literal"><span class="pre">:q</span></code> and then press <code class="kbd docutils literal"><span class="pre">Enter</span></code>.
+In most Vim reference materials, any comand that is supposed to run using <strong>command line mode</strong> is specified by prepending the colon.</p>
+<p>If you have have made changes to a file that have not been saved, Vim will kindly let you know with this message:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>~
+~
+E37: No write since last change (add ! to override)
+Press ENTER or type command to continue
+</pre></div>
+</div>
+<p>To exit without saving, then use the <code class="kbd docutils literal"><span class="pre">:q!</span></code> command. If you want to write and exit instead, use <code class="kbd docutils literal"><span class="pre">:wq</span></code></p>
+<p>If you want to just save the current file you use <code class="kbd docutils literal"><span class="pre">:w</span></code>. If you want to save the file with a different name, then you use <code class="kbd docutils literal"><span class="pre">:w</span> <span class="pre">filename</span></code>.</p>
+<p>You can also enter command line mode in search mode, by pressing <code class="kbd docutils literal"><span class="pre">/</span></code> while in normal mode (or <code class="kbd docutils literal"><span class="pre">?</span></code> to search backwards).
+In this mode, you can perform searches by entering a word and then pressing <code class="kbd docutils literal"><span class="pre">Enter</span></code>.
+You can then cycle through the instances of the word by pressing <code class="kbd docutils literal"><span class="pre">n</span></code> to search forward or <code class="kbd docutils literal"><span class="pre">N</span></code> to search backward.</p>
+</div>
+<div class="section" id="moving-in-vim">
+<h3>Moving in Vim<a class="headerlink" href="#moving-in-vim" title="Permalink to this headline">¶</a></h3>
+<p>Vim provides lots of options to move the cursor within a file, with the drawback that these are available while on <strong>command mode</strong>. If you are on <strong>insert mode</strong> you can still use the arrow keys on your keyboard, and the <code class="kbd docutils literal"><span class="pre">PageUp</span></code>, <code class="kbd docutils literal"><span class="pre">PageDown</span></code>, <code class="kbd docutils literal"><span class="pre">Home</span></code> and <code class="kbd docutils literal"><span class="pre">End</span></code> keys.</p>
+<p>The following are the most common commands available to move the cursor:</p>
+<ul class="simple">
+<li><code class="kbd docutils literal"><span class="pre">h</span></code> moves the cursor one character to the left.</li>
+<li><code class="kbd docutils literal"><span class="pre">j</span></code> moves the cursor down one line.</li>
+<li><code class="kbd docutils literal"><span class="pre">k</span></code> moves the cursor up one line.</li>
+<li><code class="kbd docutils literal"><span class="pre">l</span></code> moves the cursor one character to the right.</li>
+<li><code class="kbd docutils literal"><span class="pre">0</span></code> moves the cursor to the beginning of the line.</li>
+<li><code class="kbd docutils literal"><span class="pre">^</span></code> moves the cursor to the first non-blank character of the line.</li>
+<li><code class="kbd docutils literal"><span class="pre">$</span></code> moves the cursor to the end of the line.</li>
+<li><code class="kbd docutils literal"><span class="pre">w</span></code> move forward one word.</li>
+<li><code class="kbd docutils literal"><span class="pre">b</span></code> move backward one word.</li>
+<li><code class="kbd docutils literal"><span class="pre">ta</span></code> move to the character before the next instance of the character “a”. Works with other characters as well.</li>
+<li><code class="kbd docutils literal"><span class="pre">fa</span></code> move to the next instance of the character “a”. Works with other characters as well.</li>
+<li><code class="kbd docutils literal"><span class="pre">G</span></code> move to the end of the file.</li>
+<li><code class="kbd docutils literal"><span class="pre">123G</span></code> move to line 123</li>
+<li><code class="kbd docutils literal"><span class="pre">gg</span></code> move to the beginning of the file.</li>
+<li><code class="kbd docutils literal"><span class="pre">Ctrl</span> <span class="pre">f</span></code> move one page down (forward)</li>
+<li><code class="kbd docutils literal"><span class="pre">Ctrl</span> <span class="pre">b</span></code> move one page up (backward)</li>
+<li><code class="kbd docutils literal"><span class="pre">`.</span></code> move to the last edit.</li>
+</ul>
+<p>One very useful feature while editing source code, is to have line numbers displayed.
+To turn these one, use the <code class="kbd docutils literal"><span class="pre">:set</span> <span class="pre">number</span></code> (or the short version <code class="kbd docutils literal"><span class="pre">set</span> <span class="pre">nu</span></code>)  command.
+If you have them on and want to turn them off, you need <code class="kbd docutils literal"><span class="pre">:set</span> <span class="pre">nonumber</span></code>.
+Once you know which line number you want to move the cursor, you can move to any line by entering it in <strong>command line mode</strong>.
+For example, suppose you want to move the cursor to line 123, then you use <code class="kbd docutils literal"><span class="pre">:123</span></code> (which is equivalent to <code class="kbd docutils literal"><span class="pre">123G</span></code>)</p>
+</div>
+<div class="section" id="deleting-text">
+<h3>Deleting Text<a class="headerlink" href="#deleting-text" title="Permalink to this headline">¶</a></h3>
+<p>As mentioned before, you add text by entering <strong>insert mode</strong>. Here are some of the most basic commands to edit:</p>
+<ul class="simple">
+<li><code class="kbd docutils literal"><span class="pre">x</span></code> delete character under cursor</li>
+<li><code class="kbd docutils literal"><span class="pre">dw</span></code> delete from cursor to the end of the word</li>
+<li><code class="kbd docutils literal"><span class="pre">db</span></code> delete from the cursor to the beginning of the word (delete backward)</li>
+<li><code class="kbd docutils literal"><span class="pre">dd</span></code> delete line</li>
+<li><code class="kbd docutils literal"><span class="pre">d$</span></code> delete from the cursor to the end of the line</li>
+<li><code class="kbd docutils literal"><span class="pre">d0</span></code> delete from the cursor to the beginning of t he line</li>
+<li><code class="kbd docutils literal"><span class="pre">d^</span></code> delete from the cursor to the first non-blank character of the line.</li>
+<li><code class="kbd docutils literal"><span class="pre">di'</span></code> delete all text in between quotes</li>
+<li><code class="kbd docutils literal"><span class="pre">di&quot;</span></code> delete all text in between double quotes</li>
+<li><code class="kbd docutils literal"><span class="pre">di}</span></code> delete all text in between braces</li>
+<li><code class="kbd docutils literal"><span class="pre">di]</span></code> delete all text in between brackets</li>
+<li><code class="kbd docutils literal"><span class="pre">dit</span></code> delete all text in between tags (useful for HTML/XML)</li>
+</ul>
+</div>
+<div class="section" id="indenting">
+<h3>Indenting<a class="headerlink" href="#indenting" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><code class="kbd docutils literal"><span class="pre">&gt;</span></code> indent the current line</li>
+<li><code class="kbd docutils literal"><span class="pre">&lt;</span></code> de-indent the current line</li>
+</ul>
+</div>
+<div class="section" id="copy-cut-and-paste">
+<h3>Copy, Cut and Paste<a class="headerlink" href="#copy-cut-and-paste" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><code class="kbd docutils literal"><span class="pre">y</span></code> yank (copy) the current selection (visual mode)</li>
+<li><code class="kbd docutils literal"><span class="pre">d</span></code> cut selection (visual mode)</li>
+<li><code class="kbd docutils literal"><span class="pre">Y</span></code> yank a whole line</li>
+<li><code class="kbd docutils literal"><span class="pre">p</span></code> paste after the cursor</li>
+<li><code class="kbd docutils literal"><span class="pre">P</span></code> paste before the cursor</li>
+</ul>
+<p>You can also perform copying and cutting in normal mode:</p>
+<ul class="simple">
+<li><code class="kbd docutils literal"><span class="pre">yy</span></code> yank the whole line, equivalent to <code class="kbd docutils literal"><span class="pre">Y</span></code></li>
+<li><code class="kbd docutils literal"><span class="pre">dd</span></code> cut the whole line.</li>
+<li><code class="kbd docutils literal"><span class="pre">y$</span></code> yank from the cursor to the end of the line.</li>
+<li><code class="kbd docutils literal"><span class="pre">d$</span></code> cut from the cursor to the end of the line.</li>
+<li><code class="kbd docutils literal"><span class="pre">yw</span></code> yank the current word</li>
+<li><code class="kbd docutils literal"><span class="pre">dw</span></code> cut the current word</li>
+</ul>
+</div>
+<div class="section" id="undo-and-redo-and-repeat-command">
+<h3>Undo and Redo and repeat command<a class="headerlink" href="#undo-and-redo-and-repeat-command" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><code class="kbd docutils literal"><span class="pre">u</span></code> undo</li>
+<li><code class="kbd docutils literal"><span class="pre">Ctrl+r</span></code> redo</li>
+<li><code class="kbd docutils literal"><span class="pre">.</span></code>  repeat the previous command</li>
+</ul>
+</div>
+<div class="section" id="indentation">
+<h3>Indentation<a class="headerlink" href="#indentation" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><code class="kbd docutils literal"><span class="pre">=</span></code> indent</li>
+</ul>
+</div>
+<div class="section" id="search-and-replace">
+<h3>Search and Replace<a class="headerlink" href="#search-and-replace" title="Permalink to this headline">¶</a></h3>
+<p>We saw before that you can perform searches while on command line mode by pressing <code class="kbd docutils literal"><span class="pre">/</span></code>.
+While on normal mode, you can search for the word that is under the cursor with the combination <code class="kbd docutils literal"><span class="pre">g*</span></code>.
+As before, you can cycle through the instances of the word with <code class="kbd docutils literal"><span class="pre">n</span></code> or <code class="kbd docutils literal"><span class="pre">N</span></code> (backwards)</p>
+<p>To replace text on the current line, you use the syntax <code class="docutils literal"><span class="pre">:[range]s/searchstring/replacestring/[mod]</span></code>.
+For example, to replace the word “apple” by “orange” on the current line you would type this combination <code class="kbd docutils literal"><span class="pre">:s/apple/orange</span></code></p>
+<p>The range defaults to the current line as you just saw.
+You can specify a global search and replace by using <code class="docutils literal"><span class="pre">%</span></code> as range.
+For example <code class="kbd docutils literal"><span class="pre">:%s/apple/orange</span></code>.
+You can also specify a range of lines for example <code class="kbd docutils literal"><span class="pre">:8,20s/apple/orange</span></code> will apply from line 8 to line 10.</p>
+<p>By default, the replacement is only done to the first match in a given line.
+You can replace all the matches in a line by using the <code class="docutils literal"><span class="pre">g</span></code> modifier.
+For example <code class="kbd docutils literal"><span class="pre">:s/apple/orange/g</span></code>.
+If you want to ask for conformation, intead use <code class="docutils literal"><span class="pre">gc</span></code> instead.</p>
+<p>You can toggle case sensitivity by entering the <code class="kbd docutils literal"><span class="pre">:set</span> <span class="pre">ignorecase</span></code> or <code class="kbd docutils literal"><span class="pre">:set</span> <span class="pre">noignorecase</span></code> commands.</p>
+</div>
+<div class="section" id="vimrc">
+<h3>.vimrc<a class="headerlink" href="#vimrc" title="Permalink to this headline">¶</a></h3>
+<p>The <code class="docutils literal"><span class="pre">~/.vimrc</span></code> file allows you to set preferences for vim.
+The following example show some basic preferences (yes, the author prefers spaces over tabs) (comment lines are preceded with <code class="docutils literal"><span class="pre">&quot;</span></code>)</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="s2">&quot; Enable determine the file type and indentation</span>
+<span class="n">filetype</span> <span class="n">plugin</span> <span class="n">on</span>
+<span class="n">filetype</span> <span class="n">indent</span> <span class="n">on</span>
+
+<span class="s2">&quot; Enable syntax on</span>
+<span class="n">syntax</span> <span class="n">on</span>
+
+<span class="s2">&quot; make stabs show as 4 characters</span>
+<span class="nb">set</span> <span class="n">tabstop</span><span class="o">=</span><span class="mi">4</span>
+
+<span class="s2">&quot; indent as 4 characters</span>
+<span class="nb">set</span> <span class="n">shiftwidth</span><span class="o">=</span><span class="mi">4</span>
+
+<span class="s2">&quot; use spaces instead of tabs</span>
+<span class="nb">set</span> <span class="n">expandtab</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="extending-vim">
+<h3>Extending Vim<a class="headerlink" href="#extending-vim" title="Permalink to this headline">¶</a></h3>
+<p>There are literally hundreds of plugins that can be used to enhance Vim’s functionality.
+Plugins for code completion, syntax checking, code navigation, refactoring are available for most programming languages.</p>
+</div>
+</div>
+<div class="section" id="gdb">
+<h2>GDB<a class="headerlink" href="#gdb" title="Permalink to this headline">¶</a></h2>
+<p><code class="docutils literal"><span class="pre">gdb</span></code>, the GNU Debugger, is an application that lets you run a program while having control of the execution of the program instructions and the ability to perform inspection of the memory used by the program.
+More specifically, a debugger lets you:</p>
+<ol class="arabic simple">
+<li>inspect the values stored in variables</li>
+<li>determine what line of the program is causing an error</li>
+<li>inspect the sequence of calls that led to a certain program state</li>
+<li>force a state in the program that otherwise is difficult to recreate</li>
+</ol>
+<div class="section" id="insertion-sort">
+<h3>Insertion Sort<a class="headerlink" href="#insertion-sort" title="Permalink to this headline">¶</a></h3>
+<p>In this Lab we are going to perform a debugging session with C++ simple program that (rather unsuccessufully) implements the insertion sort algorithm.</p>
+<p>Insertion sort is the most basic algorithm used to sort a list of elements.  The following is a description of how the algorithm works.</p>
+<p>Imagine a list of <em>n</em> numbers arranged horizontally, and we want it to sort it in ascending order, from left to right.</p>
+<ol class="arabic simple">
+<li>Pick the second item of the array, and compare it with the first item. If the first item is greater than the second item, swap them. At this point the first two items of the array will be sorted, and the rest <em>n-2</em> numbers to the right will be unsorted.</li>
+<li>Pick the item in the next position, and find the first item in the sorted positions that is less than or equal to it. Shift one position all the sorted items to the right, and insert the item we picked at the position where we started shifting.</li>
+<li>Repeat step 2 until you have gone through all the <em>n</em> items.</li>
+</ol>
+<p>A compiled executable and functional version of the program is available at <code class="docutils literal"><span class="pre">~jmora/lab/insort</span></code>. You can try it to see how the program is supposed to work:</p>
+<pre class="literal-block">
+[user&#64;blue lab05]$ ~jmora/lab05/insort 13 17 2 0 3 1 8 23 2 7
+0 1 2 2 3 7 8 13 17 23
+</pre>
+</div>
+<div class="section" id="using-gdb">
+<h3>Using GDB<a class="headerlink" href="#using-gdb" title="Permalink to this headline">¶</a></h3>
+<p>In order to be able to debug a program, it needs to be compiled with debugging information.  If this prerequisite is not fulfilled, it is just not possible to use <code class="docutils literal"><span class="pre">gdb</span></code>. In <code class="docutils literal"><span class="pre">gcc</span></code> and <code class="docutils literal"><span class="pre">g++</span></code> you enable this by tuning the <code class="docutils literal"><span class="pre">-g</span></code> flag.  Using this option saves the <em>symbol table</em> (the list of memory addresses that correspond to the variables and lines of code of your program) into the compiled executable.</p>
+<p>To do this, run this command</p>
+<pre class="literal-block">
+[user&#64;blue lab05]$ g++ -std=c++11 -g insort.cpp -o insort
+</pre>
+</div>
+<div class="section" id="gdb-commands">
+<h3>GDB Commands<a class="headerlink" href="#gdb-commands" title="Permalink to this headline">¶</a></h3>
+<p>The following table summarizes the most common gdb commands</p>
+<table border="1" class="minitable docutils">
+<colgroup>
+<col width="17%" />
+<col width="83%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Command</th>
+<th class="head">Funciton</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td><code class="docutils literal"><span class="pre">run</span></code></td>
+<td>Starts the execution of a program.</td>
+</tr>
+<tr class="row-odd"><td><code class="docutils literal"><span class="pre">print</span></code></td>
+<td>Prints the value of a variable</td>
+</tr>
+<tr class="row-even"><td><code class="docutils literal"><span class="pre">break</span></code></td>
+<td>Sets a breakpoint</td>
+</tr>
+<tr class="row-odd"><td><code class="docutils literal"><span class="pre">clear</span></code></td>
+<td>Clears a breakpoint</td>
+</tr>
+<tr class="row-even"><td><code class="docutils literal"><span class="pre">watch</span></code></td>
+<td>Watches for changes in a variable</td>
+</tr>
+<tr class="row-odd"><td><code class="docutils literal"><span class="pre">condition</span></code></td>
+<td>Adds a condition to a breakpoint</td>
+</tr>
+<tr class="row-even"><td><code class="docutils literal"><span class="pre">next</span></code></td>
+<td>Executes the next statement</td>
+</tr>
+<tr class="row-odd"><td><code class="docutils literal"><span class="pre">step</span></code></td>
+<td>Executes the next statement, but stepping into a function call</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="debug-our-program">
+<h3>Debug our program<a class="headerlink" href="#debug-our-program" title="Permalink to this headline">¶</a></h3>
+<p>In this procedure we are going to debug a buggy insertion sort program that you will be given. The source code contains three problems, and we are going to follow an iterative approach to find them.</p>
+<p>The buggy source code is presented next for convenience, you will be provided with a link to download.</p>
+<div class="highlight-c++"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&lt;iostream&gt;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&lt;stdlib.h&gt;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&lt;string&gt;</span><span class="cp"></span>
+
+<span class="k">using</span> <span class="k">namespace</span> <span class="n">std</span><span class="p">;</span>
+
+<span class="cm">/**</span>
+<span class="cm">    Shifts the elements on an array to the left</span>
+<span class="cm">    @param values : the array</span>
+<span class="cm">    @param begin : the index of the first item to shift left</span>
+<span class="cm">    @param end : the index of the last item to shift left</span>
+
+<span class="cm">    Note that the element at position end+1 will be overwritten</span>
+<span class="cm">    The element at position begin-1 will retain its value</span>
+<span class="cm">*/</span>
+<span class="kt">void</span> <span class="nf">shift</span><span class="p">(</span><span class="kt">int</span> <span class="n">values</span><span class="p">[],</span> <span class="kt">int</span> <span class="n">begin</span><span class="p">,</span> <span class="kt">int</span> <span class="n">end</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">for</span> <span class="p">(</span> <span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="n">end</span><span class="p">;</span> <span class="n">i</span> <span class="o">&gt;</span> <span class="n">begin</span><span class="p">;</span> <span class="n">i</span><span class="o">--</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="n">values</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">values</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">];</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="cm">/**</span>
+<span class="cm">    Sorts an array in place in ascending order</span>
+<span class="cm">    @param values : the array to sort</span>
+<span class="cm">    @param length : the length of the array to be sorted.</span>
+<span class="cm">*/</span>
+<span class="kt">void</span> <span class="nf">sort</span><span class="p">(</span><span class="kt">int</span> <span class="n">values</span><span class="p">[],</span> <span class="kt">int</span> <span class="n">length</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">j</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">j</span> <span class="o">&lt;</span> <span class="n">length</span><span class="p">;</span> <span class="n">j</span><span class="o">++</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="k">if</span> <span class="p">(</span> <span class="n">j</span> <span class="o">=</span> <span class="mi">0</span> <span class="p">)</span> <span class="k">continue</span><span class="p">;</span>  <span class="c1">// skip the first item</span>
+        <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">k</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">k</span> <span class="o">&lt;</span> <span class="n">j</span><span class="p">;</span> <span class="n">k</span><span class="o">++</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">values</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">values</span><span class="p">[</span><span class="n">j</span><span class="p">])</span>
+            <span class="p">{</span>
+                <span class="kt">int</span> <span class="n">val</span> <span class="o">=</span> <span class="n">values</span><span class="p">[</span><span class="n">j</span><span class="p">];</span>
+                <span class="n">shift</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">k</span><span class="p">);</span>
+                <span class="n">values</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">val</span><span class="p">;</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+
+<span class="p">}</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">(</span> <span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span> <span class="o">*</span><span class="n">argv</span><span class="p">[])</span>
+<span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">argc</span> <span class="o">&lt;</span> <span class="mi">3</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="n">cerr</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;You must provide at least two arguments&quot;</span> <span class="o">&lt;&lt;</span> <span class="n">endl</span><span class="p">;</span>
+        <span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="kt">int</span> <span class="n">values</span><span class="p">[</span><span class="n">argc</span><span class="o">-</span><span class="mi">1</span><span class="p">];</span>
+
+    <span class="c1">// parse arguments</span>
+    <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">argc</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="kt">int</span> <span class="n">val</span> <span class="o">=</span> <span class="n">stoi</span><span class="p">(</span><span class="n">argv</span><span class="p">[</span><span class="n">i</span><span class="p">]);</span>
+        <span class="n">values</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">=</span><span class="n">val</span><span class="p">;</span>
+    <span class="p">}</span>    
+
+    <span class="c1">// call sort</span>
+
+    <span class="n">sort</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="n">argc</span><span class="o">-</span><span class="mi">1</span><span class="p">);</span>
+
+    <span class="c1">// print result</span>
+
+    <span class="k">for</span> <span class="p">(</span> <span class="kt">int</span> <span class="n">j</span> <span class="o">=</span> <span class="mi">0</span> <span class="p">;</span> <span class="n">j</span> <span class="o">&lt;</span> <span class="n">argc</span><span class="o">-</span><span class="mi">1</span><span class="p">;</span> <span class="n">j</span><span class="o">++</span> <span class="p">)</span>
+    <span class="p">{</span>
+        <span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="n">values</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">&lt;&lt;</span> <span class="s">&quot; &quot;</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="n">endl</span><span class="p">;</span>
+
+    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</td></tr></table></div>
+<ol class="arabic">
+<li><p class="first">The buggy C++ source file that is supposed to implement this algorithm is available at <a class="reference download internal" href="../../_downloads/insertion_sort.cpp" download=""><code class="xref download docutils literal"><span class="pre">insertion_sort.cpp</span></code></a>. Create a directory called <code class="docutils literal"><span class="pre">lab05</span></code> within your home directory, and download (remember <code class="docutils literal"><span class="pre">wget</span></code>?) the aforementioned file into it.</p>
+</li>
+<li><p class="first">Compile the program:</p>
+<pre class="literal-block">
+[user&#64;blue lab05]$ <strong class="command">g++ -std=c++17 -g insort.cpp -o insort</strong>
+</pre>
+</li>
+<li><p class="first">The previous command will generate an executable called <code class="docutils literal"><span class="pre">insort</span></code>. Run the executable:</p>
+<pre class="literal-block">
+[user&#64;blue lab05]$ <strong class="command">./insort 3 4</strong>
+</pre>
+</li>
+<li><p class="first">It should be obvious that there is a problem in the source file, since the program does not complete and does not print any output. We are going to use <code class="docutils literal"><span class="pre">gdb</span></code> to fix the buggy program.</p>
+</li>
+<li><p class="first">Start <code class="docutils literal"><span class="pre">gdb</span></code> by typing the following command, you should see the following output:</p>
+<pre class="literal-block">
+[user&#64;blue lab05]$ <strong class="command">gdb insort</strong>
+GNU gdb (GDB) Fedora 8.0.1-36.fc27
+Copyright (C) 2017 Free Software Foundation, Inc.
+License GPLv3+: GNU GPL version 3 or later &lt;<a class="reference external" href="http://gnu.org/licenses/gpl.html">http://gnu.org/licenses/gpl.html</a>&gt;
+This is free software: you are free to change and redistribute it.
+There is NO WARRANTY, to the extent permitted by law.  Type &quot;show copying&quot;
+and &quot;show warranty&quot; for details.
+This GDB was configured as &quot;x86_64-redhat-linux-gnu&quot;.
+Type &quot;show configuration&quot; for configuration details.
+For bug reporting instructions, please see:
+&lt;<a class="reference external" href="http://www.gnu.org/software/gdb/bugs/">http://www.gnu.org/software/gdb/bugs/</a>&gt;.
+Find the GDB manual and other documentation resources online at:
+&lt;<a class="reference external" href="http://www.gnu.org/software/gdb/documentation/">http://www.gnu.org/software/gdb/documentation/</a>&gt;.
+For help, type &quot;help&quot;.
+Type &quot;apropos word&quot; to search for commands related to &quot;word&quot;...
+Reading symbols from insort...done.
+(gdb)
+</pre>
+</li>
+<li><p class="first">At this point the program has not been executed, to start the program with the arguments “6 2 5”  enter:</p>
+<pre class="literal-block">
+(gdb) <strong class="command">run 6 2 5</strong>
+Starting program: /home/student/user/lab05/insort 6 2 5
+</pre>
+</li>
+<li><p class="first">The program execution will start after the previous command, and again, it will not terminate or produce any output.  The difference is that now we can suspend the program execution.  To do this, press the <code class="kbd docutils literal"><span class="pre">CTRL+c</span></code> combination, and the program will suspend and will present you again with the <code class="docutils literal"><span class="pre">(gdb)</span></code> prompt.  Your screen should look something like the following listing where <code class="docutils literal"><span class="pre">gdb</span></code> is letting us know that the program’s execution stopped at line number 21 of <code class="docutils literal"><span class="pre">insort.cpp</span></code> (the exact instruction where the program suspended the execution might be different):</p>
+<pre class="literal-block">
+Starting program: /home/student/user/lab05/insort 6 2 5
+<strong class="command">^C</strong>
+Program received signal SIGINT, Interrupt.
+0x0000000000400e46 in sort (values=0x7fffffffe290, length=3) at insort.cpp:21
+21          for (int j = 0; j &lt; length; j++)
+(gdb)
+</pre>
+</li>
+<li><p class="first">Experiment with the <code class="docutils literal"><span class="pre">next</span></code> command of gdb.  Run it several times, and notice how the line numbers change every time that you run the next command.</p>
+</li>
+<li><p class="first">Inspect the value of the variable <code class="docutils literal"><span class="pre">j</span></code>.  Does the value of this variable change?  What values do you see being assigned to this variable?</p>
+</li>
+<li><p class="first">At this point you should be able to determine the bug that is causing the program to get stuck in an endless loop.  Exit <code class="docutils literal"><span class="pre">gdb</span></code> by typing the <code class="docutils literal"><span class="pre">quit</span></code> command.</p>
+</li>
+<li><p class="first">Using <code class="docutils literal"><span class="pre">vim</span></code>, edit the source code file to fix the bug (for consistency, do not add new line numbers to your program, or you won’t be able to validate your answers in Moodle).</p>
+</li>
+<li><p class="first">Recompile your program and run it again with different inputs.  For example:</p>
+<pre class="literal-block">
+[user&#64;blue lab05]$ <strong class="command">./insort 6 5 2 3 7 4</strong>
+7 7 7 7 7 4
+[user&#64;blue lab05]$ <strong class="command">./insort 6 5 9 3 7 4</strong>
+9 9 9 7 7 4
+</pre>
+</li>
+<li><p class="first">This time the program terminates and produces output, albeit an incorrect one. This time we are going to try placing a breakpoint. Execute the gdb command, but this time before running the program place a breakpoint in line 34:</p>
+<pre class="literal-block">
+(gdb) <strong class="command">break 34</strong>
+Breakpoint 1 at 0x400da3: file insort.cpp, line 34.
+(gdb) <strong class="command">run 6 5 2 3 7 4</strong>
+Starting program: /home/student/user/lab05/insort 6 5 2 3 7 4
+
+Breakpoint 1, sort (values=0x7fffffffe270, length=6) at insort.cpp:34
+34              for (int k = 0; k &lt; j; k++)
+(gdb)
+</pre>
+</li>
+<li><p class="first">Inspect the values stored in the array called <code class="docutils literal"><span class="pre">values</span></code>, for example, you can do something like this:</p>
+<pre class="literal-block">
+(gdb) <strong class="command">print values[0]</strong>
+$2 = 6
+(gdb) <strong class="command">print values[j]</strong>
+$3 = 5
+(gdb) <strong class="command">print j</strong>
+$4 = 1
+</pre>
+</li>
+<li><p class="first">Trigger the execution of the next line, and inspect the values of the array at indices <code class="docutils literal"><span class="pre">k</span></code> and <code class="docutils literal"><span class="pre">j</span></code>.</p>
+</li>
+<li><p class="first">The next line to be executed should be line 36, which corresponds to <code class="docutils literal"><span class="pre">if</span> <span class="pre">(values[k]</span> <span class="pre">&lt;=</span> <span class="pre">values[j])</span></code>. Based on the details of the insertion sort algorithm, and the values that you observed in the previous step, does it make sense to go inside the block that starts on line 37?</p>
+</li>
+<li><p class="first">At this point you should have been able to find the second bug on your program.  Exit <code class="docutils literal"><span class="pre">gdb</span></code>, make a modification to the source code (hint, it needs to be on line 36) and recompile.</p>
+</li>
+<li><p class="first">Test your program again, you should see output like this:</p>
+<pre class="literal-block">
+[user&#64;blue lab05]$ <strong class="command">./insort 6 5 9 3 7 4</strong>
+3 3 3 3 4 4
+[user&#64;blue lab05]$ <strong class="command">./insort 6 5 2 3 7 4</strong>
+2 2 2 3 4 4
+</pre>
+</li>
+<li><p class="first">Again, the output seems to be wrong.  Using a similar procedure we used, find the last bug.</p>
+</li>
+</ol>
+</div>
+</div>
+</div>
+
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+    </p>
+    <p>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>
