@@ -367,7 +367,7 @@ More specifically, a debugger lets you:</p>
 <p>In order to be able to debug a program, it needs to be compiled with debugging information.  If this prerequisite is not fulfilled, it is just not possible to use <code class="docutils literal"><span class="pre">gdb</span></code>. In <code class="docutils literal"><span class="pre">gcc</span></code> and <code class="docutils literal"><span class="pre">g++</span></code> you enable this by tuning the <code class="docutils literal"><span class="pre">-g</span></code> flag.  Using this option saves the <em>symbol table</em> (the list of memory addresses that correspond to the variables and lines of code of your program) into the compiled executable.</p>
 <p>To do this, run this command</p>
 <pre class="literal-block">
-[user&#64;blue lab05]$ g++ -std=c++11 -g insort.cpp -o insort
+[user&#64;blue lab05]$ g++ -std=c++11 -g insertion_sort.cpp -o insort
 </pre>
 </div>
 <div class="section" id="gdb-commands">
@@ -575,7 +575,7 @@ More specifically, a debugger lets you:</p>
 </li>
 <li><p class="first">Compile the program:</p>
 <pre class="literal-block">
-[user&#64;blue lab05]$ <strong class="command">g++ -std=c++17 -g insort.cpp -o insort</strong>
+[user&#64;blue lab05]$ <strong class="command">g++ -std=c++17 -g insertion_sort.cpp -o insort</strong>
 </pre>
 </li>
 <li><p class="first">The previous command will generate an executable called <code class="docutils literal"><span class="pre">insort</span></code>. Run the executable:</p>
@@ -612,13 +612,13 @@ Reading symbols from insort...done.
 Starting program: /home/student/user/lab05/insort 6 2 5
 </pre>
 </li>
-<li><p class="first">The program execution will start after the previous command, and again, it will not terminate or produce any output.  The difference is that now we can suspend the program execution.  To do this, press the <code class="kbd docutils literal"><span class="pre">CTRL+c</span></code> combination, and the program will suspend and will present you again with the <code class="docutils literal"><span class="pre">(gdb)</span></code> prompt.  Your screen should look something like the following listing where <code class="docutils literal"><span class="pre">gdb</span></code> is letting us know that the program’s execution stopped at line number 21 of <code class="docutils literal"><span class="pre">insort.cpp</span></code> (the exact instruction where the program suspended the execution might be different):</p>
+<li><p class="first">The program execution will start after the previous command, and again, it will not terminate or produce any output.  The difference is that now we can suspend the program execution.  To do this, press the <code class="kbd docutils literal"><span class="pre">CTRL+c</span></code> combination, and the program will suspend and will present you again with the <code class="docutils literal"><span class="pre">(gdb)</span></code> prompt.  Your screen should look something like the following listing where <code class="docutils literal"><span class="pre">gdb</span></code> is letting us know that the program’s execution stopped at line number 31 of <code class="docutils literal"><span class="pre">insertion_sort.cpp</span></code> (the exact instruction where the program suspended the execution might be different):</p>
 <pre class="literal-block">
 Starting program: /home/student/user/lab05/insort 6 2 5
 <strong class="command">^C</strong>
 Program received signal SIGINT, Interrupt.
-0x0000000000400e46 in sort (values=0x7fffffffe290, length=3) at insort.cpp:21
-21          for (int j = 0; j &lt; length; j++)
+0x0000000000400e46 in sort (values=0x7fffffffe290, length=3) at insertion_sort.cpp:31
+31          for (int j = 0; j &lt; length; j++)
 (gdb)
 </pre>
 </li>
@@ -641,11 +641,11 @@ Program received signal SIGINT, Interrupt.
 <li><p class="first">This time the program terminates and produces output, albeit an incorrect one. This time we are going to try placing a breakpoint. Execute the gdb command, but this time before running the program place a breakpoint in line 34:</p>
 <pre class="literal-block">
 (gdb) <strong class="command">break 34</strong>
-Breakpoint 1 at 0x400da3: file insort.cpp, line 34.
+Breakpoint 1 at 0x400da3: file insertion_sort.cpp, line 34.
 (gdb) <strong class="command">run 6 5 2 3 7 4</strong>
 Starting program: /home/student/user/lab05/insort 6 5 2 3 7 4
 
-Breakpoint 1, sort (values=0x7fffffffe270, length=6) at insort.cpp:34
+Breakpoint 1, sort (values=0x7fffffffe270, length=6) at insertion_sort.cpp:34
 34              for (int k = 0; k &lt; j; k++)
 (gdb)
 </pre>

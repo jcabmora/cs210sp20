@@ -270,7 +270,7 @@ To do this, run this command
 
 .. parsed-literal::
 
-    [user\@blue lab05]$ g++ -std=c++11 -g insort.cpp -o insort
+    [user\@blue lab05]$ g++ -std=c++11 -g insertion_sort.cpp -o insort
 
 
 GDB Commands
@@ -311,7 +311,7 @@ The buggy source code is presented next for convenience, you will be provided wi
 
    .. parsed-literal::
 
-        [user\@blue lab05]$ :command:`g++ -std=c++17 -g insort.cpp -o insort`
+        [user\@blue lab05]$ :command:`g++ -std=c++17 -g insertion_sort.cpp -o insort`
 
 #. The previous command will generate an executable called ``insort``. Run the executable:
 
@@ -350,15 +350,15 @@ The buggy source code is presented next for convenience, you will be provided wi
     (gdb) :command:`run 6 2 5`
     Starting program: /home/student/user/lab05/insort 6 2 5
 
-#. The program execution will start after the previous command, and again, it will not terminate or produce any output.  The difference is that now we can suspend the program execution.  To do this, press the :kbd:`CTRL+c` combination, and the program will suspend and will present you again with the ``(gdb)`` prompt.  Your screen should look something like the following listing where ``gdb`` is letting us know that the program's execution stopped at line number 21 of ``insort.cpp`` (the exact instruction where the program suspended the execution might be different): 
+#. The program execution will start after the previous command, and again, it will not terminate or produce any output.  The difference is that now we can suspend the program execution.  To do this, press the :kbd:`CTRL+c` combination, and the program will suspend and will present you again with the ``(gdb)`` prompt.  Your screen should look something like the following listing where ``gdb`` is letting us know that the program's execution stopped at line number 31 of ``insertion_sort.cpp`` (the exact instruction where the program suspended the execution might be different): 
 
    .. parsed-literal::
 
     Starting program: /home/student/user/lab05/insort 6 2 5
     :command:`^C`
     Program received signal SIGINT, Interrupt.
-    0x0000000000400e46 in sort (values=0x7fffffffe290, length=3) at insort.cpp:21
-    21          for (int j = 0; j < length; j++)
+    0x0000000000400e46 in sort (values=0x7fffffffe290, length=3) at insertion_sort.cpp:31
+    31          for (int j = 0; j < length; j++)
     (gdb)
 
 #. Experiment with the ``next`` command of gdb.  Run it several times, and notice how the line numbers change every time that you run the next command.
@@ -385,11 +385,11 @@ The buggy source code is presented next for convenience, you will be provided wi
    .. parsed-literal::
 
     (gdb) :command:`break 34`
-    Breakpoint 1 at 0x400da3: file insort.cpp, line 34.
+    Breakpoint 1 at 0x400da3: file insertion_sort.cpp, line 34.
     (gdb) :command:`run 6 5 2 3 7 4`
     Starting program: /home/student/user/lab05/insort 6 5 2 3 7 4
 
-    Breakpoint 1, sort (values=0x7fffffffe270, length=6) at insort.cpp:34
+    Breakpoint 1, sort (values=0x7fffffffe270, length=6) at insertion_sort.cpp:34
     34              for (int k = 0; k < j; k++)
     (gdb)
 
