@@ -1,0 +1,547 @@
+:orphan:
+
+**********************************************
+Lab No. 6: I/O Redirection
+**********************************************
+
+After completing this lab, students will be able to:
+
+* describe *stdout*, *stdin* and *stderr* 
+* run commands that employ I/O redirection   
+* work with the contents of files through the ``cat`` command
+* apply the ``tee``, ``sort`` and ``uniq`` commands
+* apply ``/dev/null`` to discard output or errors
+
+
+Standard Input, Standard Output and Standard Error
+==================================================
+
+So far in this class we have run commands and have seen how their output is printed on the screen.
+Also, we have focused our attention in running commands that receive their input from key presses obtained from your keyboard.
+In this section of the lab we are going to learn how to change the way we can interact with the output produced by programs and also change the way programs receive input.  
+This is done through a mechanism known as *I/O redirection*.
+
+When you execute commands, the operating system creates a *process*.  
+
+Three important file descriptors are assigned to each process:
+
+* 0: *stdin*
+* 1: *stdout*
+* 2: *stderr*    
+
+Standard output, or *stdout*, is the file where the process write its output.
+Processes do not need to "know" where the data that they output will be written, it can go to a device (e.g. printer), an ordinary file, a socket, a screen (which is the default behavior for interactive shell sessions), etc.
+The operating system abstracts the end point where the output is written. By default, for interactive process, *stdout* is mapped to the pseudoterminal where the command is executed.
+
+Standard input, or *stdin*, is the file where the program gets information from. 
+In the same fashion as *stdout*, the operating system controls the file that a process uses to receive input. By default, for interactive commands, *stdin* is mapped to the keyboard attached to the pseudoterminal where the command is executed.
+
+Standard error, or *stderr*, is the file where errors are written, and for interactive sessions if defaults to the screen. Just as *stdout*, for interactive applications *stderr* is mapped to the pseudoterminal where the command is executed
+
+To be more technically accurate *stdin*, *stdout* and *sterr* are "I/O streams", instead of regular files that are save to disk.
+Unix has the philosophy **that everything is a file** as far as I/O is concerned.
+What that means in practical terms is that you can use the same library functions and interfaces without worrying about whether the file you are working is an I/O stream connected to a keyboard, a disk file, a socket, a pipe, or any other I/O abstraction
+
+Redirection Operators
+---------------------
+
+The following table has some common operators that are used to change where bytes read from *stdin* come from, or where bytes written to  *stdout* and *stderr* go to:
+
+.. cssclass:: table-striped
+
+=============== ======================================================
+Operator         Effect
+=============== ======================================================
+``>``           Redirects stdout to a new file. If the file exists, it will be overwritten.
+``>>``          Appends stdout to an existing file. If the file does not exist, it will be created.
+``2>``          Redirects stder to a new file. If the file exists, it will be overwritten.
+``2>>``         Appends stderr to an existing file. If the file does not exist, it will be created. 
+``&>``          Redirects both stdout and stderr to a new file. If the file exists, it will be overwritten.
+``&>>``         Appends both stdout and stderr to an existing file. If the file does not exist, it will be created. 
+``2>&1``        Redirects stderr to stdout
+``>&2``         Redirects stdout to stderr
+``<``           Redirects stdin to read from a file.
+``<<``          Uses text in several lines as stdin (know as a *heredoc*)
+=============== ======================================================
+
+Redirecting stdout and stderr
+=============================
+
+Let's see some example of redirection in action.
+First let's list all the files that start with ``c`` within ``/var/log``:
+
+.. parsed-literal::
+    [user\@blue ~]$ :command:`ls -ld /var/log/c*`
+    drwx------  2 cassandra cassandra    4096 Oct  4  2018 /var/log/cassandra
+    drwxr-xr-x. 2 chrony    chrony       4096 Apr  4  2018 /var/log/chrony
+    drwxr-xr-x. 2 root      root         4096 Apr 12  2018 /var/log/cluster
+    -rw-------  1 root      root       136803 Mar  1 13:33 /var/log/cron
+    -rw-------  1 root      root      5113530 Feb 10 04:50 /var/log/cron-20200209
+    -rw-------  1 root      root      4510889 Feb 16 11:53 /var/log/cron-20200216
+    -rw-------  1 root      root      4781538 Feb 23 11:50 /var/log/cron-20200223
+    -rw-------  1 root      root      4790354 Mar  1 13:33 /var/log/cron-20200301
+    drwxr-xr-x. 2 lp        sys          4096 Aug  6  2018 /var/log/cups
+    drwx------  2 custodia  custodia     4096 Aug  7  2017 /var/log/custodia
+
+Suppose you want to save the output of the find command to a file called ``clogs.txt``.
+You can use redirection in the following way:
+
+.. parsed-literal::
+    [user\@blue lab06]$ :command:`ls -ld /var/log/c* > clogs.txt`
+
+The ``cat`` command
+-------------------
+
+In this lab we are going to make heavy use of the ``cat`` command. 
+This command is used to read the contents of files and write them to *stdout*. 
+
+If you call the comand with arguments, they are interpreted as a list of files.  For example, if you execute ``cat somefile1.txt somefile2.txt`` it will read ``somefile1.txt`` and ``somefile2.txt`` and write their contents to *stdout*
+
+Let's use ``cat`` inspect the output of ``clogs.txt`` and compare with the output you obtained in the terminal.
+We should see exactly the same output (well, the file sizes and time stamps *could* have changed if by any chance a cron job was executed between commands).
+
+.. parsed-literal::
+    [user\@blue ~]$ :command:`cat clogs.txt`
+    drwx------  2 cassandra cassandra    4096 Oct  4  2018 /var/log/cassandra
+    drwxr-xr-x. 2 chrony    chrony       4096 Apr  4  2018 /var/log/chrony
+    drwxr-xr-x. 2 root      root         4096 Apr 12  2018 /var/log/cluster
+    -rw-------  1 root      root       136803 Mar  1 13:33 /var/log/cron
+    -rw-------  1 root      root      5113530 Feb 10 04:50 /var/log/cron-20200209
+    -rw-------  1 root      root      4510889 Feb 16 11:53 /var/log/cron-20200216
+    -rw-------  1 root      root      4781538 Feb 23 11:50 /var/log/cron-20200223
+    -rw-------  1 root      root      4790354 Mar  1 13:33 /var/log/cron-20200301
+    drwxr-xr-x. 2 lp        sys          4096 Aug  6  2018 /var/log/cups
+    drwx------  2 custodia  custodia     4096 Aug  7  2017 /var/log/custodia
+
+Now let's try something similar, but this time let's use the ``find`` command
+
+.. parsed-literal::
+    [user\@blue ~]$ :command:`find /var/log/c*`
+    /var/log/cassandra
+    find: ‘/var/log/cassandra’: Permission denied
+    /var/log/chrony
+    /var/log/cluster
+    /var/log/cron
+    /var/log/cron-20200209
+    /var/log/cron-20200216
+    /var/log/cron-20200223
+    /var/log/cron-20200301
+    /var/log/cups
+    /var/log/custodia
+    find: ‘/var/log/custodia’: Permission denied
+
+Notice that ``find`` presents you with some *Permission denied* errors for those directories where it can not list their contents because you don't have permission.
+Remember that ``find`` by default tries to recursively list subdirectories, and in this case it is unssucessfully trying to list the contentw of ``/var/log/cassandra`` and ``/var/log/custodia``.
+
+Now, let's write the output of the find command to ``clogs.txt``:
+
+.. parsed-literal::
+    [user\@blue lab06]$ :command:`find /var/log/c* > clogs.txt`
+    find: ‘/var/log/cassandra’: Permission denied
+    find: ‘/var/log/custodia’: Permission denied
+
+The first thing you should notice is how the *Permission denied* errors were still written to the terminal screen.
+Let's read the contents of ``clogs.txt`` using the ``cat`` command and notice how the listing did not include the error messages, and also that the ``clogs.txt`` file was completely **overwritten**:
+
+.. parsed-literal::
+    [user\@blue lab06]$ :command:`cat clogs.txt`
+    /var/log/cassandra
+    /var/log/chrony
+    /var/log/cluster
+    /var/log/cron
+    /var/log/cron-20200209
+    /var/log/cron-20200216
+    /var/log/cron-20200223
+    /var/log/cron-20200301
+    /var/log/cups
+    /var/log/custodia
+
+
+What happened here is that the *Permission denied* messages are actually written to *stderr*.
+Since the ``>`` operator only redirects *stdout*, anything that the command wrote to *stderr* still gets written to the terminal.
+Let's try redirecting *stderr* to ``clogs.txt``:
+
+.. parsed-literal::
+    [user\@blue lab06]$ :command:`find /var/log/c* 2> clogs.txt`
+    /var/log/cassandra
+    /var/log/chrony
+    /var/log/cluster
+    /var/log/cron
+    /var/log/cron-20200209
+    /var/log/cron-20200216
+    /var/log/cron-20200223
+    /var/log/cron-20200301
+    /var/log/cups
+    /var/log/custodia
+
+Notice how this time ``clogs.txt`` only has the error messages:
+
+.. parsed-literal::
+    [user\@blue lab06]$ :command:`cat clogs.txt`
+    find: ‘/var/log/cassandra’: Permission denied
+    find: ‘/var/log/custodia’: Permission denied
+
+
+We can also redirect both *stdout* and *stderr* to a file:
+
+.. parsed-literal::
+    [user\@blue lab06]$ :command:`find /var/log/c* &> clogs.txt`
+    [user\@blue lab06]$ :command:`cat clogs.txt`
+    /var/log/cassandra
+    find: ‘/var/log/cassandra’: Permission denied
+    /var/log/chrony
+    /var/log/cluster
+    /var/log/cron
+    /var/log/cron-20200209
+    /var/log/cron-20200216
+    /var/log/cron-20200223
+    /var/log/cron-20200301
+    /var/log/cups
+    /var/log/custodia
+    find: ‘/var/log/custodia’: Permission denied
+
+Another idiom that is commonly used to write both *stdout* and *stderr* to a file is to first redirect *stderr* to *stdout* and then *stdout* to a file:
+
+.. parsed-literal::
+    [user\@blue lab06]$ :command:`find /var/log/c* > clogs.txt 2>&1`
+    [user\@blue lab06]$ :command:`cat clogs.txt`
+    /var/log/cassandra
+    find: ‘/var/log/cassandra’: Permission denied
+    /var/log/chrony
+    /var/log/cluster
+    /var/log/cron
+    /var/log/cron-20200209
+    /var/log/cron-20200216
+    /var/log/cron-20200223
+    /var/log/cron-20200301
+    /var/log/cups
+    /var/log/custodia
+    find: ‘/var/log/custodia’: Permission denied
+
+Note that for this approach the order matters and if instead you use the command ``find /var/log/c* 2>&1 > clogs.txt`` the redirection will not work.
+
+The bit bucket
+--------------
+The file ``/dev/null`` is a special file that discards all data written to it.
+This file is used very often when *stdout* or *stderr* needs to be supressed.
+This file is commonly known as the *bit bucket*
+
+Following the previous exemple, suppose you want to write *sdout* to ``clogs.txt`` and want to avoid the *Permission denied* errors showing on the terminal.
+We can do that by sending *stderr* to ``/dev/null``:
+
+.. parsed-literal::
+    [user\@blue ~]$ :command:`find /var/log/c* > clogs.txt 2> /dev/null`
+    [user\@blue ~]$ :command:`cat clogs.txt`
+    /var/log/cassandra
+    /var/log/chrony
+    /var/log/cluster
+    /var/log/cron
+    /var/log/cron-20200209
+    /var/log/cron-20200216
+    /var/log/cron-20200223
+    /var/log/cron-20200301
+    /var/log/cups
+    /var/log/custodia
+
+
+Redirecting stdin
+=================
+
+The cat command has a very useful feature that if no files are specified (that is, when it is executed without any arguments) then it reads text from *stdin*. 
+
+The ``cat`` command reads input from *stdin* and writes to *stdout*.
+In the following example, once you press :kbd:`Enter` after typing the ``cat`` command, the terminal not return to the prompt immediately, and instead it will be reading any input you type. Type any test you want, notice how everytime that you hit enter the text gets written back to *stdout*
+
+.. parsed-literal::
+    [user\@blue lab06]$ :command:`cat`
+    :command:`the`
+    the
+    :command:`quick`
+    quick
+    :command:`brown`
+    brown
+    :command:`fox`
+    fox
+
+To make ``cat`` stop reading text from *stdin* press the :kbd:`CRTL+D` combination.
+This combinations sends a special non printable ``EOF`` (End of File) character.
+Be careful! If you press this combination when you are not in a mode where a command is reading from *stdin*, you will send this character to the shell (``bash``) which will close your current session.
+
+So if we execute the following command exactly the same result as if we were passing the argument directly.
+
+.. parsed-literal::
+    [user\@blue lab06]$ :command:`cat < clogs.txt`
+    /var/log/cassandra
+    find: ‘/var/log/cassandra’: Permission denied
+    /var/log/chrony
+    /var/log/cluster
+    /var/log/cron
+    /var/log/cron-20200209
+    /var/log/cron-20200216
+    /var/log/cron-20200223
+    /var/log/cron-20200301
+    /var/log/cups
+    /var/log/custodia
+    find: ‘/var/log/custodia’: Permission denied
+
+
+        
+
+Using Pipes
+===========
+
+We can use pipes to create elaborate command sequences where the output from one command is used as the input of another command.
+This is done using the *pipe operator* ``|``.
+
+As an example, if you run the command :command:`ls -l /usr/bin` you'll get a very long list of files. It will be much nicer to be able to page through those results.  The ``less`` command is a pager, and it will be great if we could pass the output from the ``ls`` command directly without having to write a file on disk.   Pipelines allows us to do just that in a very simple way.  Try running the command :command:`ls -l /usr/bin | less` 
+
+Pipelines do not have to be composed of only two commands; they can chain as many commands as you need.  For example, what if you want to obtain the list of files under ``/usr/bin``  that contain the word "gnome" on them, and then inspect thee output on a pager?  We can use the ``grep`` command to filter the output from ``ls``: :command:`ls /usr/bin/ | grep gnome | less`
+
+The ``grep`` command
+--------------------
+
+The ``grep`` command is probably one of the most heavily utilized commands in Unix systems.  It allows you to search files that containe character strings that match a pattern.
+``grep`` allows you to define very complex search patterns, known as *regular expressions*.  In this lab section we'll introduce the most basic patterns to use to search inside files.
+
+Let's download *Alice in Wonderland* , convert it to unix endings and search for the word `Cheshire` on it:
+
+.. parsed-literal::
+
+    [user\@blue lab06]$ :command:`wget -q http://www.gutenberg.org/files/11/11-0.txt`
+    [user\@blue lab06]$ :command:`dos2unix 11-0.txt`
+    dos2unix: converting file 11-0.txt to Unix format...
+    [user\@blue lab06]$ :command:`grep -e Cheshire 11-0.txt`
+    “It’s a Cheshire cat,” said the Duchess, “and that’s why. Pig!”
+    “I didn’t know that Cheshire cats always grinned; in fact, I didn’t
+    was a little startled by seeing the Cheshire Cat sitting on a bough of
+    “Cheshire Puss,” she began, rather timidly, as she did not at all know
+    to herself “It’s the Cheshire Cat: now I shall have somebody to talk
+    “It’s a friend of mine—a Cheshire Cat,” said Alice: “allow me to
+    When she got back to the Cheshire Cat, she was surprised to find quite
+
+In the previous command the ``-e Cheshire`` part specifies the *pattern* that we wanted ``grep`` to match. By default ``grep`` searches for patterns on a line-by-line basis. In this case, ``Cheshire`` means to match lines where the literal word ``Cheshire`` occurs anywhere within a line.
+
+``grep`` allows you to specify very complex patterns using **metacharacters**.
+One of the most common cases is when you need to match a line that starts with a specific word.
+This can be done by using the caret ``^`` metacharacter which means "the begining of a line".
+For example, let's search for those lines in the Alice in Wonderland book that start with the word "Alice":
+
+.. parsed-literal::
+    [user\@blue ~]$ :command:`grep -e '^Alice' 11-0.txt`
+    Alice’s Adventures in Wonderland
+    Alice was beginning to get very tired of sitting by her sister on the
+    Alice began to get rather sleepy, and went on saying to herself, in a
+    Alice was not a bit hurt, and she jumped up on to her feet in a moment:
+    Alice had been all the way down one side and up the other, trying every
+    ... (output truncated for brevity)
+
+In a similar way, we can use the dollar sign metacharacter ``$`` to specify "the end of line". 
+
+.. parsed-literal::
+    [user\@blue ~]$ :command:`grep -e Alice$ 11-0.txt`
+    conversations in it, “and what is the use of a book,” thought Alice
+    size: to be sure, this generally happens when one eats cake, but Alice
+    Dodo, a Lory and an Eaglet, and several other curious creatures. Alice
+    “We must burn the house down!” said the Rabbit’s voice; and Alice
+    “Have you guessed the riddle yet?” the Hatter said, turning to Alice
+    always getting up and walking off to other parts of the ground, Alice
+    “Oh, a song, please, if the Mock Turtle would be so kind,” Alice
+    One of the jurors had a pencil that squeaked. This of course, Alice
+
+The ``^`` and ``$`` metacharacters are known as "anchors" because they let you specify a position within the line.
+
+Another very commont metacharacter is the dot ``.`` which matches any characters. Let's see that in action:
+
+Let's see that in action:
+
+.. parsed-literal::
+    [user\@blue ~]$ :command:`grep -e .atter 11-0.txt`
+    either question, it didn’t much matter which way she put it. She felt
+    After a time she heard a little pattering of feet in the distance, and
+    shape doesn’t matter,” it said,) and then all the party were placed
+    little pattering of footsteps in the distance, and she looked up
+    Then came a little pattering of feet on the stairs. Alice knew it was
+    looking for eggs, I know _that_ well enough; and what does it matter to
+    “It matters a good deal to _me_,” said Alice hastily; “but I’m not
+    to see what was the matter with it. There could be no doubt that it had
+    “Then it doesn’t matter which way you go,” said the Cat.
+    ... (output truncated for brevity)
+
+The use of metacharacters poses one problem: how would we match a literal metacharacter?
+For example, supposed you want to match all lines that end with "Cat." (that is, "Cat" followed by a period)
+We we use ``Cat.`` we get these results:
+
+.. parsed-literal::
+    [user\@blue ~]$ :command:`grep -e Cat. 11-0.txt`
+     CHAPTER V.     Advice from a Caterpillar
+    then the Rabbit’s voice along—“Catch him, you by the hedge!” then
+    Advice from a Caterpillar
+    The Caterpillar and Alice looked at each other for some time in
+    silence: at last the Caterpillar took the hookah out of its mouth, and
+    “Who are _you?_” said the Caterpillar.
+
+This problem is solved by **escaping** the dot, which gives it back it literal meaning.
+Escaping is done by prepending a backslash, and enclosing the pattern in single quotes:
+
+.. parsed-literal::
+    [user\@blue ~]$ :command:`grep -e 'Cat\\.' 11-0.txt`
+    “That depends a good deal on where you want to get to,” said the Cat.
+    “Then it doesn’t matter which way you go,” said the Cat.
+    “Call it what you like,” said the Cat. “Do you play croquet with the
+    “By-the-bye, what became of the baby?” said the Cat. “I’d nearly
+    “Did you say pig, or fig?” said the Cat.
+
+We will cover the ``grep`` command with more details in future labs.
+
+
+The ``tee`` command
+-------------------
+The command ``tee`` sends its output in two directions at once: anything attached to ``tee``'s *stdin* goes to both a file and to its *stdout* (its name is given because it acts as a "T" junction in a pipe).
+
+As an example, the command the following commandwrites the listing of your home directory to both the terminal and to a file called ``myhome.txt``
+
+.. parsed-literal::
+    [user\@blue lab06]$ :command:`ls ~ | tee myhome.txt` 
+
+
+The ``uniq`` command
+--------------------
+The unique command takes a list and removes duplicated elements. 
+
+Let's create a file that has many repeated words. For this we are going to use the **heredoc** form of reading from *stdin* and redirecting the output to a file calee ``words.txt``:
+
+.. parsed-literal::
+    [user\@blue lab06]$ :command:`cat << EOF > words.txt`
+    heredoc> the quick brown fox jumped over the lazy dog
+    heredoc> the quick brown fox jumped over the lazy dog
+    heredoc> the quick brown fox jumped over the lazy dog
+    heredoc> the quick brown fox jumped over the lazy dog
+    heredoc> EOF
+
+Now, if we call ``uniq`` with an argument of ``words.txt`` we can see that it removes duplicate lines:
+
+
+.. parsed-literal::
+    [user\@blue lab06]$ :command:`uniq words.txt`
+    the quick brown fox jumped over the lazy dog
+
+The ``uniq`` command also accepts reading from *stdin* when no arguments have been passed:
+
+
+.. parsed-literal::
+    [user\@blue lab06]$ :command:`uniq < words.txt`
+    the quick brown fox jumped over the lazy dog
+
+
+The ``sort`` command
+--------------------
+The sort command sorts a list.
+
+.. parsed-literal::
+    [user\@blue lab06]$ :command:`cat << EOF > names.txt`
+    heredoc> henry
+    heredoc> anna
+    heredoc> zoey
+    heredoc> charles
+    heredoc> EOF
+    [user\@blue lab06]$ :command:`sort names.txt`
+    anna
+    charles
+    henry
+    zoey
+
+
+Just as other commands we have learned, ``sort`` also accepts reading from *stdin* when no arguments are passed:
+
+.. parsed-literal::
+    [user\@blue lab06]$ :command:`sort < names.txt`
+    anna
+    charles
+    henry
+    zoey
+
+
+The ``head`` and ``tail`` commands
+----------------------------------
+
+The `head` and `tail` commands allow you to restrict output of a process or the content of a file to a certain number of lines from the top or from the bottom of a file.
+The ``-n`` modifier lets you specify the number of files that you want these commands to return.
+
+.. parsed-literal::
+    [user\@blue lab06]$ :command:`head -n 2 names.txt`
+    henry
+    anna
+
+.. parsed-literal::
+    [user\@blue lab06]$ :command:`tail -n 2 names.txt`
+    zoey
+    charles
+
+As before, these two commands accept input from *stdin*
+
+.. parsed-literal::
+    [user\@blue lab06]$ :command:`head -n 2 < names.txt`
+    henry
+    anna
+
+
+Building a command pipeline
+---------------------------
+Let's put the commands we just learn to practice.
+Supposed you are asked to find out which are the first two names in the file ``names.txt`` sorted in alphabetical order.
+In order to get the answer, we need to first sort the contents of the file and then select the first two lines.
+Without pipes, we would have to write the results of the ``sort`` command to a temporary file, and then we would execute the ``head`` command using that temporary file as and argument in order to obtain the desired output.
+With pipes, we can do it all in a single command:
+
+.. parsed-literal::
+    [user\@blue lab06]$ :command:`sort names.txt  | head -n 2`
+    anna
+    charles
+
+
+.. admonition:: Part 1 (4 pts)
+    :class: worksheet
+    
+    Suppose there are two files in your working directory, called ``foo`` and ``bar`` that have the following contents
+
+    .. parsed-literal::
+
+        [you\@blue ~]$ :command:`cat foo`
+        73
+        11
+        42
+        64
+        53
+        98
+        42
+        [you\@blue ~]$ :command:`cat bar`
+        35
+        22
+        66
+        11
+        29
+        80
+
+    1. Provide a command that will produce a file called ``smallest.txt`` with the 4 smallest numbers amongst the two files. if you inspect the contents of the resulting file, the output should be:
+
+    .. parsed-literal::
+        [user\@blue lab06]$ :command:`cat smallest.txt`
+        11
+        22
+        29
+        35
+
+
+.. admonition:: Part 2 (6 pts)
+    :class: worksheet
+
+    In this exercise we will determine how many files of type ``.png`` with unique names exist in the ``/home`` directory.  You will build the command in a series of steps, please make sure that you include the resulting command at each step. Please include in your report all the commands at each step. Begin with providing a command that will list all the files recursively, with each file on its own line :command:`ls -1R /home`.
+    
+    2. The previous command will produce a very long output and some error messages due to permissions. The first task is to use redirection so you will not get any error messages in the output.
+
+    3. The next step is to filter so only the files that end with ``.png`` are shown.  Note that the ``.`` is a globing character so you will need to *escape* it (the default escape character is ``\``).  Provide an augmented command so the output only reflects files that end in ``.png``.
+
+    4. Enhance the command so the returned list is sorted.
+    5. Enhance the command so the returned list does not have any duplicated items
+    6. Add a pipe to the ``wc`` command so the number of files is printed (use the ``-l`` option to only print the number of lines)
+    7. Modify the previous command so the list of files is written to a file called ```png_list.out`` but it still prints the number of files to the screen.
