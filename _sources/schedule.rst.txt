@@ -34,7 +34,7 @@ Course Schedule and Materials
     * - 6 - 03/02
       - :doc:`labs/lab06/lab06`
       -
-      -
+      - TLCL, Chapter 6
     * - 7 - 03/09
       - Midterm
       -
