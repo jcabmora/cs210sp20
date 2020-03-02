@@ -36,7 +36,7 @@ Course Schedule and Materials
       -
       - TLCL, Chapter 6
     * - 7 - 03/09
-      - Midterm
+      -
       -
       -
     * - 8 - 03/16
@@ -44,7 +44,7 @@ Course Schedule and Materials
       -  
       -
     * - 9 - 03/23
-      -
+      - Midterm
       -
       -
     * - 10 - 03/30
