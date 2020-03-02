@@ -539,7 +539,7 @@ With pipes, we can do it all in a single command:
     
     2. The previous command will produce a very long output and some error messages due to permissions. The first task is to use redirection so you will not get any error messages in the output.
 
-    3. The next step is to filter so only the files that end with ``.png`` are shown.  Note that the ``.`` is a globing character so you will need to *escape* it (the default escape character is ``\``).  Provide an augmented command so the output only reflects files that end in ``.png``.
+    3. The next step is to filter so only the files that end with ``.png`` are shown.  Note that the ``.`` is a metacharacter so you will need to *escape* it (the default escape character is ``\``).  Provide an augmented command so the output only reflects files that end in ``.png``.
 
     4. Enhance the command so the returned list is sorted.
     5. Enhance the command so the returned list does not have any duplicated items
