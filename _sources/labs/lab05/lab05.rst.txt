@@ -319,7 +319,7 @@ The buggy source code is presented next for convenience, you will be provided wi
 
         [user\@blue lab05]$ :command:`./insort 3 4`
 
-#. It should be obvious that there is a problem in the source file, since the program does not complete and does not print any output. We are going to use ``gdb`` to fix the buggy program.
+#. It should be obvious that there is a problem in the source file, since the program does not complete and does not print any output. We are going to use ``gdb`` to fix the buggy program. Type :kbd:`CTRL+c` to terminate the buggy program.
 
 #. Start ``gdb`` by typing the following command, you should see the following output:
 
