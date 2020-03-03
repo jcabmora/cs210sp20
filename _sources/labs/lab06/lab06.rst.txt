@@ -544,4 +544,4 @@ With pipes, we can do it all in a single command:
     4. Enhance the command so the returned list is sorted.
     5. Enhance the command so the returned list does not have any duplicated items
     6. Add a pipe to the ``wc`` command so the number of files is printed (use the ``-l`` option to only print the number of lines)
-    7. Modify the previous command so the list of files is written to a file called ```png_list.out`` but it still prints the number of files to the screen.
+    7. Modify the previous command so the list of files is written to a file called ``png_list.out`` but it still prints the number of files to the screen.
