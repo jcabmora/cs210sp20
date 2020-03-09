@@ -78,3 +78,13 @@ img {
     -webkit-transition: .6s background-color;
     transition: .6s background-color
 }
+
+.command {
+    color: #333
+}
+
+pre strong{
+    font-weight: 1000;
+    color: red;
+}
+

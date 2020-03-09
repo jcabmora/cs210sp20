@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Lab No. 7: Regular Expressions &#8212; CS210 Introduction to Unix  documentation</title>
+    <link rel="stylesheet" href="../../_static/bootstrap-sphinx.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="../../_static/js/jquery-1.11.0.min.js"></script>
+    <script type="text/javascript" src="../../_static/js/jquery-fix.js"></script>
+    <script type="text/javascript" src="../../_static/bootstrap-3.3.7/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../../_static/bootstrap-sphinx.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+<link href="https://fonts.googleapis.com/css?family=Lusitana|Roboto|Roboto+Mono" rel="stylesheet">
+
+  </head>
+  <body>
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../../index.html">
+          CS210 Introduction to Unix</a>
+        <span class="navbar-text navbar-version pull-left"><b></b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../../index.html">Site <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><ul>
+<li class="toctree-l1"><a class="reference internal" href="../../syllabus.html">CS210 Introduction to Unix - Spring 2020</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../conv/conv.html">Conventions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../schedule.html">Course Schedule and Materials</a></li>
+</ul>
+</ul>
+</li>
+              
+                <li class="dropdown">
+  <a role="button"
+     id="dLabelLocalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="#">Page <b class="caret"></b></a>
+  <ul class="dropdown-menu localtoc"
+      role="menu"
+      aria-labelledby="dLabelLocalToc"><ul>
+<li><a class="reference internal" href="#">Lab No. 7: Regular Expressions</a><ul>
+<li><a class="reference internal" href="#literal-matching">Literal Matching</a></li>
+<li><a class="reference internal" href="#metacharacters">Metacharacters</a><ul>
+<li><a class="reference internal" href="#match-any-character">Match any character</a></li>
+<li><a class="reference internal" href="#anchors">Anchors</a></li>
+<li><a class="reference internal" href="#bracket-expressions-and-negation">Bracket Expressions and Negation</a></li>
+<li><a class="reference internal" href="#character-classes">Character Classes</a></li>
+<li><a class="reference internal" href="#alternation">Alternation</a></li>
+<li><a class="reference internal" href="#quantifiers">Quantifiers</a></li>
+<li><a class="reference internal" href="#inverting-the-match">Inverting the match</a></li>
+<li><a class="reference internal" href="#matched-lines-count">Matched lines count</a></li>
+<li><a class="reference internal" href="#grep-with-multiple-files">Grep with multiple files</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</ul>
+</li>
+              
+            
+            
+              
+                
+              
+            
+            
+            
+            
+              <li class="hidden-sm">
+<div id="sourcelink">
+  <a href="../../_sources/labs/lab07/lab07.rst.txt"
+     rel="nofollow">Source</a>
+</div></li>
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="../../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+    <div class="col-md-12 content">
+      
+  <div class="section" id="lab-no-7-regular-expressions">
+<h1>Lab No. 7: Regular Expressions<a class="headerlink" href="#lab-no-7-regular-expressions" title="Permalink to this headline">¶</a></h1>
+<p>Regular expressions, also known as <em>regex</em>, are sequences of characters that follow a set of notations to specify text patterns.</p>
+<p>You saw in previous Labs how pathname expansion allowed the use of the <code class="docutils literal"><span class="pre">*</span></code> character to match any characters and how you could use the <code class="docutils literal"><span class="pre">[]</span></code> pattern to match a character from a predefined list in a specific position in the file name.  Regular expressions work in the same way, certain characters denote a text pattern, and mixing these allows us to create expressions that match very complex patterns.  The difference is that regular expressions include many more options (which is justified since they are a general purpose tool, whereas pathname expansion applies only to pathnames).</p>
+<p>Some very examples of typical cases where regular expressions are useful:</p>
+<ol class="arabic simple">
+<li>validate that a distribution list does not contain invalid emails</li>
+<li>matching a url aginst a corresponding processing function</li>
+<li>looking for places where a function or method is used</li>
+<li>finding instances of errors in logs files</li>
+<li>find instances of dates in a text</li>
+<li>extract data in a certain format from user comments in a forum</li>
+<li>identify phone numbers</li>
+</ol>
+<p>Regular expressions are supported by many utilities and programming languages (although sometimes there are slight variations in the implementations)</p>
+<p>We had a gentle introduction to regular expressions on Lab 6 with <code class="docutils literal"><span class="pre">grep</span></code>.
+In this Lab we are going to learn more advances uses of regular expressions with <code class="docutils literal"><span class="pre">grep</span></code>.
+In Lab 6 we use <code class="docutils literal"><span class="pre">grep</span></code> to perform matching on a file.
+<code class="docutils literal"><span class="pre">grep</span></code> can accept input from multiple files, and it can also accept input from <code class="docutils literal"><span class="pre">stdin</span></code>.</p>
+<p>For this lab you will use a data set that is available in blue at <code class="docutils literal"><span class="pre">~/jmora/lab07/logs</span></code>. The description of the data files is available at <a class="reference external" href="https://www.sec.gov/files/EDGAR_variables_FINAL.pdf">https://www.sec.gov/files/EDGAR_variables_FINAL.pdf</a></p>
+<div class="section" id="literal-matching">
+<h2>Literal Matching<a class="headerlink" href="#literal-matching" title="Permalink to this headline">¶</a></h2>
+<p>The simplest regular expressions are a string of literal charactes to match. A string matches the regular expression if it contains the substring specified by the regular expresion.</p>
+<p>Take for example the regular expression <code class="docutils literal"><span class="pre">cks</span></code>.
+This expression matches “Linux ro<strong>cks</strong>!” and “Du<strong>cks</strong> are birds”, but does not match “My clock stopped”</p>
+<p>Note that a regular expression can match a string in more than one place.  Our previous regular expression matches “A pair of so<strong>cks</strong> for two bu<strong>cks</strong>”</p>
+<p>Note that in these examples a match is found regardless of the position within the text.  This happens because the regular expression that we used does not specify position within a string. You will see later how we can specify patterns where the position of the charaters matters.</p>
+</div>
+<div class="section" id="metacharacters">
+<h2>Metacharacters<a class="headerlink" href="#metacharacters" title="Permalink to this headline">¶</a></h2>
+<p>Metacharacters are characters that have special meaning (as opposed to a literal meaning, as we just saw).  Metacharacters are used to specify complex patterns to match.  The regular expression metacharacters are:</p>
+<pre class="literal-block">
+^ $ . [ ] { } - ? * + ( ) | 
+</pre>
+<p>In Lab 06 you where introduced to the  the anchor (<code class="docutils literal"><span class="pre">^</span> <span class="pre">$</span></code>) and the match any character (<code class="docutils literal"><span class="pre">.</span></code>) metacharacters. We’ll review them here in more detail.</p>
+<p>One aspect of metacharacters is that, since they are special, we can not simple use it if we need it to be matched literally. In order to specify a regex that includes a literal metacharacter, you need to <em>escape</em> it using the <strong>backslash</strong> character (<code class="docutils literal"><span class="pre">\</span></code>).
+As an example, suppose you want to verify that a sentence has a period.  The correct way to specify this regular expression is <code class="docutils literal"><span class="pre">\.</span></code>.</p>
+<pre class="literal-block">
+[user&#64;blue ~]$ <strong class="command">echo &quot;192. 1923&quot; | grep -e '192.'</strong>
+<strong>192. 1923</strong>
+[user&#64;blue ~]$ <strong class="command">echo &quot;192. 1923&quot; | grep -e '192.'</strong>
+<strong>192.</strong> 1923
+</pre>
+<div class="section" id="match-any-character">
+<h3>Match any character<a class="headerlink" href="#match-any-character" title="Permalink to this headline">¶</a></h3>
+<p>In regular expressions, the <em>dot</em> character (<code class="docutils literal"><span class="pre">.</span></code>) is used to match any character (with the exception of the new line character)</p>
+<p>The expression <code class="docutils literal"><span class="pre">.a</span></code> will match any line that has an <strong>a</strong> character in the middle.  For example, it will match “It’s Thurs<strong>da</strong>y”.
+Note how in this example the match includes both the <strong>d</strong> and the <strong>a</strong>.  In this case the <strong>.</strong> is matched by the <strong>d</strong> character.</p>
+<p>Note that in our example the expression calls for a character, any character, before the <strong>a</strong>. This means that it will not match a string such as “<strong>a</strong>bcdefg”.</p>
+</div>
+<div class="section" id="anchors">
+<h3>Anchors<a class="headerlink" href="#anchors" title="Permalink to this headline">¶</a></h3>
+<p>Anchors are used to specify if the regular expression needs to match the beginning of the line by using the <em>caret</em> character (<code class="docutils literal"><span class="pre">^</span></code>) or the end of the line by using the <em>dollar sign</em> character (<code class="docutils literal"><span class="pre">$</span></code>).</p>
+<p>As an example, the expression <code class="docutils literal"><span class="pre">^Th</span></code> matches the sentence “<strong>Th</strong>is is it” but it does not match “Today is Thursday”</p>
+</div>
+<div class="section" id="bracket-expressions-and-negation">
+<h3>Bracket Expressions and Negation<a class="headerlink" href="#bracket-expressions-and-negation" title="Permalink to this headline">¶</a></h3>
+<p>Brackets allow matching a character from a predetermined set of characters.
+This functionality is almost identical to the pathname expansion list of characters expression.
+Take for example the expression <code class="docutils literal"><span class="pre">h[eo]ard</span></code>.</p>
+<pre class="literal-block">
+[user&#64;blue ~]$ <strong class="command">echo &quot;I heard.&quot; | grep 'h[eo]ard'</strong>
+I <strong>heard</strong>.
+[user&#64;blue ~]$ <strong class="command">echo &quot;I hoard.&quot; | grep &quot;h[eo]ard&quot;</strong>
+I <strong>hoard</strong>.
+</pre>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p><strong>Why the quotes?</strong></p>
+<p class="last">Notice on this example that we need to enclose our expression in quotes (either single or double).
+The reason why we need to do this is that otherwise pathname expansion will be applied and our expressionn <code class="docutils literal"><span class="pre">h[eo]ard</span></code> will be used to look for input files for the <code class="docutils literal"><span class="pre">grep</span></code> command.
+Bash expansion is your friend, but some times it does it’s processing too eagerly and you need to keep it on a leash. You tell Bash to skip doing any expansions altogether by enclosing text in single quotes. You can also use double quotes to disable all shell expansion of with the exception of <code class="docutils literal"><span class="pre">$</span></code> (command substitution and parameter expansion), <code class="docutils literal"><span class="pre">`</span></code> (backtick - command substitution), <code class="docutils literal"><span class="pre">\</span></code> (escape) and <code class="docutils literal"><span class="pre">!</span></code> (history expansion).</p>
+</div>
+<p>When you want to the opposite type of matching, where you want to match any character that <em>is not</em> part of a set of characters, you need to use the <em>caret</em> character (<code class="docutils literal"><span class="pre">^</span></code>) as the first character within the brackets.
+Note in the following example how only pet, put and pit were matched (highlighted).</p>
+<pre class="literal-block">
+[user&#64;blue ~]$ <strong class="command">echo &quot;I pat my pet and then I put the pot in the pit&quot; | grep 'p[^ao]t'</strong>
+I pat my <strong>pet</strong> and then I <strong>put</strong> the pot in the <strong>pit</strong>
+</pre>
+<p>We can see that the input line matches, and that we have three different matches.
+If you run the same command and enable the <code class="docutils literal"><span class="pre">-o</span></code> option which prints only the matching regions and prints every region on its own line, you’ll be able to see the individual matches:</p>
+<pre class="literal-block">
+[user&#64;blue ~]$ <strong class="command">echo &quot;I pat my pet and then I put the pot in the pit&quot; | grep -o 'p[^ao]t'</strong>
+<strong>pet</strong>
+<strong>put</strong>
+<strong>pit</strong>
+</pre>
+<p>Just in the same fashion as the pathname expansion counterpart, you can specify ranges of characters. For example, to specify letters ranging from a to k, you can apply the expression <code class="docutils literal"><span class="pre">[d-k]</span></code>:</p>
+<pre class="literal-block">
+[user&#64;blue ~]$ <strong class="command">echo &quot;abcdefghijklmnopqrstuvwxyz&quot; | grep '[d-k]'</strong>
+abc<strong>defghijk</strong>lmnopqrstuvwxyz
+</pre>
+<p>It is clear from the example that the string “<em>abcdefghijklmnopqrstuvwxyz</em>” matches the expression <code class="docutils literal"><span class="pre">[d-k]</span></code>.
+Something that is not obvious is that the string matches the pattern 8 different times, one for each of the characters included in the set <code class="docutils literal"><span class="pre">[d-k]</span></code>.
+So the match is not “<em>defghijk</em>” but instead the individual characters “<em>d</em>”, “<em>e</em>”, … , “<em>k</em>”.
+In this context where we are looking at the whole sentence so this might not seem to make a big difference, but when you apply regular expressions and need to extract matched regions the difference becomes evident.</p>
+<pre class="literal-block">
+[user&#64;blue ~]$ <strong class="command">echo &quot;abcdefghijklmnopqrstuvwxyz&quot; | grep -o '[d-k]'</strong>
+<strong>d</strong>
+<strong>e</strong>
+<strong>f</strong>
+<strong>g</strong>
+<strong>h</strong>
+<strong>i</strong>
+<strong>j</strong>
+<strong>k</strong>
+</pre>
+<p>What if you need to match a character to a set that includes several ranges that are non contiguous?
+In that case you can simple add them in the brackets, without a space between them.
+A recurring need is to match any alpha-numerical character, lowercase and uppercase.
+The expression <code class="docutils literal"><span class="pre">[A-Za-z0-9]</span></code> will serve this purpopse.</p>
+<p>Matching numbers is a little trickier.
+The main problem is that regular expressions deal with text instead of numeric values, which means that if we want to match a number in a numeric range is not as simple as specifing the beginning and the end of the range.
+For example, you can not use the range <code class="docutils literal"><span class="pre">[0-20]</span></code> to specify a range of numbers between 0 and 20.
+We’ll cover this later once we have seen <em>alternation</em></p>
+</div>
+<div class="section" id="character-classes">
+<h3>Character Classes<a class="headerlink" href="#character-classes" title="Permalink to this headline">¶</a></h3>
+<p>Regular expressions developers realized that there are a few patterns that are commonly used over and over. So they came with the idea of defining some predetermined lists of characters. The following table summarizes the most common classes (shamefully adapted from out Textbook <em>The Linux Command Line</em> by William Shotts)</p>
+<table border="1" class="minitable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Character Class</th>
+<th class="head">Characters it matches</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td><code class="docutils literal"><span class="pre">[:alnum:]</span></code></td>
+<td>The alphanumeric characters. In ASCII, equivalent to: <code class="docutils literal"><span class="pre">[A-Za-z0-9]</span></code></td>
+</tr>
+<tr class="row-odd"><td><code class="docutils literal"><span class="pre">[:word:]</span></code></td>
+<td>The same as [:alnum:], with the addition of the underscore (<code class="docutils literal"><span class="pre">_</span></code>) character.</td>
+</tr>
+<tr class="row-even"><td><code class="docutils literal"><span class="pre">[:alpha:]</span></code></td>
+<td>The alphabetic characters. In ASCII, equivalent to:<code class="docutils literal"><span class="pre">[A-Za-z]</span></code></td>
+</tr>
+<tr class="row-odd"><td><code class="docutils literal"><span class="pre">[:blank:]</span></code></td>
+<td>Includes the space and tab characters.</td>
+</tr>
+<tr class="row-even"><td><code class="docutils literal"><span class="pre">[:cntrl:]</span></code></td>
+<td>The ASCII control codes. Includes the ASCII characters 0 through 31 and 127.</td>
+</tr>
+<tr class="row-odd"><td><code class="docutils literal"><span class="pre">[:digit:]</span></code></td>
+<td>The numerals zero through nine.</td>
+</tr>
+<tr class="row-even"><td><code class="docutils literal"><span class="pre">[:graph:]</span></code></td>
+<td>The visible characters. In ASCII, it includes characters 33 through 126.</td>
+</tr>
+<tr class="row-odd"><td><code class="docutils literal"><span class="pre">[:lower:]</span></code></td>
+<td>The lowercase letters.</td>
+</tr>
+<tr class="row-even"><td><code class="docutils literal"><span class="pre">[:punct:]</span></code></td>
+<td>The punctuation characters. In ASCII, equivalent to: <code class="docutils literal"><span class="pre">[-!&quot;#$%&amp;'()*+,./:;&lt;=&gt;?&#64;[\\\]_`{|}~]</span></code></td>
+</tr>
+<tr class="row-odd"><td><code class="docutils literal"><span class="pre">[:print:]</span></code></td>
+<td>The printable characters. All the characters in <code class="docutils literal"><span class="pre">[:graph:]</span></code> plus the space character.</td>
+</tr>
+<tr class="row-even"><td><code class="docutils literal"><span class="pre">[:space:]</span></code></td>
+<td>The whitespace characters including space, tab, carriage return, newline, vertical tab, and form feed. In ASCII, equivalent to: <code class="docutils literal"><span class="pre">[</span> <span class="pre">\t\r\n\v\f]</span></code></td>
+</tr>
+<tr class="row-odd"><td><code class="docutils literal"><span class="pre">[:upper:]</span></code></td>
+<td>The uppercase characters.</td>
+</tr>
+<tr class="row-even"><td><code class="docutils literal"><span class="pre">[:xdigit:]</span></code></td>
+<td>Characters used to express hexadecimal numbers. In ASCII, equivalent to: <code class="docutils literal"><span class="pre">[0-9A-Fa-f]</span></code></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="alternation">
+<h3>Alternation<a class="headerlink" href="#alternation" title="Permalink to this headline">¶</a></h3>
+<p>Aternation is a feature that allows applying alternative patterns at the same time. For example the expression <code class="docutils literal"><span class="pre">R2-D2|C3PO</span></code>:</p>
+<pre class="literal-block">
+[user&#64;blue ~]$ <strong class="command">echo 'The droid you are looking for is R2-D2' | grep -E 'R2-D2|C3PO'</strong>
+The droid you are looking for is R2-D2
+[user&#64;blue ~]$ <strong class="command">echo 'The droid you are looking for is C3PO' | grep -E 'R2-D2|C3PO'</strong>
+The droid you are looking for is C3PO
+</pre>
+<p>Alternation is an <strong>extended feature</strong> of the standard set of regular expression features of the <code class="docutils literal"><span class="pre">grep</span></code> command.  Because of this, we had to use the <code class="docutils literal"><span class="pre">-E</span></code> option in the previous example.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p><strong>egrep?</strong></p>
+<p>You might have heard of <code class="docutils literal"><span class="pre">egrep</span></code> as an alternative to <code class="docutils literal"><span class="pre">grep</span></code>. egrep is basically <code class="docutils literal"><span class="pre">grep</span> <span class="pre">-E</span></code> in disguise:</p>
+<div class="last highlight-default"><div class="highlight"><pre><span></span>[user@blue ~]$ cat /bin/egrep
+#!/bin/sh
+exec grep -E &quot;$@&quot;
+</pre></div>
+</div>
+</div>
+<p>Now that we know how to use alternation, we can apply it to create expressions that match numeric ranges.
+Consider a list of numbers, each one on it’s own line:</p>
+<pre class="literal-block">
+[user&#64;blue ~]$ <strong class="command">printf '%s\n' {0..15}</strong>
+0
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+</pre>
+<p>Suppose we want to match numbers between 7 and 13.
+The first set of numbers is from 7 to 9, so we can use the expression <code class="docutils literal"><span class="pre">[7-9]</span></code> for that purpose.
+The next set of numbers, from 10 to 13 can be matched by the expression <code class="docutils literal"><span class="pre">1[0-3]</span></code>.
+We can use alternation to match the desired range:</p>
+<pre class="literal-block">
+[user&#64;blue ~]$ <strong class="command">printf '%s\n' {0..15} | grep -E '^[7-9]$|^1[0-3]$'</strong>
+<strong>7
+8
+9
+10
+11
+12
+13</strong>
+</pre>
+</div>
+<div class="section" id="quantifiers">
+<h3>Quantifiers<a class="headerlink" href="#quantifiers" title="Permalink to this headline">¶</a></h3>
+<p>Quantifiers are also an <em>extended regular expression feature</em>. The following table list quantifiers and their purpose:</p>
+<table border="1" class="minitable docutils">
+<colgroup>
+<col width="14%" />
+<col width="86%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Quantifier</th>
+<th class="head">Purpose</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td><code class="docutils literal"><span class="pre">?</span></code></td>
+<td>Match an element zero or exactly one time</td>
+</tr>
+<tr class="row-odd"><td><code class="docutils literal"><span class="pre">*</span></code></td>
+<td>Match an element zero or more times</td>
+</tr>
+<tr class="row-even"><td><code class="docutils literal"><span class="pre">+</span></code></td>
+<td>Match an element one or more times</td>
+</tr>
+<tr class="row-odd"><td><code class="docutils literal"><span class="pre">{n}</span></code></td>
+<td>Match an element exactly <em>n</em> times</td>
+</tr>
+<tr class="row-even"><td><code class="docutils literal"><span class="pre">{n,m}</span></code></td>
+<td>Match an element at least <em>n</em> times but no more than <em>m</em> times</td>
+</tr>
+<tr class="row-odd"><td><code class="docutils literal"><span class="pre">{n,}</span></code></td>
+<td>Match an element <em>n</em> or more times</td>
+</tr>
+<tr class="row-even"><td><code class="docutils literal"><span class="pre">{,m}</span></code></td>
+<td>Match an element <em>m</em> times at the most</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="inverting-the-match">
+<h3>Inverting the match<a class="headerlink" href="#inverting-the-match" title="Permalink to this headline">¶</a></h3>
+<p>You can use the <code class="docutils literal"><span class="pre">-v</span></code> option of grep to instead of printing the lines that match, to print the lines that do not match:</p>
+<pre class="literal-block">
+[user&#64;blue ~]$ <strong class="command">printf '%sn' {0..15} | grep -vE '^[7-9]$|^1[0-3]$'</strong>
+0
+1
+2
+3
+4
+5
+6
+14
+15
+</pre>
+</div>
+<div class="section" id="matched-lines-count">
+<h3>Matched lines count<a class="headerlink" href="#matched-lines-count" title="Permalink to this headline">¶</a></h3>
+<p>Whenever you are interested in counting <em>the lines</em> that match a pattern, you can use the <code class="docutils literal"><span class="pre">-c</span></code> option, which saves you a call to the <code class="docutils literal"><span class="pre">wc</span></code> command. For example this:</p>
+<pre class="literal-block">
+[user&#64;blue ~]$ <strong class="command">printf '%sn' {0..15} | grep -E '^[7-9]$|^1[0-3]$' | wc -l</strong>
+7
+</pre>
+<p>Can be substituted by this:</p>
+<pre class="literal-block">
+[user&#64;blue ~]$ <strong class="command">printf '%sn' {0..15} | grep -cE '^[7-9]$|^1[0-3]$'</strong>
+7
+</pre>
+<p>Note however that the  <code class="docutils literal"><span class="pre">-c</span></code> is really applied to counting lines, not the individual match counts:</p>
+<pre class="literal-block">
+[user&#64;blue ~]$ <strong class="command">echo &quot;abcdefghijklmnopqrstuvwxyz&quot; | grep -oc '[d-k]'</strong>
+1
+[user&#64;blue ~]$ <strong class="command">echo &quot;abcdefghijklmnopqrstuvwxyz&quot; | grep -c '[d-k]'</strong>
+1
+</pre>
+</div>
+<div class="section" id="grep-with-multiple-files">
+<h3>Grep with multiple files<a class="headerlink" href="#grep-with-multiple-files" title="Permalink to this headline">¶</a></h3>
+<p>When <code class="docutils literal"><span class="pre">grep</span></code> has a list of files specified as parameters, it prints every match on a line preceded by the filename.</p>
+<p>You can suppress the file name from the output by using the <code class="docutils literal"><span class="pre">-h</span></code> option.
+Conversely, you can also print only the file names with matches by using <code class="docutils literal"><span class="pre">-l</span></code> flag.</p>
+<div class="worksheet admonition">
+<p class="first admonition-title">Part 1 (4 pts)</p>
+<p>For this part, you need to use the file located at <code class="docutils literal"><span class="pre">~jmora/lab07/Linux.log</span></code>.
+This file contains syslog entries for a system named <code class="docutils literal"><span class="pre">combo</span></code>.
+We are performing a security audit.</p>
+<p>We want to know the Host names or IP addresses (<a class="reference external" href="https://en.wikipedia.org/wiki/IP_address">https://en.wikipedia.org/wiki/IP_address</a>) of the systems where failed attempts to authenticate as <em>root</em> originated.</p>
+<p>SSH authentication failures generate log entries in syslog. The following examples show the format of the entries:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">Feb</span> <span class="mi">26</span> <span class="mi">11</span><span class="p">:</span><span class="mi">48</span><span class="p">:</span><span class="mi">19</span> <span class="n">combo</span> <span class="n">sshd</span><span class="p">(</span><span class="n">pam_unix</span><span class="p">)[</span><span class="mi">6592</span><span class="p">]:</span> <span class="n">authentication</span> <span class="n">failure</span><span class="p">;</span> <span class="n">logname</span><span class="o">=</span> <span class="n">uid</span><span class="o">=</span><span class="mi">0</span> <span class="n">euid</span><span class="o">=</span><span class="mi">0</span> <span class="n">tty</span><span class="o">=</span><span class="n">NODEVssh</span> <span class="n">ruser</span><span class="o">=</span> <span class="n">rhost</span><span class="o">=</span><span class="mf">63.116</span><span class="o">.</span><span class="mf">211.67</span>  <span class="n">user</span><span class="o">=</span><span class="n">root</span>
+<span class="n">Feb</span> <span class="mi">26</span> <span class="mi">11</span><span class="p">:</span><span class="mi">48</span><span class="p">:</span><span class="mi">19</span> <span class="n">combo</span> <span class="n">sshd</span><span class="p">(</span><span class="n">pam_unix</span><span class="p">)[</span><span class="mi">6597</span><span class="p">]:</span> <span class="n">authentication</span> <span class="n">failure</span><span class="p">;</span> <span class="n">logname</span><span class="o">=</span> <span class="n">uid</span><span class="o">=</span><span class="mi">0</span> <span class="n">euid</span><span class="o">=</span><span class="mi">0</span> <span class="n">tty</span><span class="o">=</span><span class="n">NODEVssh</span> <span class="n">ruser</span><span class="o">=</span> <span class="n">rhost</span><span class="o">=</span><span class="mf">63.116</span><span class="o">.</span><span class="mf">211.67</span>  <span class="n">user</span><span class="o">=</span><span class="n">root</span>
+<span class="n">Feb</span> <span class="mi">26</span> <span class="mi">13</span><span class="p">:</span><span class="mi">43</span><span class="p">:</span><span class="mi">51</span> <span class="n">combo</span> <span class="n">sshd</span><span class="p">(</span><span class="n">pam_unix</span><span class="p">)[</span><span class="mi">6609</span><span class="p">]:</span> <span class="n">authentication</span> <span class="n">failure</span><span class="p">;</span> <span class="n">logname</span><span class="o">=</span> <span class="n">uid</span><span class="o">=</span><span class="mi">0</span> <span class="n">euid</span><span class="o">=</span><span class="mi">0</span> <span class="n">tty</span><span class="o">=</span><span class="n">NODEVssh</span> <span class="n">ruser</span><span class="o">=</span> <span class="n">rhost</span><span class="o">=</span><span class="mf">221.230</span><span class="o">.</span><span class="mf">128.214</span>  <span class="n">user</span><span class="o">=</span><span class="n">nobody</span>
+</pre></div>
+</div>
+<p>The first two lines show failed attempts for user <code class="docutils literal"><span class="pre">root</span></code> and the third line for a user called <code class="docutils literal"><span class="pre">nobody</span></code>.
+In the first line the number <code class="docutils literal"><span class="pre">6592</span></code> is a process id and that changes on every line (you can see different numbers in the next two lines’</p>
+<p>The <code class="docutils literal"><span class="pre">rhost</span></code> element correspond to the host name or IP Address. You can see in the first two lines it corresponds to <code class="docutils literal"><span class="pre">63.116.221.67</span></code>.</p>
+<ol class="arabic simple" start="4">
+<li>Use <code class="docutils literal"><span class="pre">grep</span></code> to find out how many different hosts generated SSH authentication failures for the user root</li>
+</ol>
+<p>FTP connections produce a log entry in the following format:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">Feb</span> <span class="mi">17</span> <span class="mi">22</span><span class="p">:</span><span class="mi">40</span><span class="p">:</span><span class="mi">46</span> <span class="n">combo</span> <span class="n">ftpd</span><span class="p">[</span><span class="mi">5272</span><span class="p">]:</span> <span class="n">connection</span> <span class="kn">from</span> <span class="mf">69.177</span><span class="o">.</span><span class="mf">104.55</span> <span class="p">(</span><span class="n">hostname</span><span class="o">.</span><span class="n">media</span><span class="o">.</span><span class="n">net</span><span class="p">)</span> <span class="n">at</span> <span class="n">Fri</span> <span class="n">Feb</span> <span class="mi">17</span> <span class="mi">22</span><span class="p">:</span><span class="mi">40</span><span class="p">:</span><span class="mi">46</span> <span class="mi">2006</span>
+</pre></div>
+</div>
+<p>The part <code class="docutils literal"><span class="pre">from</span> <span class="pre">69.177.104.55</span></code> always refers to an IP Address.</p>
+<ol class="last arabic simple" start="5">
+<li>Use grep to produce a list of IP Addresses that connected to the FTP service between Feb 1st and February 17.</li>
+</ol>
+</div>
+<div class="worksheet admonition">
+<p class="first admonition-title">Part 2 (6 pts)</p>
+<p>For this part of the lab, you will use a data set that was originated from the EDGAR Log File data set (<a class="reference external" href="https://www.sec.gov/dera/data/edgar-log-file-data-set.html">https://www.sec.gov/dera/data/edgar-log-file-data-set.html</a>)
+There are 20 datafiles, in the form of CSV files (Comma delimited files), and they are localed under <code class="docutils literal"><span class="pre">~jmora/lab07/apache</span></code>.</p>
+<p>The description of the data format is available at <a class="reference external" href="https://www.sec.gov/files/EDGAR_variables_FINAL.pdf">https://www.sec.gov/files/EDGAR_variables_FINAL.pdf</a>.
+Notice that in that description of the data set, the collected IP addresses have their last Octet anonymized and replaced by a three alphabetical character string.</p>
+<p>Provide commands that use <code class="docutils literal"><span class="pre">grep</span></code> (and other utilities that you have learn on this class) to answer the following questions:</p>
+<ol class="last arabic simple">
+<li>How many different IP addresses are found among all the 20 data files files? Notice that IP address have their last octet anonymized, so make sure that you use the IP Address definition per the data format description.</li>
+<li>On which files you can find entries for IP addresses that begin with 70.102?</li>
+<li>How many times IP address 117.91.231.fjf accessed doc index.htm?</li>
+</ol>
+</div>
+</div>
+</div>
+</div>
+
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+    </p>
+    <p>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

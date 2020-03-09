@@ -1,0 +1,373 @@
+:orphan:
+
+******************************
+Lab No. 7: Regular Expressions
+******************************
+
+Regular expressions, also known as *regex*, are sequences of characters that follow a set of notations to specify text patterns. 
+
+You saw in previous Labs how pathname expansion allowed the use of the ``*`` character to match any characters and how you could use the ``[]`` pattern to match a character from a predefined list in a specific position in the file name.  Regular expressions work in the same way, certain characters denote a text pattern, and mixing these allows us to create expressions that match very complex patterns.  The difference is that regular expressions include many more options (which is justified since they are a general purpose tool, whereas pathname expansion applies only to pathnames).
+
+Some very examples of typical cases where regular expressions are useful:
+
+#. validate that a distribution list does not contain invalid emails
+#. matching a url aginst a corresponding processing function
+#. looking for places where a function or method is used
+#. finding instances of errors in logs files
+#. find instances of dates in a text
+#. extract data in a certain format from user comments in a forum
+#. identify phone numbers
+
+
+Regular expressions are supported by many utilities and programming languages (although sometimes there are slight variations in the implementations)
+
+
+We had a gentle introduction to regular expressions on Lab 6 with ``grep``.
+In this Lab we are going to learn more advances uses of regular expressions with ``grep``.
+In Lab 6 we use ``grep`` to perform matching on a file.
+``grep`` can accept input from multiple files, and it can also accept input from ``stdin``.
+
+For this lab you will use a data set that is available in blue at ``~/jmora/lab07/logs``. The description of the data files is available at https://www.sec.gov/files/EDGAR_variables_FINAL.pdf
+
+
+Literal Matching
+================
+The simplest regular expressions are a string of literal charactes to match. A string matches the regular expression if it contains the substring specified by the regular expresion.
+
+Take for example the regular expression ``cks``.
+This expression matches "Linux ro\ :strong:`cks`!" and "Du\ :strong:`cks` are birds", but does not match "My clock stopped"
+
+Note that a regular expression can match a string in more than one place.  Our previous regular expression matches "A pair of so\ :strong:`cks` for two bu\ :strong:`cks`"
+
+Note that in these examples a match is found regardless of the position within the text.  This happens because the regular expression that we used does not specify position within a string. You will see later how we can specify patterns where the position of the charaters matters.
+
+
+Metacharacters
+==============
+
+Metacharacters are characters that have special meaning (as opposed to a literal meaning, as we just saw).  Metacharacters are used to specify complex patterns to match.  The regular expression metacharacters are:
+
+.. parsed-literal::
+
+    ^ $ . [ ] { } - ? * + ( ) | \
+
+In Lab 06 you where introduced to the  the anchor (``^ $``) and the match any character (``.``) metacharacters. We'll review them here in more detail.
+
+One aspect of metacharacters is that, since they are special, we can not simple use it if we need it to be matched literally. In order to specify a regex that includes a literal metacharacter, you need to *escape* it using the **backslash** character (``\``).
+As an example, suppose you want to verify that a sentence has a period.  The correct way to specify this regular expression is ``\.``.
+
+.. parsed-literal::
+
+    [user\@blue ~]$ :command:`echo "192. 1923" | grep -e '192.'`
+    **192. 1923**
+    [user\@blue ~]$ :command:`echo "192. 1923" | grep -e '192\.'`
+    **192.** 1923
+
+
+Match any character
+-------------------
+
+In regular expressions, the *dot* character (``.``) is used to match any character (with the exception of the new line character)
+
+The expression ``.a`` will match any line that has an **a** character in the middle.  For example, it will match "It's Thurs\ :strong:`da`\ y". 
+Note how in this example the match includes both the **d** and the **a**.  In this case the **.** is matched by the **d** character.
+
+Note that in our example the expression calls for a character, any character, before the **a**. This means that it will not match a string such as "\ :strong:`a`\ bcdefg".
+
+
+Anchors
+-------
+
+Anchors are used to specify if the regular expression needs to match the beginning of the line by using the *caret* character (``^``) or the end of the line by using the *dollar sign* character (``$``).
+
+
+As an example, the expression ``^Th`` matches the sentence "\ :strong:`Th`\ is is it" but it does not match "Today is Thursday"
+
+
+
+Bracket Expressions and Negation
+--------------------------------
+Brackets allow matching a character from a predetermined set of characters. 
+This functionality is almost identical to the pathname expansion list of characters expression.
+Take for example the expression ``h[eo]ard``. 
+
+
+.. parsed-literal::
+
+    [user\@blue ~]$ :command:`echo "I heard." | grep 'h[eo]ard'`
+    I **heard**.
+    [user\@blue ~]$ :command:`echo "I hoard." | grep "h[eo]ard"`
+    I **hoard**.
+
+.. note:: **Why the quotes?**
+
+    Notice on this example that we need to enclose our expression in quotes (either single or double).
+    The reason why we need to do this is that otherwise pathname expansion will be applied and our expressionn ``h[eo]ard`` will be used to look for input files for the ``grep`` command.
+    Bash expansion is your friend, but some times it does it's processing too eagerly and you need to keep it on a leash. You tell Bash to skip doing any expansions altogether by enclosing text in single quotes. You can also use double quotes to disable all shell expansion of with the exception of ``$`` (command substitution and parameter expansion), ````` (backtick - command substitution), ``\`` (escape) and ``!`` (history expansion).
+
+When you want to the opposite type of matching, where you want to match any character that *is not* part of a set of characters, you need to use the *caret* character (``^``) as the first character within the brackets.
+Note in the following example how only pet, put and pit were matched (highlighted).
+
+.. parsed-literal::
+
+    [user\@blue ~]$ :command:`echo "I pat my pet and then I put the pot in the pit" | grep 'p[^ao]t'`
+    I pat my **pet** and then I **put** the pot in the **pit**
+
+
+We can see that the input line matches, and that we have three different matches.
+If you run the same command and enable the ``-o`` option which prints only the matching regions and prints every region on its own line, you'll be able to see the individual matches:
+
+.. parsed-literal::
+
+    [user\@blue ~]$ :command:`echo "I pat my pet and then I put the pot in the pit" | grep -o 'p[^ao]t'`
+    **pet**
+    **put**
+    **pit**
+
+
+Just in the same fashion as the pathname expansion counterpart, you can specify ranges of characters. For example, to specify letters ranging from a to k, you can apply the expression ``[d-k]``:
+
+
+.. parsed-literal::
+
+    [user\@blue ~]$ :command:`echo "abcdefghijklmnopqrstuvwxyz" | grep '[d-k]'`
+    abc\ **defghijk**\ lmnopqrstuvwxyz
+
+
+It is clear from the example that the string "*abcdefghijklmnopqrstuvwxyz*" matches the expression ``[d-k]``.
+Something that is not obvious is that the string matches the pattern 8 different times, one for each of the characters included in the set ``[d-k]``.
+So the match is not "*defghijk*" but instead the individual characters "*d*", "*e*", ... , "*k*".
+In this context where we are looking at the whole sentence so this might not seem to make a big difference, but when you apply regular expressions and need to extract matched regions the difference becomes evident.
+
+
+.. parsed-literal::
+
+    [user\@blue ~]$ :command:`echo "abcdefghijklmnopqrstuvwxyz" | grep -o '[d-k]'`
+    **d**
+    **e**
+    **f**
+    **g**
+    **h**
+    **i**
+    **j**
+    **k**
+
+What if you need to match a character to a set that includes several ranges that are non contiguous? 
+In that case you can simple add them in the brackets, without a space between them.
+A recurring need is to match any alpha-numerical character, lowercase and uppercase.
+The expression ``[A-Za-z0-9]`` will serve this purpopse.
+
+Matching numbers is a little trickier.
+The main problem is that regular expressions deal with text instead of numeric values, which means that if we want to match a number in a numeric range is not as simple as specifing the beginning and the end of the range.
+For example, you can not use the range ``[0-20]`` to specify a range of numbers between 0 and 20.
+We'll cover this later once we have seen *alternation*
+
+Character Classes
+-----------------
+Regular expressions developers realized that there are a few patterns that are commonly used over and over. So they came with the idea of defining some predetermined lists of characters. The following table summarizes the most common classes (shamefully adapted from out Textbook *The Linux Command Line* by William Shotts)
+
+.. cssclass:: minitable
+
+================    ==========
+Character Class     Characters it matches
+================    ==========
+``[:alnum:]``       The alphanumeric characters. In ASCII, equivalent to: ``[A-Za-z0-9]``
+``[:word:]``        The same as [:alnum:], with the addition of the underscore (``_``) character.
+``[:alpha:]``       The alphabetic characters. In ASCII, equivalent to:``[A-Za-z]``
+``[:blank:]``       Includes the space and tab characters.
+``[:cntrl:]``       The ASCII control codes. Includes the ASCII characters 0 through 31 and 127.
+``[:digit:]``       The numerals zero through nine.
+``[:graph:]``       The visible characters. In ASCII, it includes characters 33 through 126.
+``[:lower:]``       The lowercase letters.
+``[:punct:]``       The punctuation characters. In ASCII, equivalent to: ``[-!"#$%&'()*+,./:;<=>?@[\\\]_`{|}~]``
+``[:print:]``       The printable characters. All the characters in ``[:graph:]`` plus the space character.
+``[:space:]``       The whitespace characters including space, tab, carriage return, newline, vertical tab, and form feed. In ASCII, equivalent to: ``[ \t\r\n\v\f]``
+``[:upper:]``       The uppercase characters.
+``[:xdigit:]``      Characters used to express hexadecimal numbers. In ASCII, equivalent to: ``[0-9A-Fa-f]``
+================    ==========
+
+
+Alternation
+-----------
+
+Aternation is a feature that allows applying alternative patterns at the same time. For example the expression ``R2-D2|C3PO``:
+
+.. parsed-literal::
+    [user\@blue ~]$ :command:`echo 'The droid you are looking for is R2-D2' | grep -E 'R2-D2|C3PO'`
+    The droid you are looking for is R2-D2
+    [user\@blue ~]$ :command:`echo 'The droid you are looking for is C3PO' | grep -E 'R2-D2|C3PO'`
+    The droid you are looking for is C3PO
+
+Alternation is an **extended feature** of the standard set of regular expression features of the ``grep`` command.  Because of this, we had to use the ``-E`` option in the previous example.  
+
+
+.. note:: **egrep?**
+
+    You might have heard of ``egrep`` as an alternative to ``grep``. egrep is basically ``grep -E`` in disguise:
+   
+    .. parsed-literal::
+        [user@blue ~]$ cat /bin/egrep
+        #!/bin/sh
+        exec grep -E "$@"
+
+
+Now that we know how to use alternation, we can apply it to create expressions that match numeric ranges.
+Consider a list of numbers, each one on it's own line:
+
+.. parsed-literal::
+    [user\@blue ~]$ :command:`printf '%s\\n' {0..15}`
+    0
+    1
+    2
+    3
+    4
+    5
+    6
+    7
+    8
+    9
+    10
+    11
+    12
+    13
+    14
+    15
+
+
+Suppose we want to match numbers between 7 and 13.
+The first set of numbers is from 7 to 9, so we can use the expression ``[7-9]`` for that purpose.
+The next set of numbers, from 10 to 13 can be matched by the expression ``1[0-3]``.
+We can use alternation to match the desired range:
+
+.. parsed-literal::
+    [user\@blue ~]$ :command:`printf '%s\\n' {0..15} | grep -E '^[7-9]$|^1[0-3]$'`
+    **7
+    8
+    9
+    10
+    11
+    12
+    13**
+
+
+Quantifiers
+-----------
+
+Quantifiers are also an *extended regular expression feature*. The following table list quantifiers and their purpose:
+
+
+.. cssclass:: minitable
+
+==========    =========================================
+Quantifier    Purpose
+==========    =========================================
+``?``         Match an element zero or exactly one time
+``*``         Match an element zero or more times
+``+``         Match an element one or more times
+``{n}``       Match an element exactly *n* times
+``{n,m}``     Match an element at least *n* times but no more than *m* times
+``{n,}``      Match an element *n* or more times
+``{,m}``      Match an element *m* times at the most
+==========    =========================================
+
+
+Inverting the match
+-------------------
+
+You can use the ``-v`` option of grep to instead of printing the lines that match, to print the lines that do not match:
+
+.. parsed-literal::
+    [user\@blue ~]$ :command:`printf '%s\n' {0..15} | grep -vE '^[7-9]$|^1[0-3]$'`
+    0
+    1
+    2
+    3
+    4
+    5
+    6
+    14
+    15
+
+
+Matched lines count
+-------------------
+Whenever you are interested in counting *the lines* that match a pattern, you can use the ``-c`` option, which saves you a call to the ``wc`` command. For example this:
+
+.. parsed-literal::
+    [user\@blue ~]$ :command:`printf '%s\n' {0..15} | grep -E '^[7-9]$|^1[0-3]$' | wc -l`
+    7
+
+Can be substituted by this:
+ 
+.. parsed-literal::
+    [user\@blue ~]$ :command:`printf '%s\n' {0..15} | grep -cE '^[7-9]$|^1[0-3]$'`
+    7
+
+Note however that the  ``-c`` is really applied to counting lines, not the individual match counts:
+
+.. parsed-literal::
+    [user\@blue ~]$ :command:`echo "abcdefghijklmnopqrstuvwxyz" | grep -oc '[d-k]'`
+    1
+    [user\@blue ~]$ :command:`echo "abcdefghijklmnopqrstuvwxyz" | grep -c '[d-k]'`
+    1
+
+Grep with multiple files
+------------------------
+
+When ``grep`` has a list of files specified as parameters, it prints every match on a line preceded by the filename.
+
+
+You can suppress the file name from the output by using the ``-h`` option.
+Conversely, you can also print only the file names with matches by using ``-l`` flag.
+
+
+.. admonition:: Part 1 (4 pts)  
+    :class: worksheet
+
+    For this part, you need to use the file located at ``~jmora/lab07/Linux.log``.
+    This file contains syslog entries for a system named ``combo``.
+    We are performing a security audit.
+
+    We want to know the Host names or IP addresses (https://en.wikipedia.org/wiki/IP_address) of the systems where failed attempts to authenticate as *root* originated.
+
+    SSH authentication failures generate log entries in syslog. The following examples show the format of the entries:
+
+    .. parsed-literal::
+        Feb 26 11:48:19 combo sshd(pam_unix)[6592]: authentication failure; logname= uid=0 euid=0 tty=NODEVssh ruser= rhost=63.116.211.67  user=root
+        Feb 26 11:48:19 combo sshd(pam_unix)[6597]: authentication failure; logname= uid=0 euid=0 tty=NODEVssh ruser= rhost=63.116.211.67  user=root
+        Feb 26 13:43:51 combo sshd(pam_unix)[6609]: authentication failure; logname= uid=0 euid=0 tty=NODEVssh ruser= rhost=221.230.128.214  user=nobody
+
+
+    The first two lines show failed attempts for user ``root`` and the third line for a user called ``nobody``.
+    In the first line the number ``6592`` is a process id and that changes on every line (you can see different numbers in the next two lines'
+
+    The ``rhost`` element correspond to the host name or IP Address. You can see in the first two lines it corresponds to ``63.116.221.67``.
+    
+    4. Use ``grep`` to find out how many different hosts generated SSH authentication failures for the user root
+
+    FTP connections produce a log entry in the following format:
+
+    .. parsed-literal::
+        
+        Feb 17 22:40:46 combo ftpd[5272]: connection from 69.177.104.55 (hostname.media.net) at Fri Feb 17 22:40:46 2006
+
+    The part ``from 69.177.104.55`` always refers to an IP Address.
+
+    5. Use grep to produce a list of IP Addresses that connected to the FTP service between Feb 1st and February 17.
+
+
+.. admonition:: Part 2 (6 pts)  
+    :class: worksheet
+
+    For this part of the lab, you will use a data set that was originated from the EDGAR Log File data set (https://www.sec.gov/dera/data/edgar-log-file-data-set.html)
+    There are 20 datafiles, in the form of CSV files (Comma delimited files), and they are localed under ``~jmora/lab07/apache``.
+    
+    The description of the data format is available at https://www.sec.gov/files/EDGAR_variables_FINAL.pdf.
+    Notice that in that description of the data set, the collected IP addresses have their last Octet anonymized and replaced by a three alphabetical character string. 
+
+    Provide commands that use ``grep`` (and other utilities that you have learn on this class) to answer the following questions:
+
+    1. How many different IP addresses are found among all the 20 data files files? Notice that IP address have their last octet anonymized, so make sure that you use the IP Address definition per the data format description.
+    2. On which files you can find entries for IP addresses that begin with 70.102?
+    3. How many times IP address 117.91.231.fjf accessed doc index.htm?
+
