@@ -60,7 +60,7 @@ As an example, suppose you want to verify that a sentence has a period.  The cor
 
     [user\@blue ~]$ :command:`echo "192. 1923" | grep -e '192.'`
     **192. 1923**
-    [user\@blue ~]$ :command:`echo "192. 1923" | grep -e '192\.'`
+    [user\@blue ~]$ :command:`echo "192. 1923" | grep -e '192\\.'`
     **192.** 1923
 
 

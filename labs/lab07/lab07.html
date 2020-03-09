@@ -170,7 +170,7 @@ As an example, suppose you want to verify that a sentence has a period.  The cor
 <pre class="literal-block">
 [user&#64;blue ~]$ <strong class="command">echo &quot;192. 1923&quot; | grep -e '192.'</strong>
 <strong>192. 1923</strong>
-[user&#64;blue ~]$ <strong class="command">echo &quot;192. 1923&quot; | grep -e '192.'</strong>
+[user&#64;blue ~]$ <strong class="command">echo &quot;192. 1923&quot; | grep -e '192\.'</strong>
 <strong>192.</strong> 1923
 </pre>
 <div class="section" id="match-any-character">
