@@ -452,7 +452,7 @@ We are performing a security audit.</p>
 <p>The first two lines show failed attempts for user <code class="docutils literal"><span class="pre">root</span></code> and the third line for a user called <code class="docutils literal"><span class="pre">nobody</span></code>.
 In the first line the number <code class="docutils literal"><span class="pre">6592</span></code> is a process id and that changes on every line (you can see different numbers in the next two lines’</p>
 <p>The <code class="docutils literal"><span class="pre">rhost</span></code> element correspond to the host name or IP Address. You can see in the first two lines it corresponds to <code class="docutils literal"><span class="pre">63.116.221.67</span></code>.</p>
-<ol class="arabic simple" start="4">
+<ol class="arabic simple">
 <li>Use <code class="docutils literal"><span class="pre">grep</span></code> to find out how many different hosts generated SSH authentication failures for the user root</li>
 </ol>
 <p>FTP connections produce a log entry in the following format:</p>
@@ -460,7 +460,7 @@ In the first line the number <code class="docutils literal"><span class="pre">65
 </pre></div>
 </div>
 <p>The part <code class="docutils literal"><span class="pre">from</span> <span class="pre">69.177.104.55</span></code> always refers to an IP Address.</p>
-<ol class="last arabic simple" start="5">
+<ol class="last arabic simple" start="2">
 <li>Use grep to produce a list of IP Addresses that connected to the FTP service between Feb 1st and February 17.</li>
 </ol>
 </div>
@@ -471,7 +471,7 @@ There are 20 datafiles, in the form of CSV files (Comma delimited files), and th
 <p>The description of the data format is available at <a class="reference external" href="https://www.sec.gov/files/EDGAR_variables_FINAL.pdf">https://www.sec.gov/files/EDGAR_variables_FINAL.pdf</a>.
 Notice that in that description of the data set, the collected IP addresses have their last Octet anonymized and replaced by a three alphabetical character string.</p>
 <p>Provide commands that use <code class="docutils literal"><span class="pre">grep</span></code> (and other utilities that you have learn on this class) to answer the following questions:</p>
-<ol class="last arabic simple">
+<ol class="last arabic simple" start="3">
 <li>How many different IP addresses are found among all the 20 data files files? Notice that IP address have their last octet anonymized, so make sure that you use the IP Address definition per the data format description.</li>
 <li>On which files you can find entries for IP addresses that begin with 70.102?</li>
 <li>How many times IP address 117.91.231.fjf accessed doc index.htm?</li>

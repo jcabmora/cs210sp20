@@ -343,7 +343,7 @@ Conversely, you can also print only the file names with matches by using ``-l`` 
 
     The ``rhost`` element correspond to the host name or IP Address. You can see in the first two lines it corresponds to ``63.116.221.67``.
     
-    4. Use ``grep`` to find out how many different hosts generated SSH authentication failures for the user root
+    1. Use ``grep`` to find out how many different hosts generated SSH authentication failures for the user root
 
     FTP connections produce a log entry in the following format:
 
@@ -353,7 +353,7 @@ Conversely, you can also print only the file names with matches by using ``-l`` 
 
     The part ``from 69.177.104.55`` always refers to an IP Address.
 
-    5. Use grep to produce a list of IP Addresses that connected to the FTP service between Feb 1st and February 17.
+    2. Use grep to produce a list of IP Addresses that connected to the FTP service between Feb 1st and February 17.
 
 
 .. admonition:: Part 2 (6 pts)  
@@ -367,7 +367,7 @@ Conversely, you can also print only the file names with matches by using ``-l`` 
 
     Provide commands that use ``grep`` (and other utilities that you have learn on this class) to answer the following questions:
 
-    1. How many different IP addresses are found among all the 20 data files files? Notice that IP address have their last octet anonymized, so make sure that you use the IP Address definition per the data format description.
-    2. On which files you can find entries for IP addresses that begin with 70.102?
-    3. How many times IP address 117.91.231.fjf accessed doc index.htm?
+    3. How many different IP addresses are found among all the 20 data files files? Notice that IP address have their last octet anonymized, so make sure that you use the IP Address definition per the data format description.
+    4. On which files you can find entries for IP addresses that begin with 70.102?
+    5. How many times IP address 117.91.231.fjf accessed doc index.htm?
 
