@@ -277,7 +277,7 @@ Inverting the match
 You can use the ``-v`` option of grep to instead of printing the lines that match, to print the lines that do not match:
 
 .. parsed-literal::
-    [user\@blue ~]$ :command:`printf '%s\n' {0..15} | grep -vE '^[7-9]$|^1[0-3]$'`
+    [user\@blue ~]$ :command:`printf '%s\\n' {0..15} | grep -vE '^[7-9]$|^1[0-3]$'`
     0
     1
     2
@@ -294,13 +294,13 @@ Matched lines count
 Whenever you are interested in counting *the lines* that match a pattern, you can use the ``-c`` option, which saves you a call to the ``wc`` command. For example this:
 
 .. parsed-literal::
-    [user\@blue ~]$ :command:`printf '%s\n' {0..15} | grep -E '^[7-9]$|^1[0-3]$' | wc -l`
+    [user\@blue ~]$ :command:`printf '%s\\n' {0..15} | grep -E '^[7-9]$|^1[0-3]$' | wc -l`
     7
 
 Can be substituted by this:
  
 .. parsed-literal::
-    [user\@blue ~]$ :command:`printf '%s\n' {0..15} | grep -cE '^[7-9]$|^1[0-3]$'`
+    [user\@blue ~]$ :command:`printf '%s\\n' {0..15} | grep -cE '^[7-9]$|^1[0-3]$'`
     7
 
 Note however that the  ``-c`` is really applied to counting lines, not the individual match counts:

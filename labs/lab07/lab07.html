@@ -400,7 +400,7 @@ We can use alternation to match the desired range:</p>
 <h3>Inverting the match<a class="headerlink" href="#inverting-the-match" title="Permalink to this headline">¶</a></h3>
 <p>You can use the <code class="docutils literal"><span class="pre">-v</span></code> option of grep to instead of printing the lines that match, to print the lines that do not match:</p>
 <pre class="literal-block">
-[user&#64;blue ~]$ <strong class="command">printf '%sn' {0..15} | grep -vE '^[7-9]$|^1[0-3]$'</strong>
+[user&#64;blue ~]$ <strong class="command">printf '%s\n' {0..15} | grep -vE '^[7-9]$|^1[0-3]$'</strong>
 0
 1
 2
@@ -416,12 +416,12 @@ We can use alternation to match the desired range:</p>
 <h3>Matched lines count<a class="headerlink" href="#matched-lines-count" title="Permalink to this headline">¶</a></h3>
 <p>Whenever you are interested in counting <em>the lines</em> that match a pattern, you can use the <code class="docutils literal"><span class="pre">-c</span></code> option, which saves you a call to the <code class="docutils literal"><span class="pre">wc</span></code> command. For example this:</p>
 <pre class="literal-block">
-[user&#64;blue ~]$ <strong class="command">printf '%sn' {0..15} | grep -E '^[7-9]$|^1[0-3]$' | wc -l</strong>
+[user&#64;blue ~]$ <strong class="command">printf '%s\n' {0..15} | grep -E '^[7-9]$|^1[0-3]$' | wc -l</strong>
 7
 </pre>
 <p>Can be substituted by this:</p>
 <pre class="literal-block">
-[user&#64;blue ~]$ <strong class="command">printf '%sn' {0..15} | grep -cE '^[7-9]$|^1[0-3]$'</strong>
+[user&#64;blue ~]$ <strong class="command">printf '%s\n' {0..15} | grep -cE '^[7-9]$|^1[0-3]$'</strong>
 7
 </pre>
 <p>Note however that the  <code class="docutils literal"><span class="pre">-c</span></code> is really applied to counting lines, not the individual match counts:</p>
