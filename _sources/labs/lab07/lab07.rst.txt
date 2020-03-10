@@ -353,7 +353,7 @@ Conversely, you can also print only the file names with matches by using ``-l`` 
 
     The part ``from 69.177.104.55`` always refers to an IP Address.
 
-    2. Use grep to produce a list of IP Addresses that connected to the FTP service between Feb 1st and February 17.
+    2. Use grep to produce a list of unique IP Addresses that connected to the FTP service between Feb 1st and February 17.
 
 
 .. admonition:: Part 2 (6 pts)  
