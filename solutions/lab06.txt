@@ -1,0 +1,9 @@
+Grading: 10 pts  Q1: 4 pts Q2-7: 1 pt 
+
+1) cat foo bar | sort | uniq | head -4 > smallest.txt
+2) ls -lR /home 2> /dev/null
+3) ls -1R /home 2> /dev/null | grep '\.png$'
+4) ls -1R /home 2> /dev/null | grep '\.png$' | sort
+5) ls -1R /home 2> /dev/null | grep '\.png$' | sort | uniq
+6) ls -1R /home 2> /dev/null | grep '\.png$' | sort | uniq | wc -l
+7) ls -1R /home 2> /dev/null | grep '\.png$' | sort | uniq | tee png_list.out | wc -l

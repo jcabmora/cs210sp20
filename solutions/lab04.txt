@@ -1,0 +1,21 @@
+Grading: 10 pts  Q1-Q5: 2 pts
+
+1) a job execution can generate a .dat file always and possibly a .err file. All we have to do is to list all the .dat files and count them.
+
+ls -1 *.dat  | wc -l
+100
+
+2) Job executions with less than 4 cores are all the .dat files that have either 2 cores or 1 core:
+ls -1 *_[12]core*.dat | wc -l
+44
+
+3)  ls -1 *fft[12]*02??.dat | wc -l
+6
+
+4)
+ls -1 {leo,chronos}*2017??0[1-9].dat {leo,chronos}*2017??1[0-4].dat | wc -l
+7
+
+5)
+touch 201{0..2}-{01..12}
+

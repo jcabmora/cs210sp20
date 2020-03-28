@@ -1,0 +1,20 @@
+Grading: 10 pts   Q1-Q4: 2.5 pts 
+
+1) The commands prints "Hello" in one line and "World" in another line. The "-e" is what's called an option or flag and by looking in the man pages of echo we kno that it modifies the behavior of the echo command by enabling interpretation of escaped characters (such as "\n"). If we remove the quotes, then echo is no longer able to recognize the "\n" escaped sequence. (This is happening because not the shell is interpreting the backslash as a continuation character, but you did not need to explain that)
+
+2) By looking in the man pages of date we can determine that 
+
+date -u
+
+There is a little hidden in the man pages is the "TZ" environment variable, so you can also use:
+
+TZ=UTC date
+
+3) "hostname" outputs the name of the host. The "-i" flag prints the ip address of the host. This option is not available on the Mac hosts because even MacOs is a Posix system, sometimes the utilities bundled on the distributions/os vary.
+
+4) this combination of keystrokes allows you to quickly modify the command without typing it all over again.
+
+UP ' CTRL+a META+f SPACE -e RIGHT '
+
+(Note: When grading this question, any answer that tried to use key combinations was awarded full credit)
+

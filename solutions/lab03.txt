@@ -1,0 +1,15 @@
+Grading: 10pts   Q1: 1pt  Q2: 7pts  Q3: 2 pts
+
+1) -rw------ (or 600)
+2) 
+	chmod u=rwx newfile   or chmod u+x newfile
+	chmod 500 newfile
+	chmod u=rwx,g=r,o=r newfile     chmod u+w,g+r,o+r newfile     chmod u+w,go=r newfile (or many other answers that could be correct)
+	-rwxr-xr-x
+	chmod g=rw,o= newfile      chmod g+w,g-x,o= newfile    (or many other answers that could be correct)
+	chmod 545 newfile
+	-rwxrw---x
+
+3) ln -sf oldfiles/file_a file_b
+
+
