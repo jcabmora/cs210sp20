@@ -1,0 +1,825 @@
+:orphan:
+
+**************************
+Lab No. 8: Text Processing
+**************************
+
+In this Lab we are going to learn about common Unix/Linux tools for processing of text data.
+
+sed
+===
+
+``sed`` (which stands for *stream editor*) is used to perform transformations to text files or a stream of text. Common uses are editing files without using an interactive  editor (e.g. on scripts), alter the output of a command in a command pipeline, or carry out batch edits on large groups of files.
+
+``sed`` accepts input in the form of text lines. During its execution, it goes through its input one line at a time, and applies one or more instructions (known as *sed commands*) to each one of them individually, and then outputs the processed lines to standard output.
+
+Let's create a file called ``testfile.txt`` with some text so we can use it to test ``sed`` functionality in the following sections.
+
+.. parsed-literal::
+
+    [user\@blue ~]$ :command:`cat << EOF > testfile.txt`
+    > :command:`1 a quick brown fox jumped over the quick wolf quickly`
+    > :command:`2 the quick brown fox jumped over the quick wolf quickly`
+    > :command:`3 no quick brown fox jumped over the quick wolf quickly`
+    > :command:`4 the quick brown fox jumped over the quick wolf quickly`
+    > :command:`5 the quick BROWN fox jumped over the quick wolf quickly`
+    > :command:`6 the quick BROWN fox jumped over the quick wolf quickly`
+    > :command:`7 the quick BROWN fox jumped over the quick wolf quickly`
+    > :command:`8 the quick BROWN fox jumped over the quick wolf quickly`
+    > :command:`EOF`
+
+Just to make sure you typed that file correctly, use the following checksum:
+
+.. parsed-literal::
+    [user\@blue ~]$ :command:`md5sum testfile.txt`
+    e2a8f3ce72f773b4b3ecd2c0feafdd50  testfile.txt
+
+
+``sed`` basic syntax
+--------------------
+
+The basic sintax to invoke ``sed`` is:
+
+.. parsed-literal::
+
+    sed [options] script filename
+
+*options* are flags that modify the defaul behavior.  The *script* specifies the *sed commands*  that ``sed`` will apply to the input. If a *filename* is specified, input is taken from that file, otherwise, ``sed`` will read input from **stdin**.
+
+
+Let's see ``sed`` in action.  In the following command we replace the word "quick" by "fast" in that we created earlier (``testfile.txt``):
+
+.. parsed-literal::
+    [user\@blue ~]$ :command:`sed 's/quick/fast/' testfile.txt`
+    1 a fast brown fox jumped over the quick wolf quickly
+    2 the fast brown fox jumped over the quick wolf quickly
+    3 no fast brown fox jumped over the quick wolf quickly
+    4 the fast brown fox jumped over the quick wolf quickly
+    5 the fast BROWN fox jumped over the quick wolf quickly
+    6 the fast BROWN fox jumped over the quick wolf quickly
+    7 the fast BROWN fox jumped over the quick wolf quickly
+    8 the fast BROWN fox jumped over the quick wolf quickly
+
+In this invocation of ``sed``, we did not provide any *options*, the ``'s/quick/fast'``  part is the *script* argument with a single command (enclosed in single quotes), and we specified input from the ``testfile.txt`` *filename*.
+
+Notice how when running this command the output of ``sed`` was written to *stdout*, and the contents of ``testfile.txt`` were not modified.
+We could actually modify the contents of ``testfile`` by using the ``-i`` option which stands for *edit files in place*. (But we don't want to do that yet, we'll do it later).
+
+In this command, the argument ``s/quick/fast`` tells ``sed`` to replace the first instance of the word "quick" on every line of the input.
+Notice how we enclosed the script argument in single quotes.
+This is not required in all cases, but it is a common practice (and you should make a habit of it) because it prevents the shell from expanding any expressions in the sed command (recall what we leared in Lab 4), and also the shell uses spaces to determine the arguments to a program, so if the sed command has spaces on it, it absolutely needs to be enclosed in quotes.
+
+For example, suppose you want to replace "quick brown" by "slow white". Let's see what happens if we do not use quotes:
+
+.. parsed-literal::
+
+    [user\@blue ~]$ :command:`sed s/quick brown/slow white/ testfile.txt`
+    sed: -e expression #1, char 7: unterminated \`s' command
+
+What happened here is that the script argument was interpreted as ``s/quick`` because of the space between "quick" and "brown".
+As mentioned before, this problem is avoided by enclosing the script argument in single quotes. You could also use double quotes, but be mindful that text within double quotes is still subject to shell expansions. That is why it is recommended to form the habit of enclosing the script argument in single quotes.
+ 
+.. parsed-literal::
+     [user\@blue ~]$ :command:`sed 's/quick brown/slow white/' testfile.txt`
+    1 a slow white fox jumped over the quick wolf quickly
+    2 the slow white fox jumped over the quick wolf quickly
+    3 no slow white fox jumped over the quick wolf quickly
+    4 the slow white fox jumped over the quick wolf quickly
+    5 the quick BROWN fox jumped over the quick wolf quickly
+    6 the quick BROWN fox jumped over the quick wolf quickly
+    7 the quick BROWN fox jumped over the quick wolf quickly
+    8 the quick BROWN fox jumped over the quick wolf quickly
+
+
+We mentioned that ``sed`` can operate on a stream of text. To do this, you can need to write the input text to stdin of ``sed`` and omit the filename ``argument`` that we used before. In the following command we pipe the output of the ``echo`` command to ``sed``:
+
+.. parsed-literal::
+
+    [user\@blue ~]$ :command:`echo -e "The quick brown fox\\njumped over the lazy dog." | sed 's/quick/fast/'`
+    The fast brown fox
+    jumped over the lazy dog.
+
+
+You can specify more than one sed command as part of the *script* argument.
+In the next example we use two different commands to substitute "fox" with "rabbit" and anoter to replace "wolf" with "lynx":
+
+.. parsed-literal::
+    [user\@blue ~]$ :command:`sed 's/fox/rabbit/;s/wolf/lynx/' testfile.txt`
+    1 a quick brown rabbit jumped over the quick lynx quickly
+    2 the quick brown rabbit jumped over the quick lynx quickly
+    3 no quick brown rabbit jumped over the quick lynx quickly
+    4 the quick brown rabbit jumped over the quick lynx quickly
+    5 the quick BROWN rabbit jumped over the quick lynx quickly
+    6 the quick BROWN rabbit jumped over the quick lynx quickly
+    7 the quick BROWN rabbit jumped over the quick lynx quickly
+    8 the quick BROWN rabbit jumped over the quick lynx quickly
+
+Note that we separated the sed commands  using a semicolon.  
+There is an alternative syntax where you can specify multiple script arguments to achieve the same results, which has the advantage that it is a little easier to read (specially if and of the text to replace or its replacement contains a semicolon).
+
+.. parsed-literal::
+    [user\@blue ~]$ :command:`sed -e 's/fox/rabbit/' -e 's/wolf/lynx/' testfile.txt`
+    1 a quick brown rabbit jumped over the quick lynx quickly
+    2 the quick brown rabbit jumped over the quick lynx quickly
+    3 no quick brown rabbit jumped over the quick lynx quickly
+    4 the quick brown rabbit jumped over the quick lynx quickly
+    5 the quick BROWN rabbit jumped over the quick lynx quickly
+    6 the quick BROWN rabbit jumped over the quick lynx quickly
+    7 the quick BROWN rabbit jumped over the quick lynx quickly
+    8 the quick BROWN rabbit jumped over the quick lynx quickly
+
+
+When you have a complex set of sed commands that you want to apply for a given task, you can have ``sed`` read them from a *script file* which could be as simple as a file with each command written on separate lines (more complex scripts can be created, but they are out of scope for this class).
+You specify the *script file* with the ``-f`` option:
+
+.. parsed-literal::
+    [user\@blue ~]$ :command:`cat << EOF > sedscript`
+    > :command:`s/fox/rabbit/`
+    > :command:`s/wolf/lynx/`
+    > :command:`EOF`
+    [user\@blue ~]$ :command:`sed -f sedscript testfile.txt`
+    1 a quick brown rabbit jumped over the quick lynx quickly
+    2 the quick brown rabbit jumped over the quick lynx quickly
+    3 no quick brown rabbit jumped over the quick lynx quickly
+    4 the quick brown rabbit jumped over the quick lynx quickly
+    5 the quick BROWN rabbit jumped over the quick lynx quickly
+    6 the quick BROWN rabbit jumped over the quick lynx quickly
+    7 the quick BROWN rabbit jumped over the quick lynx quickly
+    8 the quick BROWN rabbit jumped over the quick lynx quickly
+
+One thing that you should be aware is that each sed command is applied one by one, and the output from each sed command is applied as the input to the next:
+
+.. parsed-literal::
+    [user\@blue ~]$ :command:`sed -e 's/fox/rabbit/' -e 's/rabbit/grasshopper/' testfile.txt`
+    1 a quick brown grasshopper jumped over the quick wolf quickly
+    2 the quick brown grasshopper jumped over the quick wolf quickly
+    3 no quick brown grasshopper jumped over the quick wolf quickly
+    4 the quick brown grasshopper jumped over the quick wolf quickly
+    5 the quick BROWN grasshopper jumped over the quick wolf quickly
+    6 the quick BROWN grasshopper jumped over the quick wolf quickly
+    7 the quick BROWN grasshopper jumped over the quick wolf quickly
+    8 the quick BROWN grasshopper jumped over the quick wolf quickly
+
+
+``sed`` supports many several types of commands.
+
+In this course we are going to learn the "substitute", "print" and "delete" sed commands.
+
+
+``sed`` substitute command
+--------------------------
+
+The commands that we executed previously are examples of the *substitute* command, which is the most commonly used. 
+To be precise, a substitute command has the following syntax (notice the "s" after the address elements)
+
+.. parsed-literal::
+
+    [address]s/pattern/replacement/flags
+
+As you have seen so far, sed command elements are typically separated by a "slash" (``/``) character, which is called a "delimiter".  In the substitute command the delimiter needs to appear three times, even if there are no flags. Also, you can use any character as a delimiter except a new line character. 
+Using a delimiter other than slash can be useful when the slash character is part of the *pattern* or *replacement*.
+A typical example of this is when you have to make a substitution of strings that refer to paths in the filesystem.
+In the following example we use the underscore (``_``) as separator:
+
+.. parsed-literal::
+    [user\@blue ~]$ :command:`sed 's_quick_slow_' testfile.txt`
+    1 a slow brown fox jumped over the quick wolf quickly
+    2 the slow brown fox jumped over the quick wolf quickly
+    3 no slow brown fox jumped over the quick wolf quickly
+    4 the slow brown fox jumped over the quick wolf quickly
+    5 the slow BROWN fox jumped over the quick wolf quickly
+    6 the slow BROWN fox jumped over the quick wolf quickly
+    7 the slow BROWN fox jumped over the quick wolf quickly
+    8 the slow BROWN fox jumped over the quick wolf quickly
+
+
+When using the substitute command, the second token (``quick``) corresponds to a regular expression (regex) to match, the third token (``slow``) indicates the replacement text.  The substitute command also accepts a fourth token, which in our examples is ommitted, and that corresponds to a *flag* that could be (There are other flags "p" and "w' that we are not going to cover as part of this course)
+
+* ommited: only the first instance of the matching text is replaced
+* ``n``: A number (between 1 and 512) that indicates that the replacement should be made for only the *n* th occurrence of the pattern
+* ``g``: make changes globally on all ocurrences of the pattern.
+* ``p``: print the lines where a pattern match occurred 
+
+We already saw in the first example how the word "quick" had only the first instance replaced. Let's see how we can change specific instances within a line:
+
+.. parsed-literal::
+    [user\@blue ~]$ :command:`sed 's/quick/fast/2' testfile.txt`
+    1 a quick brown fox jumped over the fast wolf quickly
+    2 the quick brown fox jumped over the fast wolf quickly
+    3 no quick brown fox jumped over the fast wolf quickly
+    4 the quick brown fox jumped over the fast wolf quickly
+    5 the quick BROWN fox jumped over the fast wolf quickly
+    6 the quick BROWN fox jumped over the fast wolf quickly
+    7 the quick BROWN fox jumped over the fast wolf quickly
+    8 the quick BROWN fox jumped over the fast wolf quickly
+
+.. parsed-literal::
+    [user\@blue ~]$ :command:`sed 's/quick/fast/3' testfile.txt`
+    1 a quick brown fox jumped over the quick wolf fastly
+    2 the quick brown fox jumped over the quick wolf fastly
+    3 no quick brown fox jumped over the quick wolf fastly
+    4 the quick brown fox jumped over the quick wolf fastly
+    5 the quick BROWN fox jumped over the quick wolf fastly
+    6 the quick BROWN fox jumped over the quick wolf fastly
+    7 the quick BROWN fox jumped over the quick wolf fastly
+    8 the quick BROWN fox jumped over the quick wolf fastly
+
+
+If we use the ``g`` flag (which stands for "global") we can replace all the instances:
+
+.. parsed-literal::
+    [user\@blue ~]$ :command:`sed 's/quick/fast/g' testfile.txt`
+    1 a fast brown fox jumped over the fast wolf fastly
+    2 the fast brown fox jumped over the fast wolf fastly
+    3 no fast brown fox jumped over the fast wolf fastly
+    4 the fast brown fox jumped over the fast wolf fastly
+    5 the fast BROWN fox jumped over the fast wolf fastly
+    6 the fast BROWN fox jumped over the fast wolf fastly
+    7 the fast BROWN fox jumped over the fast wolf fastly
+    8 the fast BROWN fox jumped over the fast wolf fastly
+
+
+By default, ``sed`` will write to stdout every line that it processes, regardless if there is a match or not.
+We can fine control the output by using the ``-n`` option ("quiet mode").
+This option will make ``sed`` to only output lines that are explicitly printed by either using a sed print command, or in the case of a sed substitute command, that use the ``p`` flag.
+Let's see that in action:
+
+.. parsed-literal::
+    [user@blue ~]$ sed -n 's/BROWN/brown/gp' testfile.txt
+    5 the quick brown fox jumped over the quick wolf quickly
+    6 the quick brown fox jumped over the quick wolf quickly
+    7 the quick brown fox jumped over the quick wolf quickly
+    8 the quick brown fox jumped over the quick wolf quickly
+
+Notice how in the previous example only lines that originally matched the pattern ``BROWN`` were output. If we omit the ``p`` flag at the end, then we would get no output.
+
+
+If we want to modify a specific line, we can do so by using the *address* element of the command. Adresses can be specified in different ways:
+
+.. cssclass:: minitable
+
+==========      =====
+Notation        Description
+==========      =====
+n               The command will be applied only to line number *n*
+$               The last line
+n1,n2           A range of lines from *n1* to *n2*
+n~y             Line number *n* then each subsequent line at *y* intervals
+n1,+n2          Line *n1* and the following *n2* lines
+n!              All lines except line *n*
+==========      =====
+
+Let's try some examples:
+
+.. parsed-literal::
+    [user\@blue ~]$ :command:`sed '2s/quick/fast/g' testfile.txt`
+    1 a quick brown fox jumped over the quick wolf quickly
+    2 the fast brown fox jumped over the fast wolf fastly
+    3 no quick brown fox jumped over the quick wolf quickly
+    4 the quick brown fox jumped over the quick wolf quickly
+    5 the quick BROWN fox jumped over the quick wolf quickly
+    6 the quick BROWN fox jumped over the quick wolf quickly
+    7 the quick BROWN fox jumped over the quick wolf quickly
+    8 the quick BROWN fox jumped over the quick wolf quickly
+
+.. parsed-literal::
+    [user\@blue ~]$ :command:`sed '$s/quick/fast/g' testfile.txt`
+    1 a quick brown fox jumped over the quick wolf quickly
+    2 the quick brown fox jumped over the quick wolf quickly
+    3 no quick brown fox jumped over the quick wolf quickly
+    4 the quick brown fox jumped over the quick wolf quickly
+    5 the quick BROWN fox jumped over the quick wolf quickly
+    6 the quick BROWN fox jumped over the quick wolf quickly
+    7 the quick BROWN fox jumped over the quick wolf quickly
+    8 the fast BROWN fox jumped over the fast wolf fastly
+
+.. parsed-literal::
+    [user\@blue ~]$ :command:`sed '3,5s/quick/fast/g' testfile.txt`
+    1 a quick brown fox jumped over the quick wolf quickly
+    2 the quick brown fox jumped over the quick wolf quickly
+    3 no fast brown fox jumped over the fast wolf fastly
+    4 the fast brown fox jumped over the fast wolf fastly
+    5 the fast BROWN fox jumped over the fast wolf fastly
+    6 the quick BROWN fox jumped over the quick wolf quickly
+    7 the quick BROWN fox jumped over the quick wolf quickly
+    8 the quick BROWN fox jumped over the quick wolf quickly
+
+.. parsed-literal::
+    [user\@blue ~]$ :command:`sed '3~2s/quick/fast/g' testfile.txt`
+    1 a quick brown fox jumped over the quick wolf quickly
+    2 the quick brown fox jumped over the quick wolf quickly
+    3 no fast brown fox jumped over the fast wolf fastly
+    4 the quick brown fox jumped over the quick wolf quickly
+    5 the fast BROWN fox jumped over the fast wolf fastly
+    6 the quick BROWN fox jumped over the quick wolf quickly
+    7 the fast BROWN fox jumped over the fast wolf fastly
+    8 the quick BROWN fox jumped over the quick wolf quickly
+
+.. parsed-literal::
+
+    [user\@blue ~]$ :command:`sed '2,+3s/quick/fast/g' testfile.txt`
+    1 a quick brown fox jumped over the quick wolf quickly
+    2 the fast brown fox jumped over the fast wolf fastly
+    3 no fast brown fox jumped over the fast wolf fastly
+    4 the fast brown fox jumped over the fast wolf fastly
+    5 the fast BROWN fox jumped over the fast wolf fastly
+    6 the quick BROWN fox jumped over the quick wolf quickly
+    7 the quick BROWN fox jumped over the quick wolf quickly
+    8 the quick BROWN fox jumped over the quick wolf quickly
+
+.. parsed-literal::
+
+    [user\@blue ~]$ :command:`sed '4!s/quick/fast/g' testfile.txt`
+    1 a fast brown fox jumped over the fast wolf fastly
+    2 the fast brown fox jumped over the fast wolf fastly
+    3 no fast brown fox jumped over the fast wolf fastly
+    4 the quick brown fox jumped over the quick wolf quickly
+    5 the fast BROWN fox jumped over the fast wolf fastly
+    6 the fast BROWN fox jumped over the fast wolf fastly
+    7 the fast BROWN fox jumped over the fast wolf fastly
+    8 the fast BROWN fox jumped over the fast wolf fastly
+
+More elaborate patterns
+~~~~~~~~~~~~~~~~~~~~~~~
+So far we have used patterns that match literals (they do not use any of the metacharacters that we learned in Lab 7).
+Let's try some tasks that require the usage of metacharacters.
+
+Suppose we want to capitalize the word at the begining of the line (right after the line number)
+Let's try the following expression, in which we try to capitalize the words "the", "a" and "no".
+
+.. parsed-literal::
+    [user\@blue ~]$ :command:`sed 's/the/The/;s/a/A/;s/no/No/'  testfile.txt`
+    1 A quick brown fox jumped over The quick wolf quickly
+    2 The quick brown fox jumped over the quick wolf quickly
+    3 No quick brown fox jumped over The quick wolf quickly
+    4 The quick brown fox jumped over the quick wolf quickly
+    5 The quick BROWN fox jumped over the quick wolf quickly
+    6 The quick BROWN fox jumped over the quick wolf quickly
+    7 The quick BROWN fox jumped over the quick wolf quickly
+    8 The quick BROWN fox jumped over the quick wolf quickly
+
+
+We can see that it makes substitutions that we did not want (on lines 1 and 3)
+One first attempt to solve this problem by using the begining of the line metacharacter, and for the sake of simplicity, let's try only to take care of the word "the"
+
+.. parsed-literal::
+    [user\@blue ~]$ :command:`sed 's/^[0-9] the/The/' testfile.txt`
+    1 a quick brown fox jumped over the quick wolf quickly
+    The quick brown fox jumped over the quick wolf quickly
+    3 no quick brown fox jumped over the quick wolf quickly
+    The quick brown fox jumped over the quick wolf quickly
+    The quick BROWN fox jumped over the quick wolf quickly
+    The quick BROWN fox jumped over the quick wolf quickly
+    The quick BROWN fox jumped over the quick wolf quickly
+    The quick BROWN fox jumped over the quick wolf quickly
+
+That worked, but unfortunately, we lost the line number.
+We need a way to tell sed to *preserve* the ``^[0-9]`` part.
+To do this, we need to make use of **back references**. 
+To make use of backreferences, we need to enclose the subexpression in **escaped** parenthesis, and then we need to refer to them in the replacement part using the ``\digit`` special sequence, where ``digit`` is a single digit (between 1 and 9)
+
+.. parsed-literal::
+    [user\@blue ~]$ :command:`sed 's/\\(^[0-9] \\)the/\\1The/' testfile.txt`
+    1 a quick brown fox jumped over the quick wolf quickly
+    2 The quick brown fox jumped over the quick wolf quickly
+    3 no quick brown fox jumped over the quick wolf quickly
+    4 The quick brown fox jumped over the quick wolf quickly
+    5 The quick BROWN fox jumped over the quick wolf quickly
+    6 The quick BROWN fox jumped over the quick wolf quickly
+    7 The quick BROWN fox jumped over the quick wolf quickly
+    8 The quick BROWN fox jumped over the quick wolf quickly
+
+We can now take care of the desired substitution as:
+
+
+.. parsed-literal::
+    [user\@blue ~]$ :command:`sed 's/\\(^[0-9] \\)the/\\1The/;s/\\(^[0-9] \\)a/\\1A/;s/\\(^[0-9] \\)no/\\1No/' testfile.txt`
+    1 A quick brown fox jumped over the quick wolf quickly
+    2 The quick brown fox jumped over the quick wolf quickly
+    3 No quick brown fox jumped over the quick wolf quickly
+    4 The quick brown fox jumped over the quick wolf quickly
+    5 The quick BROWN fox jumped over the quick wolf quickly
+    6 The quick BROWN fox jumped over the quick wolf quickly
+    7 The quick BROWN fox jumped over the quick wolf quickly
+    8 The quick BROWN fox jumped over the quick wolf quickly
+
+
+That was quite a lot, and we can see how complex expressions can quickly turn into a hard to understand pattern.
+Let's try to simplify this a little.
+We know that we want to capitalize the first lower case letter.
+Just to try something, let's see if the ``[[:lower::]]`` capturing group could help.
+For the moment, let's replace everything with a capital T:
+
+
+.. parsed-literal::
+    [user\@blue ~]$ :command:`sed 's/\\(^[0-9] \\)[[:lower:]]/\\1T/' testfile.txt`
+    1 T quick brown fox jumped over the quick wolf quickly
+    2 The quick brown fox jumped over the quick wolf quickly
+    3 To quick brown fox jumped over the quick wolf quickly
+    4 The quick brown fox jumped over the quick wolf quickly
+    5 The quick BROWN fox jumped over the quick wolf quickly
+    6 The quick BROWN fox jumped over the quick wolf quickly
+    7 The quick BROWN fox jumped over the quick wolf quickly
+    8 The quick BROWN fox jumped over the quick wolf quickly
+
+Now, we are closer, but we need to preserve the lowercase character that was matched and convert it to uppercase. 
+We know that we can preserve a match by using a back reference.
+We can solve the conversion to uppercase by using a special sequence ``\u`` which converts the next character in the replacement to uppercase:
+
+
+.. parsed-literal::
+    [user\@blue ~]$ :command:`sed 's/\\(^[0-9] \\)\\([[:lower:]]\\)/\\1\\U\\2/' testfile.txt`
+    1 A quick brown fox jumped over the quick wolf quickly
+    2 The quick brown fox jumped over the quick wolf quickly
+    3 No quick brown fox jumped over the quick wolf quickly
+    4 The quick brown fox jumped over the quick wolf quickly
+    5 The quick BROWN fox jumped over the quick wolf quickly
+    6 The quick BROWN fox jumped over the quick wolf quickly
+    7 The quick BROWN fox jumped over the quick wolf quickly
+    8 The quick BROWN fox jumped over the quick wolf quickly
+
+The following table lists other special sequences that can be used with ``sed``:
+.. cssclass:: minitable
+
+==========  =================================================
+Sequence    Description                                      
+==========  =================================================
+\L          Turn the replacement to lowercase (until a \U or \E is found)           
+\U          Turn the replacement to uppercase (until a \L or \E is found)
+\l          Turn the next character to lowercase
+\u          Turn the next character to uppercase
+\E          Stop case conversion started by \U or \L
+&           Output the matched pattern
+==========  =================================================
+
+Just as ``grep``, ``sed`` supports extended regular expressions, but you need to activate them by using the the ``-E`` option.
+
+Assume for example, that we have a file called ``ccnumbers.txt`` that contains 16-digit credit card numbers:
+
+.. parsed-literal::
+    [user\@blue ~]$ :command:`cat ccnumbers.txt`
+    4737458963699782
+    4916875767809262
+    4556856715310335
+    4556636000469644
+    4024007127553401
+
+Suppose you want to print the credit card numbers with a space separating each one of the 4 digit segments.
+You can use the following command:
+
+.. parsed-literal::
+    [user\@blue ~]$ :command:`sed -E 's/([0-9]{4})([0-9]{4})([1234567890]{4})([[:digit:]]{4})/\\1 \\2 \\3 \\4/' ccnumbers.txt`
+    4737 4589 6369 9782
+    4916 8757 6780 9262
+    4556 8567 1531 0335
+    4556 6360 0046 9644
+    4024 0071 2755 3401
+
+See how we used back references, repetition quantifiers, and character classes ([1234567890] [[:digit:]] and [0-9] they all do the same and are used here for illustration purposes)
+Notice how when you enabled extended regular expressions **you did not have to escape** the parenthesis. Yes this can be maddening!
+
+
+``sed`` print command
+---------------------
+
+The print command is used (as you might have guessed) to print specific lines from the input.
+It has the following syntax:
+
+.. parsed-literal::
+    [address]/pattern/p 
+
+The address and pattern behave exactly in the same way as in the case of the substitute command. There is one modification that we need to make to the way are invoking ``sed`` which is to add the ``-n`` flag:
+
+.. parsed-literal::
+    [user@blue ~]$ :command:`sed -n '1p' testfile.txt`
+    1 a quick brown fox jumped over the quick wolf quickly
+
+By using the pattern element, we can make ``sed`` behave just like grep:
+
+.. parsed-literal::
+    [user\@blue ~]$ :command:`sed -n '/BROWN/p' testfile.txt`
+    5 the quick BROWN fox jumped over the quick wolf quickly
+    6 the quick BROWN fox jumped over the quick wolf quickly
+    7 the quick BROWN fox jumped over the quick wolf quickly
+    8 the quick BROWN fox jumped over the quick wolf quickly
+    [user\@blue ~]$ :command:`grep BROWN testfile.txt`
+    5 the quick BROWN fox jumped over the quick wolf quickly
+    6 the quick BROWN fox jumped over the quick wolf quickly
+    7 the quick BROWN fox jumped over the quick wolf quickly
+    8 the quick BROWN fox jumped over the quick wolf quickly
+
+This is obviously not the prime usage of sed, but it does have it's place in complex sed scripts.
+
+``sed`` delete command
+----------------------
+
+The delete command is used (as you might have also guessed) to remove specific lines from the input:
+It requires the following syntax:
+
+.. parsed-literal::
+    [address]/pattern/p 
+
+In the following example we remove all the lines that match ``BROWN``:
+
+.. parsed-literal::
+    [user\@blue ~]$ sed  '/BROWN/d' testfile.txt
+    1 a quick brown fox jumped over the quick wolf quickly
+    2 the quick brown fox jumped over the quick wolf quickly
+    3 no quick brown fox jumped over the quick wolf quickly
+    4 the quick brown fox jumped over the quick wolf quickly
+
+
+cut
+===
+``cut`` is used to extract a section of text from a line and output the extrated section.
+It is a simple alternative when we have text that is organized in columns or fields.
+By default it uses the tab character as separator.
+We are going to show some examples of its usage here, but please refer to the man pages of cut to get familiar with the different options it supports.
+
+Let's first take our ``testfile.txt``, replace spaces with tabs and create another file called ``data.txt``
+
+.. parsed-literal::
+    [user\@blue ~]$ :command:`sed 's/ /\\t/g' testfile.txt > data.txt`
+    [user\@blue ~]$ :command:`cat data.txt`
+    1       a       quick   brown   fox     jumped  over    the     quick   wolf    quickly
+    2       the     quick   brown   fox     jumped  over    the     quick   wolf    quickly
+    3       no      quick   brown   fox     jumped  over    the     quick   wolf    quickly
+    4       the     quick   brown   fox     jumped  over    the     quick   wolf    quickly
+    5       the     quick   BROWN   fox     jumped  over    the     quick   wolf    quickly
+    6       the     quick   BROWN   fox     jumped  over    the     quick   wolf    quickly
+    7       the     quick   BROWN   fox     jumped  over    the     quick   wolf    quickly
+    8       the     quick   BROWN   fox     jumped  over    the     quick   wolf    quickly
+    [user\@blue ~]$ :command:`md5sum data.txt`
+    c1d1d33855ec4751d3c6aef158a1fdfa  data.txt
+
+Notice how we used the escaped sequence ``\t`` for the tab character. Also, make sure you verify the checksum.
+
+Let's use ``cut`` got print the second column
+
+.. parsed-literal::
+    [user\@blue ~]$ :command:`cut -f 2 data.txt`
+    a
+    the
+    no
+    the
+    the
+    the
+    the
+    the
+
+We can also print a list or range of columns:
+
+.. parsed-literal:: 
+    [user\@blue ~]$ cut -f 2,5 data.txt
+    a       fox
+    the     fox
+    no      fox
+    the     fox
+    the     fox
+    the     fox
+    the     fox
+    the     fox
+    [user\@blue ~]$ cut -f 2-5 data.txt
+    a       quick   brown   fox
+    the     quick   brown   fox
+    no      quick   brown   fox
+    the     quick   brown   fox
+    the     quick   BROWN   fox
+    the     quick   BROWN   fox
+    the     quick   BROWN   fox
+    the     quick   BROWN   fox
+
+
+You could use cut with files that are not delimited with tabs by using ``-d`` option
+
+.. parsed-literal::
+    [user\@blue ~]$ :command:`cut -d ' ' -f 2-5 testfile.txt`
+    a quick brown fox
+    the quick brown fox
+    no quick brown fox
+    the quick brown fox
+    the quick BROWN fox
+    the quick BROWN fox
+    the quick BROWN fox
+    the quick BROWN fox
+
+Or you could select specific characters with the ``-c`` option:
+
+.. parsed-literal::
+    [user\@blue ~]$ :command:`cut  -c 3- testfile.txt`
+    a quick brown fox jumped over the quick wolf quickly
+    the quick brown fox jumped over the quick wolf quickly
+    no quick brown fox jumped over the quick wolf quickly
+    the quick brown fox jumped over the quick wolf quickly
+    the quick BROWN fox jumped over the quick wolf quickly
+    the quick BROWN fox jumped over the quick wolf quickly
+    the quick BROWN fox jumped over the quick wolf quickly
+    the quick BROWN fox jumped over the quick wolf quickly
+
+
+awk
+===
+``awk``, named after its developers (Aho, Weinberger and Kernighan), is a programming language that permits manipulation of structured data.
+
+
+``awk`` is way more than a tool, it is a programming language by itself. In this class we are going to learn only its most basic usage through some very basic examples.
+
+In the following example we extract datafields from a string.
+``awk`` uses whitespace characters as its defaul field delimiter.  The ``awk`` field variables start at ``$1`` and increment up through the end of the string. In the example, there are 9 fields.
+The variable ``$0`` corresponds to entire line, the variable ``NR`` holds the current line number, and the variable ``NF`` contains the number of fields in the current line.
+
+.. parsed-literal::
+    [user\@blue ~]$ :command:`awk '{ print $1, $9, $5, $6, $7, $4, NR}' testfile.txt`
+    1 quick fox jumped over brown 1
+    2 quick fox jumped over brown 2
+    3 quick fox jumped over brown 3
+    4 quick fox jumped over brown 4
+    5 quick fox jumped over BROWN 5
+    6 quick fox jumped over BROWN 6
+    7 quick fox jumped over BROWN 7
+    8 quick fox jumped over BROWN 8
+
+Just like ``sed``, ``awk`` accepts input from stdin:
+
+.. parsed-literal::
+    [user\@blue ~]$ :command:`awk '{ print $1, $9, $5, $6, $7, $4, NR}' < testfile.txt`
+    1 quick fox jumped over brown 1
+    2 quick fox jumped over brown 2
+    3 quick fox jumped over brown 3
+    4 quick fox jumped over brown 4
+    5 quick fox jumped over BROWN 5
+    6 quick fox jumped over BROWN 6
+    7 quick fox jumped over BROWN 7
+    8 quick fox jumped over BROWN 8
+
+
+
+Notice how you can print the last field by using the ``$NF`` variable:
+
+.. parsed-literal::
+    [user\@blue ~]$ :command:`echo 'The quick brown fox jumped over the lazy dog' | awk '{ print "The input was: "$0". There are a total of " NF " fields. The last field value is "$NF}'`
+    The input was: The quick brown fox jumped over the lazy dog. There are a total of 9 fields. The last field value is dog
+
+
+If the data is not formatted using spaces as separators, we can specify the delimiter by using the ``-F`` option.
+
+.. parsed-literal::
+    [user\@blue ~]$ :command:`echo 'this-is-a-hyphen-delimited-text' | awk -F'-' '{ print $4, $5}'`
+    hyphen delimited
+
+
+A common need is to be able to pass variables from bash to awk.
+The following example demonstrate an example of how to achieve this (the ``-v`` option is used to assign variables and their values)
+
+.. parsed-literal::
+    [user\@blue ~]$ :command:`VAR=3`
+    [user\@blue ~]$ :command:`echo "The quick brown fox" | awk -v myvar=$VAR '{print $myvar}'`
+    brown
+
+
+You can also perform substring extraction with ``awk`` through its ``substr`` function.  The syntax of this function is
+
+.. parsed-literal::
+    substr(string, position of first character, length of substring)
+
+
+The position of the first character is 1-indexed (that is the first character has a position equal to one, not zero)
+
+
+.. parsed-literal::
+    [user\@blue ~]$ :command:`echo -e "This is linenumberone\\nThis is linenumbertwo" | awk '{print substr($3,11,3)}'`
+    one
+    two
+
+
+In the next example we produce output only if the second field matches a certain value ("no"):
+
+.. parsed-literal::
+
+    [user\@blue ~]$ :command:`awk '$2 == "no" {print $0}' testfile.txt`
+    3 no quick brown fox jumped over the quick wolf quickly
+
+We can also apply regular expressions by using the ``~`` operator. In the following example, we tell ``awk`` to filter lines whose first field matches the pattern ``[713]``
+
+.. parsed-literal::
+    [user\@blue ~]$ :command:`awk '$1 ~ /[713]/  {print $1,$2,$3,$4}' testfile.txt`
+    1 a quick brown
+    3 no quick brown
+    7 the quick BROWN
+
+tr
+==
+
+The ``tr`` command is used to *translate* or delete characters. It takes input from *stdin* it does not read files.
+
+For example, lets replace spaces with tabs. We did that with ``sed`` earlier, but we can do it with ``tr`` as well:
+
+.. parsed-literal::
+    [user\@blue ~]$ :command:`tr ' ' '\\t' < testfile.txt`
+    1       a       quick   brown   fox     jumped  over    the     quick   wolf    quickly
+    2       the     quick   brown   fox     jumped  over    the     quick   wolf    quickly
+    3       no      quick   brown   fox     jumped  over    the     quick   wolf    quickly
+    4       the     quick   brown   fox     jumped  over    the     quick   wolf    quickly
+    5       the     quick   BROWN   fox     jumped  over    the     quick   wolf    quickly
+    6       the     quick   BROWN   fox     jumped  over    the     quick   wolf    quickly
+    7       the     quick   BROWN   fox     jumped  over    the     quick   wolf    quickly
+    8       the     quick   BROWN   fox     jumped  over    the     quick   wolf    quickly
+
+You can also use character classes with ``tr``
+
+.. parsed-literal::
+    [user\@blue ~]$ :command:`tr [:upper:] [:lower:] < testfile.txt`
+    1 a quick brown fox jumped over the quick wolf quickly
+    2 the quick brown fox jumped over the quick wolf quickly
+    3 no quick brown fox jumped over the quick wolf quickly
+    4 the quick brown fox jumped over the quick wolf quickly
+    5 the quick brown fox jumped over the quick wolf quickly
+    6 the quick brown fox jumped over the quick wolf quickly
+    7 the quick brown fox jumped over the quick wolf quickly
+    8 the quick brown fox jumped over the quick wolf quickly
+
+Notice that you did not need to enclose the character classes in double square brackets as you have done before (e.g. with grep).
+
+head
+====
+The head command is used to output the first lines of files or input from stdin.
+Consult the man pages to see the different options it supports.
+
+tail
+====
+The tail command is used to output the last lines of files or input from stdin.
+Consult the man pages to see the different options it supports.
+
+sort
+====
+We have seen the ``sort`` command in previous labs.
+Its purpose is to sort the contents of standard input or one or more files.
+The default sort order is ascending by character value.
+Consult the man pages to see the different options it supports.
+
+uniq
+====
+We have also seen the ``uniq`` command in previous labs.
+``uniq`` removes duplicated entries from a file.
+Note that uniq does not sort the input, it detects a duplicate if the previous line was identical to the current line that is processing.
+In order for uniq to remove duplicates, most likely you need to process the data with ``sort`` beforehand.
+Also note that the GNU version of ``sort`` has the ``-u`` option to remove duplicates. which renders a subsequent call to ``uniq`` unnecessary.
+However uniq has some interesting options to instead of removing duplicates, actually print duplicates.
+
+
+.. admonition:: Report (20 pts)
+    :class: worksheet
+
+    1. (4 pts) We saw in Lab No.3 that the file ``/etc/passwd`` is used to store user account information.
+    Provide a command that will print a list of full user names (i.e. the first name and last names) of all the users in that file.
+
+
+    2. (4 pt) A python program saved in a file named 'bad.py` was written using incorrect syntax and we need to change all the square brackets ``[]`` with parentheses ``()``.
+    Provide a command that will perform this task.
+
+    For example, if the contents of ``bad.py`` are:
+
+    .. parsed-literal::
+        def bad_function[]:
+            print["this does not work"]
+            print[[35+4]]
+
+    it should produce:
+
+    .. parsed-literal::
+        def bad_function():
+            print("this does not work")
+            print((35+4))
+
+
+    3. (2 pt) Given a file named "alongfile.txt" which has more than 1000 lines, provide a command that will print lines 100-200 (both inclusive) of this file.
+
+
+    4. (2 pt) Given a file named "alongfile.txt" which has more than 1000 lines, provide a command that will print the last 100 lines of this file.
+
+
+    5. (4 pts) Recall the ``sed`` example with credit card numbers. Since we are guaranteed a consistent format in the ``ccnumbers.txt`` file, we could simplify with this expression:
+
+    .. parsed-literal:: 
+        [user\@blue ~]$ :command:`sed -E 's/(.{4})/& /g;s/ $//' ccnumbers.txt`
+        4737 4589 6369 9782
+        4916 8757 6780 9262
+        4556 8567 1531 0335
+        4556 6360 0046 9644
+        4024 0071 2755 3401
+
+    Explain (verbally) the script argument of the previous command.
+
+    6. (4 pts) Provide a command that will take a file called ``input.txt`` and will output to stdout the line content with the line number prepended.  For example, if the contents of ``input.txt`` are:
+
+    .. parsed-literal::
+        :command:`This is line one`
+        :command:`This is line two`
+        :command:`This is line three`
+
+    The command output should be:
+
+    .. parsed-literal::
+        :command:`1 This is line one`
+        :command:`2 This is line two`
+        :command:`3 This is line three`

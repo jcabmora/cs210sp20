@@ -1,0 +1,902 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Lab No. 8: Text Processing &#8212; CS210 Introduction to Unix  documentation</title>
+    <link rel="stylesheet" href="../../_static/bootstrap-sphinx.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="../../_static/js/jquery-1.11.0.min.js"></script>
+    <script type="text/javascript" src="../../_static/js/jquery-fix.js"></script>
+    <script type="text/javascript" src="../../_static/bootstrap-3.3.7/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../../_static/bootstrap-sphinx.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+<link href="https://fonts.googleapis.com/css?family=Lusitana|Roboto|Roboto+Mono" rel="stylesheet">
+
+  </head>
+  <body>
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../../index.html">
+          CS210 Introduction to Unix</a>
+        <span class="navbar-text navbar-version pull-left"><b></b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../../index.html">Site <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><ul>
+<li class="toctree-l1"><a class="reference internal" href="../../syllabus.html">CS210 Introduction to Unix - Spring 2020</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../conv/conv.html">Conventions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../schedule.html">Course Schedule and Materials</a></li>
+</ul>
+</ul>
+</li>
+              
+                <li class="dropdown">
+  <a role="button"
+     id="dLabelLocalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="#">Page <b class="caret"></b></a>
+  <ul class="dropdown-menu localtoc"
+      role="menu"
+      aria-labelledby="dLabelLocalToc"><ul>
+<li><a class="reference internal" href="#">Lab No. 8: Text Processing</a><ul>
+<li><a class="reference internal" href="#sed">sed</a><ul>
+<li><a class="reference internal" href="#sed-basic-syntax"><code class="docutils literal"><span class="pre">sed</span></code> basic syntax</a></li>
+<li><a class="reference internal" href="#sed-substitute-command"><code class="docutils literal"><span class="pre">sed</span></code> substitute command</a><ul>
+<li><a class="reference internal" href="#more-elaborate-patterns">More elaborate patterns</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#sed-print-command"><code class="docutils literal"><span class="pre">sed</span></code> print command</a></li>
+<li><a class="reference internal" href="#sed-delete-command"><code class="docutils literal"><span class="pre">sed</span></code> delete command</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#cut">cut</a></li>
+<li><a class="reference internal" href="#awk">awk</a></li>
+<li><a class="reference internal" href="#tr">tr</a></li>
+<li><a class="reference internal" href="#head">head</a></li>
+<li><a class="reference internal" href="#tail">tail</a></li>
+<li><a class="reference internal" href="#sort">sort</a></li>
+<li><a class="reference internal" href="#uniq">uniq</a></li>
+</ul>
+</li>
+</ul>
+</ul>
+</li>
+              
+            
+            
+              
+                
+              
+            
+            
+            
+            
+              <li class="hidden-sm">
+<div id="sourcelink">
+  <a href="../../_sources/labs/lab08/lab08.rst.txt"
+     rel="nofollow">Source</a>
+</div></li>
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="../../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+    <div class="col-md-12 content">
+      
+  <div class="section" id="lab-no-8-text-processing">
+<h1>Lab No. 8: Text Processing<a class="headerlink" href="#lab-no-8-text-processing" title="Permalink to this headline">¶</a></h1>
+<p>In this Lab we are going to learn about common Unix/Linux tools for processing of text data.</p>
+<div class="section" id="sed">
+<h2>sed<a class="headerlink" href="#sed" title="Permalink to this headline">¶</a></h2>
+<p><code class="docutils literal"><span class="pre">sed</span></code> (which stands for <em>stream editor</em>) is used to perform transformations to text files or a stream of text. Common uses are editing files without using an interactive  editor (e.g. on scripts), alter the output of a command in a command pipeline, or carry out batch edits on large groups of files.</p>
+<p><code class="docutils literal"><span class="pre">sed</span></code> accepts input in the form of text lines. During its execution, it goes through its input one line at a time, and applies one or more instructions (known as <em>sed commands</em>) to each one of them individually, and then outputs the processed lines to standard output.</p>
+<p>Let’s create a file called <code class="docutils literal"><span class="pre">testfile.txt</span></code> with some text so we can use it to test <code class="docutils literal"><span class="pre">sed</span></code> functionality in the following sections.</p>
+<pre class="literal-block">
+[user&#64;blue ~]$ <strong class="command">cat &lt;&lt; EOF &gt; testfile.txt</strong>
+&gt; <strong class="command">1 a quick brown fox jumped over the quick wolf quickly</strong>
+&gt; <strong class="command">2 the quick brown fox jumped over the quick wolf quickly</strong>
+&gt; <strong class="command">3 no quick brown fox jumped over the quick wolf quickly</strong>
+&gt; <strong class="command">4 the quick brown fox jumped over the quick wolf quickly</strong>
+&gt; <strong class="command">5 the quick BROWN fox jumped over the quick wolf quickly</strong>
+&gt; <strong class="command">6 the quick BROWN fox jumped over the quick wolf quickly</strong>
+&gt; <strong class="command">7 the quick BROWN fox jumped over the quick wolf quickly</strong>
+&gt; <strong class="command">8 the quick BROWN fox jumped over the quick wolf quickly</strong>
+&gt; <strong class="command">EOF</strong>
+</pre>
+<p>Just to make sure you typed that file correctly, use the following checksum:</p>
+<pre class="literal-block">
+[user&#64;blue ~]$ <strong class="command">md5sum testfile.txt</strong>
+e2a8f3ce72f773b4b3ecd2c0feafdd50  testfile.txt
+</pre>
+<div class="section" id="sed-basic-syntax">
+<h3><code class="docutils literal"><span class="pre">sed</span></code> basic syntax<a class="headerlink" href="#sed-basic-syntax" title="Permalink to this headline">¶</a></h3>
+<p>The basic sintax to invoke <code class="docutils literal"><span class="pre">sed</span></code> is:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">sed</span> <span class="p">[</span><span class="n">options</span><span class="p">]</span> <span class="n">script</span> <span class="n">filename</span>
+</pre></div>
+</div>
+<p><em>options</em> are flags that modify the defaul behavior.  The <em>script</em> specifies the <em>sed commands</em>  that <code class="docutils literal"><span class="pre">sed</span></code> will apply to the input. If a <em>filename</em> is specified, input is taken from that file, otherwise, <code class="docutils literal"><span class="pre">sed</span></code> will read input from <strong>stdin</strong>.</p>
+<p>Let’s see <code class="docutils literal"><span class="pre">sed</span></code> in action.  In the following command we replace the word “quick” by “fast” in that we created earlier (<code class="docutils literal"><span class="pre">testfile.txt</span></code>):</p>
+<pre class="literal-block">
+[user&#64;blue ~]$ <strong class="command">sed 's/quick/fast/' testfile.txt</strong>
+1 a fast brown fox jumped over the quick wolf quickly
+2 the fast brown fox jumped over the quick wolf quickly
+3 no fast brown fox jumped over the quick wolf quickly
+4 the fast brown fox jumped over the quick wolf quickly
+5 the fast BROWN fox jumped over the quick wolf quickly
+6 the fast BROWN fox jumped over the quick wolf quickly
+7 the fast BROWN fox jumped over the quick wolf quickly
+8 the fast BROWN fox jumped over the quick wolf quickly
+</pre>
+<p>In this invocation of <code class="docutils literal"><span class="pre">sed</span></code>, we did not provide any <em>options</em>, the <code class="docutils literal"><span class="pre">'s/quick/fast'</span></code>  part is the <em>script</em> argument with a single command (enclosed in single quotes), and we specified input from the <code class="docutils literal"><span class="pre">testfile.txt</span></code> <em>filename</em>.</p>
+<p>Notice how when running this command the output of <code class="docutils literal"><span class="pre">sed</span></code> was written to <em>stdout</em>, and the contents of <code class="docutils literal"><span class="pre">testfile.txt</span></code> were not modified.
+We could actually modify the contents of <code class="docutils literal"><span class="pre">testfile</span></code> by using the <code class="docutils literal"><span class="pre">-i</span></code> option which stands for <em>edit files in place</em>. (But we don’t want to do that yet, we’ll do it later).</p>
+<p>In this command, the argument <code class="docutils literal"><span class="pre">s/quick/fast</span></code> tells <code class="docutils literal"><span class="pre">sed</span></code> to replace the first instance of the word “quick” on every line of the input.
+Notice how we enclosed the script argument in single quotes.
+This is not required in all cases, but it is a common practice (and you should make a habit of it) because it prevents the shell from expanding any expressions in the sed command (recall what we leared in Lab 4), and also the shell uses spaces to determine the arguments to a program, so if the sed command has spaces on it, it absolutely needs to be enclosed in quotes.</p>
+<p>For example, suppose you want to replace “quick brown” by “slow white”. Let’s see what happens if we do not use quotes:</p>
+<pre class="literal-block">
+[user&#64;blue ~]$ <strong class="command">sed s/quick brown/slow white/ testfile.txt</strong>
+sed: -e expression #1, char 7: unterminated `s' command
+</pre>
+<p>What happened here is that the script argument was interpreted as <code class="docutils literal"><span class="pre">s/quick</span></code> because of the space between “quick” and “brown”.
+As mentioned before, this problem is avoided by enclosing the script argument in single quotes. You could also use double quotes, but be mindful that text within double quotes is still subject to shell expansions. That is why it is recommended to form the habit of enclosing the script argument in single quotes.</p>
+<pre class="literal-block">
+ [user&#64;blue ~]$ <strong class="command">sed 's/quick brown/slow white/' testfile.txt</strong>
+1 a slow white fox jumped over the quick wolf quickly
+2 the slow white fox jumped over the quick wolf quickly
+3 no slow white fox jumped over the quick wolf quickly
+4 the slow white fox jumped over the quick wolf quickly
+5 the quick BROWN fox jumped over the quick wolf quickly
+6 the quick BROWN fox jumped over the quick wolf quickly
+7 the quick BROWN fox jumped over the quick wolf quickly
+8 the quick BROWN fox jumped over the quick wolf quickly
+</pre>
+<p>We mentioned that <code class="docutils literal"><span class="pre">sed</span></code> can operate on a stream of text. To do this, you can need to write the input text to stdin of <code class="docutils literal"><span class="pre">sed</span></code> and omit the filename <code class="docutils literal"><span class="pre">argument</span></code> that we used before. In the following command we pipe the output of the <code class="docutils literal"><span class="pre">echo</span></code> command to <code class="docutils literal"><span class="pre">sed</span></code>:</p>
+<pre class="literal-block">
+[user&#64;blue ~]$ <strong class="command">echo -e &quot;The quick brown fox\njumped over the lazy dog.&quot; | sed 's/quick/fast/'</strong>
+The fast brown fox
+jumped over the lazy dog.
+</pre>
+<p>You can specify more than one sed command as part of the <em>script</em> argument.
+In the next example we use two different commands to substitute “fox” with “rabbit” and anoter to replace “wolf” with “lynx”:</p>
+<pre class="literal-block">
+[user&#64;blue ~]$ <strong class="command">sed 's/fox/rabbit/;s/wolf/lynx/' testfile.txt</strong>
+1 a quick brown rabbit jumped over the quick lynx quickly
+2 the quick brown rabbit jumped over the quick lynx quickly
+3 no quick brown rabbit jumped over the quick lynx quickly
+4 the quick brown rabbit jumped over the quick lynx quickly
+5 the quick BROWN rabbit jumped over the quick lynx quickly
+6 the quick BROWN rabbit jumped over the quick lynx quickly
+7 the quick BROWN rabbit jumped over the quick lynx quickly
+8 the quick BROWN rabbit jumped over the quick lynx quickly
+</pre>
+<p>Note that we separated the sed commands  using a semicolon.
+There is an alternative syntax where you can specify multiple script arguments to achieve the same results, which has the advantage that it is a little easier to read (specially if and of the text to replace or its replacement contains a semicolon).</p>
+<pre class="literal-block">
+[user&#64;blue ~]$ <strong class="command">sed -e 's/fox/rabbit/' -e 's/wolf/lynx/' testfile.txt</strong>
+1 a quick brown rabbit jumped over the quick lynx quickly
+2 the quick brown rabbit jumped over the quick lynx quickly
+3 no quick brown rabbit jumped over the quick lynx quickly
+4 the quick brown rabbit jumped over the quick lynx quickly
+5 the quick BROWN rabbit jumped over the quick lynx quickly
+6 the quick BROWN rabbit jumped over the quick lynx quickly
+7 the quick BROWN rabbit jumped over the quick lynx quickly
+8 the quick BROWN rabbit jumped over the quick lynx quickly
+</pre>
+<p>When you have a complex set of sed commands that you want to apply for a given task, you can have <code class="docutils literal"><span class="pre">sed</span></code> read them from a <em>script file</em> which could be as simple as a file with each command written on separate lines (more complex scripts can be created, but they are out of scope for this class).
+You specify the <em>script file</em> with the <code class="docutils literal"><span class="pre">-f</span></code> option:</p>
+<pre class="literal-block">
+[user&#64;blue ~]$ <strong class="command">cat &lt;&lt; EOF &gt; sedscript</strong>
+&gt; <strong class="command">s/fox/rabbit/</strong>
+&gt; <strong class="command">s/wolf/lynx/</strong>
+&gt; <strong class="command">EOF</strong>
+[user&#64;blue ~]$ <strong class="command">sed -f sedscript testfile.txt</strong>
+1 a quick brown rabbit jumped over the quick lynx quickly
+2 the quick brown rabbit jumped over the quick lynx quickly
+3 no quick brown rabbit jumped over the quick lynx quickly
+4 the quick brown rabbit jumped over the quick lynx quickly
+5 the quick BROWN rabbit jumped over the quick lynx quickly
+6 the quick BROWN rabbit jumped over the quick lynx quickly
+7 the quick BROWN rabbit jumped over the quick lynx quickly
+8 the quick BROWN rabbit jumped over the quick lynx quickly
+</pre>
+<p>One thing that you should be aware is that each sed command is applied one by one, and the output from each sed command is applied as the input to the next:</p>
+<pre class="literal-block">
+[user&#64;blue ~]$ <strong class="command">sed -e 's/fox/rabbit/' -e 's/rabbit/grasshopper/' testfile.txt</strong>
+1 a quick brown grasshopper jumped over the quick wolf quickly
+2 the quick brown grasshopper jumped over the quick wolf quickly
+3 no quick brown grasshopper jumped over the quick wolf quickly
+4 the quick brown grasshopper jumped over the quick wolf quickly
+5 the quick BROWN grasshopper jumped over the quick wolf quickly
+6 the quick BROWN grasshopper jumped over the quick wolf quickly
+7 the quick BROWN grasshopper jumped over the quick wolf quickly
+8 the quick BROWN grasshopper jumped over the quick wolf quickly
+</pre>
+<p><code class="docutils literal"><span class="pre">sed</span></code> supports many several types of commands.</p>
+<p>In this course we are going to learn the “substitute”, “print” and “delete” sed commands.</p>
+</div>
+<div class="section" id="sed-substitute-command">
+<h3><code class="docutils literal"><span class="pre">sed</span></code> substitute command<a class="headerlink" href="#sed-substitute-command" title="Permalink to this headline">¶</a></h3>
+<p>The commands that we executed previously are examples of the <em>substitute</em> command, which is the most commonly used.
+To be precise, a substitute command has the following syntax (notice the “s” after the address elements)</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">address</span><span class="p">]</span><span class="n">s</span><span class="o">/</span><span class="n">pattern</span><span class="o">/</span><span class="n">replacement</span><span class="o">/</span><span class="n">flags</span>
+</pre></div>
+</div>
+<p>As you have seen so far, sed command elements are typically separated by a “slash” (<code class="docutils literal"><span class="pre">/</span></code>) character, which is called a “delimiter”.  In the substitute command the delimiter needs to appear three times, even if there are no flags. Also, you can use any character as a delimiter except a new line character.
+Using a delimiter other than slash can be useful when the slash character is part of the <em>pattern</em> or <em>replacement</em>.
+A typical example of this is when you have to make a substitution of strings that refer to paths in the filesystem.
+In the following example we use the underscore (<code class="docutils literal"><span class="pre">_</span></code>) as separator:</p>
+<pre class="literal-block">
+[user&#64;blue ~]$ <strong class="command">sed 's_quick_slow_' testfile.txt</strong>
+1 a slow brown fox jumped over the quick wolf quickly
+2 the slow brown fox jumped over the quick wolf quickly
+3 no slow brown fox jumped over the quick wolf quickly
+4 the slow brown fox jumped over the quick wolf quickly
+5 the slow BROWN fox jumped over the quick wolf quickly
+6 the slow BROWN fox jumped over the quick wolf quickly
+7 the slow BROWN fox jumped over the quick wolf quickly
+8 the slow BROWN fox jumped over the quick wolf quickly
+</pre>
+<p>When using the substitute command, the second token (<code class="docutils literal"><span class="pre">quick</span></code>) corresponds to a regular expression (regex) to match, the third token (<code class="docutils literal"><span class="pre">slow</span></code>) indicates the replacement text.  The substitute command also accepts a fourth token, which in our examples is ommitted, and that corresponds to a <em>flag</em> that could be (There are other flags “p” and “w’ that we are not going to cover as part of this course)</p>
+<ul class="simple">
+<li>ommited: only the first instance of the matching text is replaced</li>
+<li><code class="docutils literal"><span class="pre">n</span></code>: A number (between 1 and 512) that indicates that the replacement should be made for only the <em>n</em> th occurrence of the pattern</li>
+<li><code class="docutils literal"><span class="pre">g</span></code>: make changes globally on all ocurrences of the pattern.</li>
+<li><code class="docutils literal"><span class="pre">p</span></code>: print the lines where a pattern match occurred</li>
+</ul>
+<p>We already saw in the first example how the word “quick” had only the first instance replaced. Let’s see how we can change specific instances within a line:</p>
+<pre class="literal-block">
+[user&#64;blue ~]$ <strong class="command">sed 's/quick/fast/2' testfile.txt</strong>
+1 a quick brown fox jumped over the fast wolf quickly
+2 the quick brown fox jumped over the fast wolf quickly
+3 no quick brown fox jumped over the fast wolf quickly
+4 the quick brown fox jumped over the fast wolf quickly
+5 the quick BROWN fox jumped over the fast wolf quickly
+6 the quick BROWN fox jumped over the fast wolf quickly
+7 the quick BROWN fox jumped over the fast wolf quickly
+8 the quick BROWN fox jumped over the fast wolf quickly
+</pre>
+<pre class="literal-block">
+[user&#64;blue ~]$ <strong class="command">sed 's/quick/fast/3' testfile.txt</strong>
+1 a quick brown fox jumped over the quick wolf fastly
+2 the quick brown fox jumped over the quick wolf fastly
+3 no quick brown fox jumped over the quick wolf fastly
+4 the quick brown fox jumped over the quick wolf fastly
+5 the quick BROWN fox jumped over the quick wolf fastly
+6 the quick BROWN fox jumped over the quick wolf fastly
+7 the quick BROWN fox jumped over the quick wolf fastly
+8 the quick BROWN fox jumped over the quick wolf fastly
+</pre>
+<p>If we use the <code class="docutils literal"><span class="pre">g</span></code> flag (which stands for “global”) we can replace all the instances:</p>
+<pre class="literal-block">
+[user&#64;blue ~]$ <strong class="command">sed 's/quick/fast/g' testfile.txt</strong>
+1 a fast brown fox jumped over the fast wolf fastly
+2 the fast brown fox jumped over the fast wolf fastly
+3 no fast brown fox jumped over the fast wolf fastly
+4 the fast brown fox jumped over the fast wolf fastly
+5 the fast BROWN fox jumped over the fast wolf fastly
+6 the fast BROWN fox jumped over the fast wolf fastly
+7 the fast BROWN fox jumped over the fast wolf fastly
+8 the fast BROWN fox jumped over the fast wolf fastly
+</pre>
+<p>By default, <code class="docutils literal"><span class="pre">sed</span></code> will write to stdout every line that it processes, regardless if there is a match or not.
+We can fine control the output by using the <code class="docutils literal"><span class="pre">-n</span></code> option (“quiet mode”).
+This option will make <code class="docutils literal"><span class="pre">sed</span></code> to only output lines that are explicitly printed by either using a sed print command, or in the case of a sed substitute command, that use the <code class="docutils literal"><span class="pre">p</span></code> flag.
+Let’s see that in action:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>[user@blue ~]$ sed -n &#39;s/BROWN/brown/gp&#39; testfile.txt
+5 the quick brown fox jumped over the quick wolf quickly
+6 the quick brown fox jumped over the quick wolf quickly
+7 the quick brown fox jumped over the quick wolf quickly
+8 the quick brown fox jumped over the quick wolf quickly
+</pre></div>
+</div>
+<p>Notice how in the previous example only lines that originally matched the pattern <code class="docutils literal"><span class="pre">BROWN</span></code> were output. If we omit the <code class="docutils literal"><span class="pre">p</span></code> flag at the end, then we would get no output.</p>
+<p>If we want to modify a specific line, we can do so by using the <em>address</em> element of the command. Adresses can be specified in different ways:</p>
+<table border="1" class="minitable docutils">
+<colgroup>
+<col width="15%" />
+<col width="85%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Notation</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>n</td>
+<td>The command will be applied only to line number <em>n</em></td>
+</tr>
+<tr class="row-odd"><td>$</td>
+<td>The last line</td>
+</tr>
+<tr class="row-even"><td>n1,n2</td>
+<td>A range of lines from <em>n1</em> to <em>n2</em></td>
+</tr>
+<tr class="row-odd"><td>n~y</td>
+<td>Line number <em>n</em> then each subsequent line at <em>y</em> intervals</td>
+</tr>
+<tr class="row-even"><td>n1,+n2</td>
+<td>Line <em>n1</em> and the following <em>n2</em> lines</td>
+</tr>
+<tr class="row-odd"><td>n!</td>
+<td>All lines except line <em>n</em></td>
+</tr>
+</tbody>
+</table>
+<p>Let’s try some examples:</p>
+<pre class="literal-block">
+[user&#64;blue ~]$ <strong class="command">sed '2s/quick/fast/g' testfile.txt</strong>
+1 a quick brown fox jumped over the quick wolf quickly
+2 the fast brown fox jumped over the fast wolf fastly
+3 no quick brown fox jumped over the quick wolf quickly
+4 the quick brown fox jumped over the quick wolf quickly
+5 the quick BROWN fox jumped over the quick wolf quickly
+6 the quick BROWN fox jumped over the quick wolf quickly
+7 the quick BROWN fox jumped over the quick wolf quickly
+8 the quick BROWN fox jumped over the quick wolf quickly
+</pre>
+<pre class="literal-block">
+[user&#64;blue ~]$ <strong class="command">sed '$s/quick/fast/g' testfile.txt</strong>
+1 a quick brown fox jumped over the quick wolf quickly
+2 the quick brown fox jumped over the quick wolf quickly
+3 no quick brown fox jumped over the quick wolf quickly
+4 the quick brown fox jumped over the quick wolf quickly
+5 the quick BROWN fox jumped over the quick wolf quickly
+6 the quick BROWN fox jumped over the quick wolf quickly
+7 the quick BROWN fox jumped over the quick wolf quickly
+8 the fast BROWN fox jumped over the fast wolf fastly
+</pre>
+<pre class="literal-block">
+[user&#64;blue ~]$ <strong class="command">sed '3,5s/quick/fast/g' testfile.txt</strong>
+1 a quick brown fox jumped over the quick wolf quickly
+2 the quick brown fox jumped over the quick wolf quickly
+3 no fast brown fox jumped over the fast wolf fastly
+4 the fast brown fox jumped over the fast wolf fastly
+5 the fast BROWN fox jumped over the fast wolf fastly
+6 the quick BROWN fox jumped over the quick wolf quickly
+7 the quick BROWN fox jumped over the quick wolf quickly
+8 the quick BROWN fox jumped over the quick wolf quickly
+</pre>
+<pre class="literal-block">
+[user&#64;blue ~]$ <strong class="command">sed '3~2s/quick/fast/g' testfile.txt</strong>
+1 a quick brown fox jumped over the quick wolf quickly
+2 the quick brown fox jumped over the quick wolf quickly
+3 no fast brown fox jumped over the fast wolf fastly
+4 the quick brown fox jumped over the quick wolf quickly
+5 the fast BROWN fox jumped over the fast wolf fastly
+6 the quick BROWN fox jumped over the quick wolf quickly
+7 the fast BROWN fox jumped over the fast wolf fastly
+8 the quick BROWN fox jumped over the quick wolf quickly
+</pre>
+<pre class="literal-block">
+[user&#64;blue ~]$ <strong class="command">sed '2,+3s/quick/fast/g' testfile.txt</strong>
+1 a quick brown fox jumped over the quick wolf quickly
+2 the fast brown fox jumped over the fast wolf fastly
+3 no fast brown fox jumped over the fast wolf fastly
+4 the fast brown fox jumped over the fast wolf fastly
+5 the fast BROWN fox jumped over the fast wolf fastly
+6 the quick BROWN fox jumped over the quick wolf quickly
+7 the quick BROWN fox jumped over the quick wolf quickly
+8 the quick BROWN fox jumped over the quick wolf quickly
+</pre>
+<pre class="literal-block">
+[user&#64;blue ~]$ <strong class="command">sed '4!s/quick/fast/g' testfile.txt</strong>
+1 a fast brown fox jumped over the fast wolf fastly
+2 the fast brown fox jumped over the fast wolf fastly
+3 no fast brown fox jumped over the fast wolf fastly
+4 the quick brown fox jumped over the quick wolf quickly
+5 the fast BROWN fox jumped over the fast wolf fastly
+6 the fast BROWN fox jumped over the fast wolf fastly
+7 the fast BROWN fox jumped over the fast wolf fastly
+8 the fast BROWN fox jumped over the fast wolf fastly
+</pre>
+<div class="section" id="more-elaborate-patterns">
+<h4>More elaborate patterns<a class="headerlink" href="#more-elaborate-patterns" title="Permalink to this headline">¶</a></h4>
+<p>So far we have used patterns that match literals (they do not use any of the metacharacters that we learned in Lab 7).
+Let’s try some tasks that require the usage of metacharacters.</p>
+<p>Suppose we want to capitalize the word at the begining of the line (right after the line number)
+Let’s try the following expression, in which we try to capitalize the words “the”, “a” and “no”.</p>
+<pre class="literal-block">
+[user&#64;blue ~]$ <strong class="command">sed 's/the/The/;s/a/A/;s/no/No/'  testfile.txt</strong>
+1 A quick brown fox jumped over The quick wolf quickly
+2 The quick brown fox jumped over the quick wolf quickly
+3 No quick brown fox jumped over The quick wolf quickly
+4 The quick brown fox jumped over the quick wolf quickly
+5 The quick BROWN fox jumped over the quick wolf quickly
+6 The quick BROWN fox jumped over the quick wolf quickly
+7 The quick BROWN fox jumped over the quick wolf quickly
+8 The quick BROWN fox jumped over the quick wolf quickly
+</pre>
+<p>We can see that it makes substitutions that we did not want (on lines 1 and 3)
+One first attempt to solve this problem by using the begining of the line metacharacter, and for the sake of simplicity, let’s try only to take care of the word “the”</p>
+<pre class="literal-block">
+[user&#64;blue ~]$ <strong class="command">sed 's/^[0-9] the/The/' testfile.txt</strong>
+1 a quick brown fox jumped over the quick wolf quickly
+The quick brown fox jumped over the quick wolf quickly
+3 no quick brown fox jumped over the quick wolf quickly
+The quick brown fox jumped over the quick wolf quickly
+The quick BROWN fox jumped over the quick wolf quickly
+The quick BROWN fox jumped over the quick wolf quickly
+The quick BROWN fox jumped over the quick wolf quickly
+The quick BROWN fox jumped over the quick wolf quickly
+</pre>
+<p>That worked, but unfortunately, we lost the line number.
+We need a way to tell sed to <em>preserve</em> the <code class="docutils literal"><span class="pre">^[0-9]</span></code> part.
+To do this, we need to make use of <strong>back references</strong>.
+To make use of backreferences, we need to enclose the subexpression in <strong>escaped</strong> parenthesis, and then we need to refer to them in the replacement part using the <code class="docutils literal"><span class="pre">\digit</span></code> special sequence, where <code class="docutils literal"><span class="pre">digit</span></code> is a single digit (between 1 and 9)</p>
+<pre class="literal-block">
+[user&#64;blue ~]$ <strong class="command">sed 's/\(^[0-9] \)the/\1The/' testfile.txt</strong>
+1 a quick brown fox jumped over the quick wolf quickly
+2 The quick brown fox jumped over the quick wolf quickly
+3 no quick brown fox jumped over the quick wolf quickly
+4 The quick brown fox jumped over the quick wolf quickly
+5 The quick BROWN fox jumped over the quick wolf quickly
+6 The quick BROWN fox jumped over the quick wolf quickly
+7 The quick BROWN fox jumped over the quick wolf quickly
+8 The quick BROWN fox jumped over the quick wolf quickly
+</pre>
+<p>We can now take care of the desired substitution as:</p>
+<pre class="literal-block">
+[user&#64;blue ~]$ <strong class="command">sed 's/\(^[0-9] \)the/\1The/;s/\(^[0-9] \)a/\1A/;s/\(^[0-9] \)no/\1No/' testfile.txt</strong>
+1 A quick brown fox jumped over the quick wolf quickly
+2 The quick brown fox jumped over the quick wolf quickly
+3 No quick brown fox jumped over the quick wolf quickly
+4 The quick brown fox jumped over the quick wolf quickly
+5 The quick BROWN fox jumped over the quick wolf quickly
+6 The quick BROWN fox jumped over the quick wolf quickly
+7 The quick BROWN fox jumped over the quick wolf quickly
+8 The quick BROWN fox jumped over the quick wolf quickly
+</pre>
+<p>That was quite a lot, and we can see how complex expressions can quickly turn into a hard to understand pattern.
+Let’s try to simplify this a little.
+We know that we want to capitalize the first lower case letter.
+Just to try something, let’s see if the <code class="docutils literal"><span class="pre">[[:lower::]]</span></code> capturing group could help.
+For the moment, let’s replace everything with a capital T:</p>
+<pre class="literal-block">
+[user&#64;blue ~]$ <strong class="command">sed 's/\(^[0-9] \)[[:lower:]]/\1T/' testfile.txt</strong>
+1 T quick brown fox jumped over the quick wolf quickly
+2 The quick brown fox jumped over the quick wolf quickly
+3 To quick brown fox jumped over the quick wolf quickly
+4 The quick brown fox jumped over the quick wolf quickly
+5 The quick BROWN fox jumped over the quick wolf quickly
+6 The quick BROWN fox jumped over the quick wolf quickly
+7 The quick BROWN fox jumped over the quick wolf quickly
+8 The quick BROWN fox jumped over the quick wolf quickly
+</pre>
+<p>Now, we are closer, but we need to preserve the lowercase character that was matched and convert it to uppercase.
+We know that we can preserve a match by using a back reference.
+We can solve the conversion to uppercase by using a special sequence <code class="docutils literal"><span class="pre">\u</span></code> which converts the next character in the replacement to uppercase:</p>
+<pre class="literal-block">
+[user&#64;blue ~]$ <strong class="command">sed 's/\(^[0-9] \)\([[:lower:]]\)/\1\U\2/' testfile.txt</strong>
+1 A quick brown fox jumped over the quick wolf quickly
+2 The quick brown fox jumped over the quick wolf quickly
+3 No quick brown fox jumped over the quick wolf quickly
+4 The quick brown fox jumped over the quick wolf quickly
+5 The quick BROWN fox jumped over the quick wolf quickly
+6 The quick BROWN fox jumped over the quick wolf quickly
+7 The quick BROWN fox jumped over the quick wolf quickly
+8 The quick BROWN fox jumped over the quick wolf quickly
+</pre>
+<p>The following table lists other special sequences that can be used with <code class="docutils literal"><span class="pre">sed</span></code>:
+.. cssclass:: minitable</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="14%" />
+<col width="86%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Sequence</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>L</td>
+<td>Turn the replacement to lowercase (until a U or E is found)</td>
+</tr>
+<tr class="row-odd"><td>U</td>
+<td>Turn the replacement to uppercase (until a L or E is found)</td>
+</tr>
+<tr class="row-even"><td>l</td>
+<td>Turn the next character to lowercase</td>
+</tr>
+<tr class="row-odd"><td>u</td>
+<td>Turn the next character to uppercase</td>
+</tr>
+<tr class="row-even"><td>E</td>
+<td>Stop case conversion started by U or L</td>
+</tr>
+<tr class="row-odd"><td>&amp;</td>
+<td>Output the matched pattern</td>
+</tr>
+</tbody>
+</table>
+<p>Just as <code class="docutils literal"><span class="pre">grep</span></code>, <code class="docutils literal"><span class="pre">sed</span></code> supports extended regular expressions, but you need to activate them by using the the <code class="docutils literal"><span class="pre">-E</span></code> option.</p>
+<p>Assume for example, that we have a file called <code class="docutils literal"><span class="pre">ccnumbers.txt</span></code> that contains 16-digit credit card numbers:</p>
+<pre class="literal-block">
+[user&#64;blue ~]$ <strong class="command">cat ccnumbers.txt</strong>
+4737458963699782
+4916875767809262
+4556856715310335
+4556636000469644
+4024007127553401
+</pre>
+<p>Suppose you want to print the credit card numbers with a space separating each one of the 4 digit segments.
+You can use the following command:</p>
+<pre class="literal-block">
+[user&#64;blue ~]$ <strong class="command">sed -E 's/([0-9]{4})([0-9]{4})([1234567890]{4})([[:digit:]]{4})/\1 \2 \3 \4/' ccnumbers.txt</strong>
+4737 4589 6369 9782
+4916 8757 6780 9262
+4556 8567 1531 0335
+4556 6360 0046 9644
+4024 0071 2755 3401
+</pre>
+<p>See how we used back references, repetition quantifiers, and character classes ([1234567890] [[:digit:]] and [0-9] they all do the same and are used here for illustration purposes)
+Notice how when you enabled extended regular expressions <strong>you did not have to escape</strong> the parenthesis. Yes this can be maddening!</p>
+</div>
+</div>
+<div class="section" id="sed-print-command">
+<h3><code class="docutils literal"><span class="pre">sed</span></code> print command<a class="headerlink" href="#sed-print-command" title="Permalink to this headline">¶</a></h3>
+<p>The print command is used (as you might have guessed) to print specific lines from the input.
+It has the following syntax:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">address</span><span class="p">]</span><span class="o">/</span><span class="n">pattern</span><span class="o">/</span><span class="n">p</span>
+</pre></div>
+</div>
+<p>The address and pattern behave exactly in the same way as in the case of the substitute command. There is one modification that we need to make to the way are invoking <code class="docutils literal"><span class="pre">sed</span></code> which is to add the <code class="docutils literal"><span class="pre">-n</span></code> flag:</p>
+<pre class="literal-block">
+[<a class="reference external" href="mailto:user&#37;&#52;&#48;blue">user<span>&#64;</span>blue</a> ~]$ <strong class="command">sed -n '1p' testfile.txt</strong>
+1 a quick brown fox jumped over the quick wolf quickly
+</pre>
+<p>By using the pattern element, we can make <code class="docutils literal"><span class="pre">sed</span></code> behave just like grep:</p>
+<pre class="literal-block">
+[user&#64;blue ~]$ <strong class="command">sed -n '/BROWN/p' testfile.txt</strong>
+5 the quick BROWN fox jumped over the quick wolf quickly
+6 the quick BROWN fox jumped over the quick wolf quickly
+7 the quick BROWN fox jumped over the quick wolf quickly
+8 the quick BROWN fox jumped over the quick wolf quickly
+[user&#64;blue ~]$ <strong class="command">grep BROWN testfile.txt</strong>
+5 the quick BROWN fox jumped over the quick wolf quickly
+6 the quick BROWN fox jumped over the quick wolf quickly
+7 the quick BROWN fox jumped over the quick wolf quickly
+8 the quick BROWN fox jumped over the quick wolf quickly
+</pre>
+<p>This is obviously not the prime usage of sed, but it does have it’s place in complex sed scripts.</p>
+</div>
+<div class="section" id="sed-delete-command">
+<h3><code class="docutils literal"><span class="pre">sed</span></code> delete command<a class="headerlink" href="#sed-delete-command" title="Permalink to this headline">¶</a></h3>
+<p>The delete command is used (as you might have also guessed) to remove specific lines from the input:
+It requires the following syntax:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">address</span><span class="p">]</span><span class="o">/</span><span class="n">pattern</span><span class="o">/</span><span class="n">p</span>
+</pre></div>
+</div>
+<p>In the following example we remove all the lines that match <code class="docutils literal"><span class="pre">BROWN</span></code>:</p>
+<pre class="literal-block">
+[user&#64;blue ~]$ sed  '/BROWN/d' testfile.txt
+1 a quick brown fox jumped over the quick wolf quickly
+2 the quick brown fox jumped over the quick wolf quickly
+3 no quick brown fox jumped over the quick wolf quickly
+4 the quick brown fox jumped over the quick wolf quickly
+</pre>
+</div>
+</div>
+<div class="section" id="cut">
+<h2>cut<a class="headerlink" href="#cut" title="Permalink to this headline">¶</a></h2>
+<p><code class="docutils literal"><span class="pre">cut</span></code> is used to extract a section of text from a line and output the extrated section.
+It is a simple alternative when we have text that is organized in columns or fields.
+By default it uses the tab character as separator.
+We are going to show some examples of its usage here, but please refer to the man pages of cut to get familiar with the different options it supports.</p>
+<p>Let’s first take our <code class="docutils literal"><span class="pre">testfile.txt</span></code>, replace spaces with tabs and create another file called <code class="docutils literal"><span class="pre">data.txt</span></code></p>
+<pre class="literal-block">
+[user&#64;blue ~]$ <strong class="command">sed 's/ /\t/g' testfile.txt &gt; data.txt</strong>
+[user&#64;blue ~]$ <strong class="command">cat data.txt</strong>
+1       a       quick   brown   fox     jumped  over    the     quick   wolf    quickly
+2       the     quick   brown   fox     jumped  over    the     quick   wolf    quickly
+3       no      quick   brown   fox     jumped  over    the     quick   wolf    quickly
+4       the     quick   brown   fox     jumped  over    the     quick   wolf    quickly
+5       the     quick   BROWN   fox     jumped  over    the     quick   wolf    quickly
+6       the     quick   BROWN   fox     jumped  over    the     quick   wolf    quickly
+7       the     quick   BROWN   fox     jumped  over    the     quick   wolf    quickly
+8       the     quick   BROWN   fox     jumped  over    the     quick   wolf    quickly
+[user&#64;blue ~]$ <strong class="command">md5sum data.txt</strong>
+c1d1d33855ec4751d3c6aef158a1fdfa  data.txt
+</pre>
+<p>Notice how we used the escaped sequence <code class="docutils literal"><span class="pre">\t</span></code> for the tab character. Also, make sure you verify the checksum.</p>
+<p>Let’s use <code class="docutils literal"><span class="pre">cut</span></code> got print the second column</p>
+<pre class="literal-block">
+[user&#64;blue ~]$ <strong class="command">cut -f 2 data.txt</strong>
+a
+the
+no
+the
+the
+the
+the
+the
+</pre>
+<p>We can also print a list or range of columns:</p>
+<pre class="literal-block">
+[user&#64;blue ~]$ cut -f 2,5 data.txt
+a       fox
+the     fox
+no      fox
+the     fox
+the     fox
+the     fox
+the     fox
+the     fox
+[user&#64;blue ~]$ cut -f 2-5 data.txt
+a       quick   brown   fox
+the     quick   brown   fox
+no      quick   brown   fox
+the     quick   brown   fox
+the     quick   BROWN   fox
+the     quick   BROWN   fox
+the     quick   BROWN   fox
+the     quick   BROWN   fox
+</pre>
+<p>You could use cut with files that are not delimited with tabs by using <code class="docutils literal"><span class="pre">-d</span></code> option</p>
+<pre class="literal-block">
+[user&#64;blue ~]$ <strong class="command">cut -d ' ' -f 2-5 testfile.txt</strong>
+a quick brown fox
+the quick brown fox
+no quick brown fox
+the quick brown fox
+the quick BROWN fox
+the quick BROWN fox
+the quick BROWN fox
+the quick BROWN fox
+</pre>
+<p>Or you could select specific characters with the <code class="docutils literal"><span class="pre">-c</span></code> option:</p>
+<pre class="literal-block">
+[user&#64;blue ~]$ <strong class="command">cut  -c 3- testfile.txt</strong>
+a quick brown fox jumped over the quick wolf quickly
+the quick brown fox jumped over the quick wolf quickly
+no quick brown fox jumped over the quick wolf quickly
+the quick brown fox jumped over the quick wolf quickly
+the quick BROWN fox jumped over the quick wolf quickly
+the quick BROWN fox jumped over the quick wolf quickly
+the quick BROWN fox jumped over the quick wolf quickly
+the quick BROWN fox jumped over the quick wolf quickly
+</pre>
+</div>
+<div class="section" id="awk">
+<h2>awk<a class="headerlink" href="#awk" title="Permalink to this headline">¶</a></h2>
+<p><code class="docutils literal"><span class="pre">awk</span></code>, named after its developers (Aho, Weinberger and Kernighan), is a programming language that permits manipulation of structured data.</p>
+<p><code class="docutils literal"><span class="pre">awk</span></code> is way more than a tool, it is a programming language by itself. In this class we are going to learn only its most basic usage through some very basic examples.</p>
+<p>In the following example we extract datafields from a string.
+<code class="docutils literal"><span class="pre">awk</span></code> uses whitespace characters as its defaul field delimiter.  The <code class="docutils literal"><span class="pre">awk</span></code> field variables start at <code class="docutils literal"><span class="pre">$1</span></code> and increment up through the end of the string. In the example, there are 9 fields.
+The variable <code class="docutils literal"><span class="pre">$0</span></code> corresponds to entire line, the variable <code class="docutils literal"><span class="pre">NR</span></code> holds the current line number, and the variable <code class="docutils literal"><span class="pre">NF</span></code> contains the number of fields in the current line.</p>
+<pre class="literal-block">
+[user&#64;blue ~]$ <strong class="command">awk '{ print $1, $9, $5, $6, $7, $4, NR}' testfile.txt</strong>
+1 quick fox jumped over brown 1
+2 quick fox jumped over brown 2
+3 quick fox jumped over brown 3
+4 quick fox jumped over brown 4
+5 quick fox jumped over BROWN 5
+6 quick fox jumped over BROWN 6
+7 quick fox jumped over BROWN 7
+8 quick fox jumped over BROWN 8
+</pre>
+<p>Just like <code class="docutils literal"><span class="pre">sed</span></code>, <code class="docutils literal"><span class="pre">awk</span></code> accepts input from stdin:</p>
+<pre class="literal-block">
+[user&#64;blue ~]$ <strong class="command">awk '{ print $1, $9, $5, $6, $7, $4, NR}' &lt; testfile.txt</strong>
+1 quick fox jumped over brown 1
+2 quick fox jumped over brown 2
+3 quick fox jumped over brown 3
+4 quick fox jumped over brown 4
+5 quick fox jumped over BROWN 5
+6 quick fox jumped over BROWN 6
+7 quick fox jumped over BROWN 7
+8 quick fox jumped over BROWN 8
+</pre>
+<p>Notice how you can print the last field by using the <code class="docutils literal"><span class="pre">$NF</span></code> variable:</p>
+<pre class="literal-block">
+[user&#64;blue ~]$ <strong class="command">echo 'The quick brown fox jumped over the lazy dog' | awk '{ print &quot;The input was: &quot;$0&quot;. There are a total of &quot; NF &quot; fields. The last field value is &quot;$NF}'</strong>
+The input was: The quick brown fox jumped over the lazy dog. There are a total of 9 fields. The last field value is dog
+</pre>
+<p>If the data is not formatted using spaces as separators, we can specify the delimiter by using the <code class="docutils literal"><span class="pre">-F</span></code> option.</p>
+<pre class="literal-block">
+[user&#64;blue ~]$ <strong class="command">echo 'this-is-a-hyphen-delimited-text' | awk -F'-' '{ print $4, $5}'</strong>
+hyphen delimited
+</pre>
+<p>A common need is to be able to pass variables from bash to awk.
+The following example demonstrate an example of how to achieve this (the <code class="docutils literal"><span class="pre">-v</span></code> option is used to assign variables and their values)</p>
+<pre class="literal-block">
+[user&#64;blue ~]$ <strong class="command">VAR=3</strong>
+[user&#64;blue ~]$ <strong class="command">echo &quot;The quick brown fox&quot; | awk -v myvar=$VAR '{print $myvar}'</strong>
+brown
+</pre>
+<p>You can also perform substring extraction with <code class="docutils literal"><span class="pre">awk</span></code> through its <code class="docutils literal"><span class="pre">substr</span></code> function.  The syntax of this function is</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">substr</span><span class="p">(</span><span class="n">string</span><span class="p">,</span> <span class="n">position</span> <span class="n">of</span> <span class="n">first</span> <span class="n">character</span><span class="p">,</span> <span class="n">length</span> <span class="n">of</span> <span class="n">substring</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The position of the first character is 1-indexed (that is the first character has a position equal to one, not zero)</p>
+<pre class="literal-block">
+[user&#64;blue ~]$ <strong class="command">echo -e &quot;This is linenumberone\nThis is linenumbertwo&quot; | awk '{print substr($3,11,3)}'</strong>
+one
+two
+</pre>
+<p>In the next example we produce output only if the second field matches a certain value (“no”):</p>
+<pre class="literal-block">
+[user&#64;blue ~]$ <strong class="command">awk '$2 == &quot;no&quot; {print $0}' testfile.txt</strong>
+3 no quick brown fox jumped over the quick wolf quickly
+</pre>
+<p>We can also apply regular expressions by using the <code class="docutils literal"><span class="pre">~</span></code> operator. In the following example, we tell <code class="docutils literal"><span class="pre">awk</span></code> to filter lines whose first field matches the pattern <code class="docutils literal"><span class="pre">[713]</span></code></p>
+<pre class="literal-block">
+[user&#64;blue ~]$ <strong class="command">awk '$1 ~ /[713]/  {print $1,$2,$3,$4}' testfile.txt</strong>
+1 a quick brown
+3 no quick brown
+7 the quick BROWN
+</pre>
+</div>
+<div class="section" id="tr">
+<h2>tr<a class="headerlink" href="#tr" title="Permalink to this headline">¶</a></h2>
+<p>The <code class="docutils literal"><span class="pre">tr</span></code> command is used to <em>translate</em> or delete characters. It takes input from <em>stdin</em> it does not read files.</p>
+<p>For example, lets replace spaces with tabs. We did that with <code class="docutils literal"><span class="pre">sed</span></code> earlier, but we can do it with <code class="docutils literal"><span class="pre">tr</span></code> as well:</p>
+<pre class="literal-block">
+[user&#64;blue ~]$ <strong class="command">tr ' ' '\t' &lt; testfile.txt</strong>
+1       a       quick   brown   fox     jumped  over    the     quick   wolf    quickly
+2       the     quick   brown   fox     jumped  over    the     quick   wolf    quickly
+3       no      quick   brown   fox     jumped  over    the     quick   wolf    quickly
+4       the     quick   brown   fox     jumped  over    the     quick   wolf    quickly
+5       the     quick   BROWN   fox     jumped  over    the     quick   wolf    quickly
+6       the     quick   BROWN   fox     jumped  over    the     quick   wolf    quickly
+7       the     quick   BROWN   fox     jumped  over    the     quick   wolf    quickly
+8       the     quick   BROWN   fox     jumped  over    the     quick   wolf    quickly
+</pre>
+<p>You can also use character classes with <code class="docutils literal"><span class="pre">tr</span></code></p>
+<pre class="literal-block">
+[user&#64;blue ~]$ <strong class="command">tr [:upper:] [:lower:] &lt; testfile.txt</strong>
+1 a quick brown fox jumped over the quick wolf quickly
+2 the quick brown fox jumped over the quick wolf quickly
+3 no quick brown fox jumped over the quick wolf quickly
+4 the quick brown fox jumped over the quick wolf quickly
+5 the quick brown fox jumped over the quick wolf quickly
+6 the quick brown fox jumped over the quick wolf quickly
+7 the quick brown fox jumped over the quick wolf quickly
+8 the quick brown fox jumped over the quick wolf quickly
+</pre>
+<p>Notice that you did not need to enclose the character classes in double square brackets as you have done before (e.g. with grep).</p>
+</div>
+<div class="section" id="head">
+<h2>head<a class="headerlink" href="#head" title="Permalink to this headline">¶</a></h2>
+<p>The head command is used to output the first lines of files or input from stdin.
+Consult the man pages to see the different options it supports.</p>
+</div>
+<div class="section" id="tail">
+<h2>tail<a class="headerlink" href="#tail" title="Permalink to this headline">¶</a></h2>
+<p>The tail command is used to output the last lines of files or input from stdin.
+Consult the man pages to see the different options it supports.</p>
+</div>
+<div class="section" id="sort">
+<h2>sort<a class="headerlink" href="#sort" title="Permalink to this headline">¶</a></h2>
+<p>We have seen the <code class="docutils literal"><span class="pre">sort</span></code> command in previous labs.
+Its purpose is to sort the contents of standard input or one or more files.
+The default sort order is ascending by character value.
+Consult the man pages to see the different options it supports.</p>
+</div>
+<div class="section" id="uniq">
+<h2>uniq<a class="headerlink" href="#uniq" title="Permalink to this headline">¶</a></h2>
+<p>We have also seen the <code class="docutils literal"><span class="pre">uniq</span></code> command in previous labs.
+<code class="docutils literal"><span class="pre">uniq</span></code> removes duplicated entries from a file.
+Note that uniq does not sort the input, it detects a duplicate if the previous line was identical to the current line that is processing.
+In order for uniq to remove duplicates, most likely you need to process the data with <code class="docutils literal"><span class="pre">sort</span></code> beforehand.
+Also note that the GNU version of <code class="docutils literal"><span class="pre">sort</span></code> has the <code class="docutils literal"><span class="pre">-u</span></code> option to remove duplicates. which renders a subsequent call to <code class="docutils literal"><span class="pre">uniq</span></code> unnecessary.
+However uniq has some interesting options to instead of removing duplicates, actually print duplicates.</p>
+<div class="worksheet admonition">
+<p class="first admonition-title">Report (20 pts)</p>
+<p>1. (4 pts) We saw in Lab No.3 that the file <code class="docutils literal"><span class="pre">/etc/passwd</span></code> is used to store user account information.
+Provide a command that will print a list of full user names (i.e. the first name and last names) of all the users in that file.</p>
+<p>2. (4 pt) A python program saved in a file named ‘bad.py` was written using incorrect syntax and we need to change all the square brackets <code class="docutils literal"><span class="pre">[]</span></code> with parentheses <code class="docutils literal"><span class="pre">()</span></code>.
+Provide a command that will perform this task.</p>
+<p>For example, if the contents of <code class="docutils literal"><span class="pre">bad.py</span></code> are:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">bad_function</span><span class="p">[]:</span>
+    <span class="nb">print</span><span class="p">[</span><span class="s2">&quot;this does not work&quot;</span><span class="p">]</span>
+    <span class="nb">print</span><span class="p">[[</span><span class="mi">35</span><span class="o">+</span><span class="mi">4</span><span class="p">]]</span>
+</pre></div>
+</div>
+<p>it should produce:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">bad_function</span><span class="p">():</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;this does not work&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">((</span><span class="mi">35</span><span class="o">+</span><span class="mi">4</span><span class="p">))</span>
+</pre></div>
+</div>
+<ol class="arabic simple" start="3">
+<li>(2 pt) Given a file named “alongfile.txt” which has more than 1000 lines, provide a command that will print lines 100-200 (both inclusive) of this file.</li>
+<li>(2 pt) Given a file named “alongfile.txt” which has more than 1000 lines, provide a command that will print the last 100 lines of this file.</li>
+<li>(4 pts) Recall the <code class="docutils literal"><span class="pre">sed</span></code> example with credit card numbers. Since we are guaranteed a consistent format in the <code class="docutils literal"><span class="pre">ccnumbers.txt</span></code> file, we could simplify with this expression:</li>
+</ol>
+<pre class="literal-block">
+[user&#64;blue ~]$ <strong class="command">sed -E 's/(.{4})/&amp; /g;s/ $//' ccnumbers.txt</strong>
+4737 4589 6369 9782
+4916 8757 6780 9262
+4556 8567 1531 0335
+4556 6360 0046 9644
+4024 0071 2755 3401
+</pre>
+<p>Explain (verbally) the script argument of the previous command.</p>
+<ol class="arabic simple" start="6">
+<li>(4 pts) Provide a command that will take a file called <code class="docutils literal"><span class="pre">input.txt</span></code> and will output to stdout the line content with the line number prepended.  For example, if the contents of <code class="docutils literal"><span class="pre">input.txt</span></code> are:</li>
+</ol>
+<pre class="literal-block">
+<strong class="command">This is line one</strong>
+<strong class="command">This is line two</strong>
+<strong class="command">This is line three</strong>
+</pre>
+<p>The command output should be:</p>
+<pre class="last literal-block">
+<strong class="command">1 This is line one</strong>
+<strong class="command">2 This is line two</strong>
+<strong class="command">3 This is line three</strong>
+</pre>
+</div>
+</div>
+</div>
+
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+    </p>
+    <p>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>
