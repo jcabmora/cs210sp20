@@ -1,0 +1,159 @@
+:orphan:
+
+********************************************
+Lab No. 9: Processes and Shell Script Basics
+********************************************
+
+After completing this lab, students will be able to:
+
+* understand how processes are created in a Linux system
+* list processes in a Linux system
+* describe the purpose of some common environment variables
+* create simple shell scripts
+
+Processes
+=========
+
+A process is simply a running instance of a program.
+A program is composed of instructions that are executed by the CPU.
+When a process starts, its instructions are stored in memory, and also, memory is allocated for the process.
+The process has "safe access" to the chunk of memory that it gets allocated, which essentially means that other processes would not be able to modify the memory allocated to the process, and also that the process would not modify memory allocated to other processes.
+
+Chapter 10 of TLC covers processes. Please go ahead and read that chapter in its entirety, making sure that you have understood all the examples.
+The example in the section "Controlling Processes" which executes the ``xlogo`` command will not work, but instead use the ``sleep 1000`` command. 
+Consult the man pages of ``sleep`` so you can understand what is the purpose of this command (you can probably make a pretty good guess by its name).
+Also, the ``xload`` command will not work in **blue**.
+So, go ahead and read Chapter 10 and once you are done come back and continue with the next paragraph in this document.
+
+
+OK, so you are back from Chapter 10.
+There are a few things that need some clarification.
+One thing you might be wondering is: **How are processes created?**
+
+Essentially, every process is created by another process. 
+As explained in the book, when a Linux system boots, there is one special process that starts first, and that is known as the **init** process, and it is assigned a process ID of 1, so it is also called **PID1**.
+Every other process is a child of PID1.
+You can picture now that (just like the filesystem) the processes in a Linux system are organized in a tree structure.
+When a new process is created, the operating system makes a copy of the parent process (in a process called *forking*) and then the specific command is **executed** by reading the instructions of the command and loading it into memory, and it gets a process id assigned to it. This is what's known as the **fork-and-exec** mechanism.
+
+Let's see some examples (please make sure you are logged in ``blue.cs.sonoma.edu``:
+
+By now, you should know that the ``ps`` command is used to list processes. In the following example, you can see the processes your user is running:
+
+.. parsed-literal::
+
+    [user\@blue ~]$ :command:`ps f`
+      PID TTY      STAT   TIME COMMAND
+    15853 pts/0    Ss     0:00 -bash
+    21441 pts/0    R+     0:00  \\_ ps f
+
+
+You can see that your current shell (``bash``) is the parent process of the ``ps f`` command.
+Also, notice that each process thas a "PID" or Process ID associated with it. Of, course, the process ID numbers **will** differ from what you see here.
+So just to set the record straigh, in that example process ``15853`` is the parent process of process ``21441``, and process ``21441`` is a child process of process ``21441``. One thing that should be obvious at this point is that one process can have many child processes, and one child process can only have one parent.
+
+The ``BASHPID`` variable stores the value of the current shell process ID:
+
+.. parsed-literal::
+    [user\@blue ~]$ :command:`echo $BASHPID`
+    15853
+
+Let's try now to create some child processes. 
+You can start a new shell session within the current shell session:
+
+.. parsed-literal::
+    [user\@blue ~]$ :command:`bash`
+    [user\@blue ~]$ :command:`echo $BASHPID`
+    40791
+    [user\@blue ~]$ :command:`ps f`
+      PID TTY      STAT   TIME COMMAND
+    15853 pts/0    Ss     0:00 -bash
+    40791 pts/0    S      0:00  \\_ bash
+    39492 pts/0    R+     0:00      \\_ ps f
+
+Notice how ``$BASHPID`` prints the process ID of the second instance of ``bash``, and that PID 39492 (``ps f``) is a child of the new shell with PID 40791, instead of the shell we were on before (PID 15853).
+You can see this with more detail if your run ``ps jf`` which includes a column with the parent process ID (PPID):
+
+.. parsed-literal::
+    [user\@blue ~]$ :command:`ps jf`
+     PPID   PID  PGID   SID TTY      TPGID STAT   UID   TIME COMMAND
+    15852 15853 15853 15853 pts/0    40855 Ss    1135   0:00 -bash
+    15853 40791 40791 15853 pts/0    40855 S     1135   0:00  \\_ bash
+    40791 40855 40855 15853 pts/0    40855 R+    1135   0:00      \\_ ps jf
+
+At this point, if you type the ``exit`` command (once) you will terminate the second shell and you will be back at the original shell.
+
+
+The environment
+===============
+
+Recall how on Lab 04 we learned about environment variables. 
+Before learning how to write Shell scripts, we need to understand how the environment is set and how it can be altered.
+From your text book read Chapter 11, from pages 128 until page 134. Pay special attention to the section where the ``PATH`` environment variable is explained.
+Once you have read that part come back to this document.
+
+
+Shell Scripts
+=============
+
+A shell script is basically a file that contains a series of commands. 
+Shell scripts are plain text files, so they can be created with any text editor.
+They can be even conveniently created from the command line if they are simple enough.
+
+For this part of the Lab you need to read (and execute all examples) from Chapter 24 of TLC. Once you are done, come back to this document.
+
+Script Arguments
+----------------
+
+Shell scripts can use variables in many forms.  
+A variable is a "placeholder" for a value that can change (hence the name).
+Shell scripts accept postional parameters, and they are accessible within the script using the a dollar sign (``$``) and a number that corresponds to the argument position. 
+
+Create a script called ``args.sh`` with the following contents (and dont forget to ass the execute permissions)
+
+.. parsed-literal::
+
+    #!/bin/bash
+
+    # This is my first shell script with arguments
+    echo "The first argument you entered is: " $1
+
+Now try running the script:
+
+.. parsed-literal::
+
+    [user\@blue ~]$ :command:`./args.sh Linux`
+    The first argument you entered is: Linux
+
+If you need to pass an argument that contains whitespace, you need to use quotes around the text.  Explore running that script with different types of arguments.
+
+.. admonition:: Lab Submission
+    :class: worksheet
+
+    You are asked to create several basic scripts at each step.  You *need to include* each one of these in your lab submission.
+
+    Consider the following directory tree:
+
+    .. parsed-literal::
+
+        vehicles
+        │
+        ├── public_bicycles
+        ├── public_cars
+        ├── public_planes
+        ├── bicycles
+        ├── cars
+        └── planes
+    
+    1. Create a shell script that will generate that directory structure. Name this script ``makedirs.sh`` and include this script in your submission.
+
+    2. Create a new script called ``securedirs.sh`` that will modify permissions in the previous tree structure so:
+        
+    * any user can read/write files into directories that have the  *public* prefix (i.e. ``public_bicycles``, ``public_cars`` and ``public_planes``)
+    * no user other than the owner can create files, or list the contents of the *non public* directories (i.e ``bicycles``, ``cars`` and ``planes``)
+    * any user can execute the files in the *non public* directories 
+
+
+    3. Create a new script called ``movefiles.sh`` that will print to the terminal any file added into the  *public* directories and will move them to their corresponding *non public* directory. If a file already exists on the *non public* directory, your script needs to overwrite the file without asking for confirmation.  Also, your script should not produce any error messages in case there are no files that need to be moved (hint: ``/dev/null`` is your friend when you want to get rid of error messages).
+
+    4. Extract the archive ``~jmora/lab09/texts.tar.gz`` into your current directory. This expands to a folder called ``texts`` with some text files on it.  Create a new script called ``findwords.sh`` that will take the first argument passed to the script and will perform a search on the files that were extracted (contained in the ``texts`` folder), and will print the number of lines were the input word appears.
