@@ -1,0 +1,510 @@
+:orphan:
+
+********************************
+Lab No. 10: Shell Scripts Part 2
+********************************
+
+In the previous lab, we learned the basics of creating Shell Scripts. In this Lab we are going to expand by exploring:
+
+#. How variables work in shell scripts
+#. What exit codes are and hot to use them
+#. How to use the AND and OR operators
+#. How to use conditionals on shell scripts
+
+In this lab you need to write several scripts. In the code examples contained in this lab, the contents of the scripts are shown using the ``cat`` command. **You need to create these scripts using ``vim`` or any other editor of your choice. You also need to make sure that the correct permissions have been set so you can execute them (``u=rwx``)** .
+The examples assume that you are working on a directory called ``lab10`` within your home directory.
+
+Variables
+=========
+
+A variable is a name given to a piece of data that is stored in memory.  Variables allow scripts to assign, read and manipulate the data that they hold.
+Variables are assigned by using the assignment operator: the *equals* (``=``) character **without spaces before or after**.
+Shell variables names start with a letter or an underscore, and after the first character, they can contain any number of letters, numbers and underscores.
+
+The following example script assigns values to several variables. Notice how you can assign values to variables using literals, environment variables, and substitution:
+
+.. parsed-literal::
+
+    [user\@blue lab10]$ :command:`cat variables.sh`
+    #!/bin/bash
+
+    # a, b and d are assigned literals
+    a="foo"
+    b=bar
+    c=0123
+    # d is assigned the value of an environement variable
+    d=$HOME
+    # e is assigned using process substitution
+    e=`who | wc -l`
+    # f is assigned using arithmetic substitution
+    f=$((2*3))
+
+    echo $a
+    echo $b
+    echo $c
+    echo $d
+    echo $e
+    echo $f
+    [user\@blue lab10]$ :command:`./variables.sh`
+    foo
+    bar
+    0123
+    /home/student/user/lab10
+    8
+    6
+
+
+Variables and their scope
+-------------------------
+
+Shell Variables have three different scopes:
+
+- **Environment**:  In :ref:`lab04` and :ref:`lab09` we learned about *Environment Variables*. Variables in the environment are copied to child processes or might be set when the command is executed.
+- **Global**:  These are variables that exist in a process context.  These are not copied to child processes.
+- **Local**: These are variables that only exist within a function.
+
+Please before proceeding further on this document, go and Read Chapter 25 of TLCL.
+
+.. note:: Chapter 25 Note
+
+    In this chapter you will create a simple script that generates a web page. If you complete the examples from the book on ``blue.cs.sonoma.edu`` you will not be able to open files with a browser. For example, on page 372 the command ``firefox sys_info_page.html`` will just hang since you do not have a GUI session.
+    Please also skip the script that downloads an image using FTP in page 380. This would download a very large file which will saturate the disk and the network unnecessarily.
+
+Variables in the Environment
+----------------------------
+
+To understand how the environment scope work, consider the following script and sequence of commands. On each command try to analyze what is happening with the variable ``MYVAR``.
+
+Let's first see what happens if the variable has not been declared:
+
+.. parsed-literal::
+
+    [user\@blue lab10]$ :command:`cat envscript.sh`
+    #!/bin/bash
+    echo "The value of MYVAR is $MYVAR"
+    [user\@blue lab10]$ :command:`./envscript.sh`
+    The value of MYVAR is
+
+Lets not declare this variable and assign a value to it and run our script.
+
+
+.. parsed-literal::
+
+    [user\@blue lab10]$ :command:`MYVAR=bar`
+    [user\@blue lab10]$ :command:`echo $MYVAR`
+    bar
+    [user\@blue lab10]$ :command:`./envscript.sh`
+    The value of MYVAR is
+
+What's going on? We created the variable, but it is still not visible to the script.
+In order to make a variable that exists in the current process be part of the environment that is copied to a child processes, we need to use the ``export`` command.
+The ``export`` command causes a variable to be in the environment of any subsequent commands.
+To be precise, when you run a command, it spawns a new *child process* that has a copy of the parent process environment, and that is why an *"exported"* variable is *"visible"* in the script context.
+
+
+.. parsed-literal::
+    [user\@blue lab10]$ :command:`export MYVAR`
+    [user\@blue lab10]$ :command:`./envscript.sh`
+    The value of MYVAR is bar
+
+We can also include a variable in the environment of a child process by declaring it in the same command line.
+When you set the variable in the same command line, you are setting the variable **only** in the environment of the *child process* to be executed.
+The variable will be set only for the duration of the process, but once the command (or pipeline of commands) finishes, it will not be set for future commands (actually, the right term is future processes). Notice that this mechanism does not affect the value of the variable in the current process (``MYVAR`` remains equal to ``bar`` in your shell session):
+
+.. parsed-literal::
+    [user\@blue lab10]$ :command:`MYVAR=baz ./envscript.sh`
+    The value of MYVAR is baz
+    [user\@blue lab10]$ :command:`echo $MYVAR`
+    bar
+
+
+Notice that you can remove a variable from the environment by using the ``unset`` command.
+The effect of unsetting a variable is that any subsequent child process will not have that variable on its environment.
+
+
+.. parsed-literal::
+    [user\@blue lab10]$ :command:`unset MYVAR`
+    [user\@blue lab10]$ :command:`echo $MYVAR`
+    
+    [user\@blue lab10]$ :command:`./envscript.sh`
+    The value of MYVAR is
+
+
+Another important fact is that a shell child process has no access whatsoever to the parent's environment (after all, what a child process has is a *copy* of its parent environment).
+
+
+Functions
+=========
+
+Please proceed to read and do the exercises on Chapter 26 of TLCL.
+
+.. note:: Chapter 26 Note
+
+    Pay special attention to the syntax for creating functions, and the differences between **global** and **local** scopes.
+    On page 391 replace the process substitution expression ``$(du -sh /home/*)`` by ``$(du -sh $HOME)`` otherwise you will get a lot of errors caused by directories that you do not have permissions. The script is actually enhanced in Chapter 27 to account for this issue, but at this point it could be confusing for you.
+
+
+Exit Codes
+==========
+In Unix, every command produces a numeric( typically an 8 bit integer) exit code to signal sucess or failure.
+An exit code of zero means that a command completed successfully, and any other value indicates failure.
+There are some values that by convention, have special meanings, as shown on the following table (adapted from http://tldp.org/LDP/abs/html/exitcodes.html)
+
+
+.. cssclass:: minitable
+
+=========   ==========
+Exit Code   Meaning
+=========   ==========
+1           Catchall for general errors
+2           Misuse of shell builtins
+126         Command invoked cannot execute
+127         "command not found"
+128         Invalid argument to exit
+128+n       Fatal error signal "n"
+130         Script terminated by Control-C
+255         Exit status out of range
+=========   ==========
+
+
+The $? variable
+---------------
+
+The exit code of the last run command is stored in the special shell variable ``$?``.  In the following example an erroneous command returns an exit code of 1:
+
+.. parsed-literal::
+
+    [you\@blue lab10]$ :command:`cat "I_dont_exist"`
+    cat: I_dont_exist: No such file or directory
+    [you\@blue lab10]$ :command:`echo $?`
+    1
+
+
+When writing shell scripts, it is very often needed to verify if a command executed within a script completed successfully.  The ``$?`` variable comes to the rescue on such scenarios.
+
+Also, when writing scripts, it is recommended that you return a proper exit code, so other users or utilities that need to run your script can be properly notified of an eventual failure detected in your script.  By default, a script returns a value of 0 once it reaches its end.  You can control the exit code by calling the ``exit`` with a numeric argument:
+
+
+.. parsed-literal::
+    [user\@blue lab10]$ :command:`cat i_succeed.sh`
+    #!/bin/bash
+
+    echo "I prefer to end with success"
+    [user\@blue lab10]$ :command:`./i_succeed.sh`
+    I prefer to end with success
+    [user@blue lab10]$ :command:`echo $?`
+    0
+    [you\@blue lab10]$ :command:`cat always_wrong.sh`
+    #!/bin/bash
+    echo "I always terminate in error".
+    exit 2
+    [you\@blue lab10]$ :command:`./always_wrong.sh`
+    I always terminate in error.
+    [you\@blue lab10]$ :command:`echo $?`
+    2
+
+
+Many utilities produce a non-success status code when they produce an unexpected output.  Take as an example the ``grep`` utility:
+
+.. parsed-literal::
+
+    [you\@blue lab10]$ :command:`echo "There are no numbers here" | grep [0-9]`
+    [you\@blue lab10]$ :command:`echo $?`
+    1
+    [you\@blue lab10]$ :command:`echo "Heres a number: 255" | grep [0-9]`
+    Heres a number: 255
+    [you\@blue lab10]$ :command:`echo $?`
+    0
+
+Let's see how we can use the ``$?`` variable in a script:
+
+
+.. parsed-literal::
+    [user\@blue lab10]$ :command:`cat exit_checker.sh`
+    #!/bin/bash
+
+    ./always_wrong.sh
+
+    echo "The exit code of always_wrong was $?"
+    [user\@blue lab10]$ :command:`./exit_checker.sh`
+    I always terminate in error
+    The exit code of always_wrong was 2
+
+
+The AND (&&) and OR (||) Operators
+==================================
+
+Bash provides logical operators that consume and act on return codes.
+These are **short-circuited operators**, so they stop being evaluated as early as possible to interpret the truth-value.
+
+The AND operator (``&&``) would execute a second statement only if the execution of the first command succeeds (which means that the exit code of the first command is ``0``).
+
+The OR operator (``||``) would execute a second command only if the exxcution of the first command fails (which means that the exit code of the first command is not equal to ``0``).
+
+.. parsed-literal::
+    [user\@blue lab10]$ :command:`cat logic_checker.sh`
+    #!/bin/bash
+
+    echo "AND continues execution as long as commands succeed and will short circuit once a command fails"
+    ./i_succeed.sh && ./i_succeed.sh && ./always_wrong.sh && ./always_wrong.sh
+
+    echo "OR continues execution as long as commands fail and will short circuit once one command succeeds"
+    ./always_wrong.sh || ./always_wrong.sh || ./i_succeed.sh || ./i_succeed.sh
+
+    [user\@blue lab10]$ :command:`./logic_checker.sh`
+    AND continues execution as long as commands succeed and will short circuit once a command fails
+    I prefer to end with success
+    I prefer to end with success
+    I always terminate in error
+    OR continues execution as long as commands fail and will short circuit once one command succeeds
+    I always terminate in error
+    I always terminate in error
+    I prefer to end with success
+
+
+Conditionals
+============
+
+Please proceed to read and do the exercises on Chapter 27 of TLCL.
+Once you are done, come back to this document. We are going to complement the information given to you on Chapter 27.
+
+Conditionals let you execute logic in your script subject that a condition be true or false.  The most basic form is
+
+.. parsed-literal::
+
+    if [ condition ]
+    then
+      # code to exectute when condition is true
+    fi
+
+
+As an example, consider the following script.
+We define a variable called ``x`` and assign a value of 5.
+We later use the ``-lt`` comparison operator (with stands for *integer less than* comparison) to test if ``x`` is less than 10.
+Since that is true, the block of code subject to that condition to be true executes, so the program writes ``x is less than 10`` to stdout.
+
+.. parsed-literal::
+
+    [user\@blue lab10]$ :command:`cat conditions.sh`
+    #!/bin/bash
+
+    x=5
+
+    if [ "$x" -lt 10 ]
+    then
+        echo "x is less than 10"
+    fi
+
+    [user\@blue lab10]$ :command:`./conditions.sh`
+    x is less than 10
+
+
+In the previous example we saw how to execute code if a condition was met. Notice that **you need to leave a space after the left square bracket ( [ ) and a space before the right square bracket ( ] )**:
+
+.. parsed-literal::
+
+    [user\@blue lab10]$ :command:`cat ./badconditions.sh`
+    #!/bin/bash
+
+    x=5
+
+    if ["$x" -lt 10]
+    then
+        echo "x is less than 10"
+    fi
+
+    [user\@blue lab10]$ :command:`./badconditions.sh`
+    ./badconditions.sh: line 6: [5: command not found
+
+
+What if you want to run another set of commands if the condition is not true?
+In that case you can use the **if-then-else** form:
+
+
+.. parsed-literal::
+
+    if [ condition ]
+    then
+      # code to exectute when condition is true
+    else
+      # code to execute when the condition is not true
+    fi
+
+
+There is also an **if-then-elif-else** form that lets your script react to multiple conditions:
+
+
+.. parsed-literal::
+
+    if [ condition-1 ]
+    then
+      # code to exectute when condition-1 is true
+    elif [ condition-2 ]
+    then
+      # code to execute if condition-1 is not true and condition-2 is true
+    elif [ condition-3 ]
+    then
+      # code to execute if condition-1 and condition-2 are not true and condition-3 is true
+    .
+    .
+    .
+    elif [ condition-n ]
+    then
+      # you can have as many conditions as you want
+    else
+      # code to execute when none of the previously stated conditions are not met
+    fi
+
+
+The following example shows how to implement the **if-then-elif-else** form:
+
+
+.. parsed-literal::
+
+    [you\@blue lab10]$ :command:`cat elif.sh`
+    #!/bin/bash
+
+    x=12
+
+    if [ "$x" -lt 10 ]
+    then
+        echo "x is less than 10"
+    elif [ "$x" -lt 25 ]
+    then
+        echo "x is greater than 10 but less than 25"
+    else
+        echo "x is greater than or equal 25"
+    fi
+
+    [you\@blue lab10]$ ./elif.sh
+    x is greater than 10 but less than 25
+
+
+
+.. note:: Why quote inside the brackets?
+
+    You probably noticed that the references to variables are encloded in double quotes within the condition test.  The reason to do this is to avoid syntax errors if the variable is not set.  It is technically not needed in the previous examples because we are setting the value of ``x`` in the script, so there is no risk for the variable to be un set, but it is considered to be a good practice for maintainability.
+
+
+Test operators
+--------------
+
+We saw in the previous example how to use the **less than integer comparison operator**.  There is a remarkable variety of operators. As an alternative to the tables given in TLCL, you can save a link to Table 7-1 in http://tldp.org/LDP/Bash-Beginners-Guide/html/sect_07_01.html
+
+The test command
+----------------
+
+The syntax that uses brackets for testing conditions that we saw earlier is actually builtin syntax. In the following example, we modified the previous ``conditions.sh`` example to call the test command directly instead of using the bracket syntax
+
+.. parsed-literal::
+
+    [user\@blue lab10]$ :command:`cat conditions2.sh`
+    #!/bin/bash
+
+    x=5
+
+
+    if test $x -lt 10
+    then
+        echo "x is less than 10"
+    fi
+    [user\@blue lab10]$ :command:`./conditions2.sh`
+    x is less than 10
+
+
+
+Lab Submission
+==============
+
+
+For the lab submission, we are going to implement a very simple script that validates an HTTP Method from an HTTP Request Line.
+
+
+What is and HTTP Request?
+-------------------------
+
+The HTTP/1.1 standard was released by the IETF (Internet Engineering
+Task Force) under RFC 2626 (https://tools.ietf.org/html/rfc2616).
+The format of an HTTP request is detailed in
+https://tools.ietf.org/html/rfc2616#section-5. (You do not need to read
+the RFC specification for this class, but I recommend at least taking
+a look at it). We are going to summarize here what you need to know for this class.
+
+The following is a typical example of an HTTP ``GET`` request:
+
+::
+
+    GET /test HTTP/1.1
+    User-Agent: curl/7.40.0
+    Host: localhost:2300
+    Accept: */*
+    Content-Type: text/plain
+    Content-Length: 15
+
+    Some plain text
+
+The first line is called the **request line**. The first token on this
+line specifies the **HTTP Method** (in this case a ``GET`` method.) The
+second token specifies the **URI** (Uniform Resource Identifier) which
+corresponds to the resource that the request is asking for. In this case
+the request is asking for the ``/test`` resource. The last token
+corresponds to the standard that this request is supposed to adhere
+(``HTTP/1.1``).
+
+The next five lines are called the **request headers**. These tell the
+server:
+
+-  what kind of agent is generating the request, by means of the
+   ``User-Agent`` header,
+
+-  the Host that this request intends to reach, through the ``Host``
+   header,
+
+-  what kind of content the client would like to receive in the
+   response, by using the ``Accept`` header
+
+-  If the client is sending data to the server, then it can specify what
+   type of data is sending with the ``Content-Type`` header
+
+-  If the client is sending data, it can also tell how much data is
+   sending, by means of the ``Content-Length`` header
+
+Different clients use different headers. In fact, they can include
+custom headers that are not even part of the standard. Headers are just
+key-value pairs, which many are standardized and are used by webservers
+(for example, the ``User-Agent`` can be used to know if the request is
+coming from a smartphone or from a desktop computer, and therefore the
+server can decide whether to respond with a mobile version of the
+requested resource.)
+
+If the client is sending data, it is included in that is called the
+**request body**. The request will have a blank line right after the
+header (that blank line tells the server where the end of the Headers
+section is), and after that it will include the **request body**, also
+known as the **request content** (the text ``Some plain text`` in the
+previous example)
+
+
+
+You are required to create a script that will be used to parse the first line of an HTTP request.
+This script will accept its input as a positional argument (recall :ref:`lab09`).
+We want this script to print ``HTTP/1.1 400 Bad Request`` if the line received as input does not begin with the HTTP methods ``GET``, ``POST`` or ``DELETE`` and end with an exit code equal to 1, otherwise it should print ``HTTP/1.1 200 OK`` and  and exit code of 0. Name this script ``http_method.sh``.
+
+.. parsed-literal::
+
+    [user\@blue lab10]$ :command:`./http_method.sh 'POST /test HTTP/1.1'`
+    HTTP/1.1 200 OK
+    [user\@blue lab10]$ :command:`echo $?`
+    0
+    [user\@blue lab10]$ :command:`./http_method.sh 'GET /test HTTP/1.1'`
+    HTTP/1.1 200 OK
+    [user\@blue lab10]$ :command:`echo $?`
+    0
+    [user\@blue lab10]$ :command:`./http_method.sh 'DELETE /test HTTP/1.1'`
+    HTTP/1.1 200 OK
+    [user\@blue lab10]$ :command:`echo $?`
+    0
+    [user\@blue lab10]$ :command:`./http_method.sh 'HEAD /test HTTP/1.1'`
+    HTTP/1.1 400 Bad Request
+    [user\@blue lab10]$ :command:`echo $?`
+    1
