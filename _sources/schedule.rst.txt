@@ -37,7 +37,7 @@ Course Schedule and Materials
       - TLCL, Chapter 6
     * - 7 - 03/09
       - :doc:`labs/lab07/lab07`
-      -
+      - `Lab07 Solution <solutions/lab07.txt>`_ 
       - TLCL, Chapter 19, 20
     * - 8 - 03/16
       - Spring Break

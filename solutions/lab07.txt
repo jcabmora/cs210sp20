@@ -1,0 +1,57 @@
+1)
+We are going to solve this in steps.
+
+First we want to filter so we only see lines that correspond to an authentication failure, we use the following command for that:
+
+grep 'ssh.*authentication failure.*root$' ~jmora/lab07/Linux.log 
+
+That command produces multiple lines for each different rhost, and prints the complete line. If we want a list of the unique rhost values, we need to filter the rest of the line out. Looking on grep's man pages we can find the -o option which causes grep to only print the matching parts of the line. If we pipe the output of the previous command to another grep command that searches for the word "rhost" followed by one or more alphanumeric or punctuaion characters, we will get a list of the different hosts:
+
+grep 'ssh.*authentication failure.*root$' ~jmora/lab07/Linux.log | grep -Eo 'rhost=[[:alnum:][:punct:]]+'
+
+Next, we sort and remove duplicates with the sort command:
+
+grep 'ssh.*authentication failure.*root$' ~jmora/lab07/Linux.log | grep -Eo 'rhost=[[:alnum:][:punct:]]+' | sort -u 
+
+and finally, we count:
+
+grep 'ssh.*authentication failure.*root$' ~jmora/lab07/Linux.log | grep -Eo 'rhost=[[:alnum:][:punct:]]+' | sort -u | wc -l
+
+
+2) 
+First, we filter out lines that are not related to an FTP connection
+
+grep 'ftpd.*connection from' ~jmora/lab07/Linux.log
+
+Next, we filter the dates as requested
+
+grep 'ftpd.*connection from' ~jmora/lab07/Linux.log | grep -E '^Feb  [1-9]|^Feb 1[0-7]'
+
+Notice that we used the the -E option to enable extended regular expressions which are required to enable quantifiers.
+
+Next, using the -o option we print only the IP address. We use a rather simple and not entirely correct regular expression that does not take into consideration a valid range of IP address. Since we are filtering data that we know are IP addresses we can be sloppy here:
+
+grep 'ftpd.*connection from' ~jmora/lab07/Linux.log | grep -E '^Feb  [1-9]|^Feb 1[0-7]' | grep -oE '[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}' 
+
+Finally, we remove duplicates with sort:
+
+grep 'ftpd.*connection from' ~jmora/lab07/Linux.log | grep -E '^Feb  [1-9]|^Feb 1[0-7]' | grep -oE '[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}' | sort -u
+
+
+3)  
+In this case we assemble a similar regular expression as before, replacing the last octet by three alphabetic characters. Since the IP address is the first field we use the caret character at the beginning of the expression:
+
+grep -Eoh '^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[a-z]{3}' ~jmora/lab07/apache/* | sort  -u | wc -l
+
+We also use the -h option to avoid printing the file name, given that we searching in a list of files.
+
+
+4)
+This one was rather simple, you only need to make sure that you used the -l option to print file names:
+
+grep -l '^70.102' ~jmora/lab07/apache/*
+
+
+5)
+grep -hE '^117\.91\.231\.fjf.*index\.htm' ~jmora/lab07/apache/* | wc -l
+
