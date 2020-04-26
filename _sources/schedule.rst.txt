@@ -57,7 +57,7 @@ Course Schedule and Materials
       - TLCL, Chapters 20, 21
     * - 12 - 04/13
       - :doc:`labs/lab09/lab09`
-      -
+      - `Lab09 Solution <solutions/lab09.txt>`_ 
       - TLCL, Chapters 10, 11 and 24
     * - 13 - 04/20
       - :doc:`labs/lab10/lab10`

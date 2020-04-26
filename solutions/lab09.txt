@@ -1,0 +1,56 @@
+makedirs.sh
+-----------
+
+This was a very simple script, just make sure that if you use a one-liner, you include the -p flag
+
+    #!/bin/bash
+
+    mkdir -p vehicles/public_bicycles vehicles/public_cars vehicles/public_planes vehicles/bicycles vehicles/cars vehicles/planes
+
+
+securedirs.sh
+-------------
+
+This was another very simple script.  This is a possible answer (notice that there were more than one modes that would fit the problem statement for both public and non-public directories).
+
+    #!/bin/bash
+
+    chmod 766 vehicles/public*
+    chmod 711 vehicles/bicycles vehicles/cars vehicles/planes
+
+
+movefiles.sh
+------------
+
+1) your script needed to list the contents of the vehicles/public* directories. You could have done this with either the ls or the find command.
+
+2) To move the files you needed to use wildcards on each one of the public directories.  If any of those directories is empty, the mv command will print an error message to stderr. The problem statement asks for your script to avoid printing those messages, so you needed to also add stderr redirection.
+
+
+    #!bin/bash
+
+    find vehicles/public* -type f 2> /dev/null
+
+    mv -f vehicles/public_bicycles/* vehicles/bicycles 2> /dev/null
+    mv -f vehicles/public_cars/* vehicles/cars 2> /dev/null
+    mv -f vehicles/public_planes/* vehicles/planes 2> /dev/null
+
+findwords.sh
+------------
+
+The key facts in the problem statement:
+
+1) You'll use the contents of the ~jmora/lab09/texts.tar.gz archive. This expands to a folder called `texts` with some text files on it.
+2) The script will take an argument.  This means that whatever commands you use on your script, they need to use this argument somehow.
+3) The script will perform a search for the passed argument in the `texts` folder: We learned in Lab 07 about finding content in text files, which is achieved through the grep command.
+4) The script is supposed to only return the number of lines that had the input argument: This means that we have to perform a count, and for this (you guessed it) wc is our best friend.
+
+Having this in mind, a script with the following contents will achieve the result
+
+
+    #!/bin/bash
+
+    grep -r $1 texts | wc -l
+
+
+Notice how we did not have to list all the files within the texts folder, since the -r flag traverses the texts directory.
