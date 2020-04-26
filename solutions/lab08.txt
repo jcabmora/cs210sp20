@@ -1,0 +1,34 @@
+1)
+Using awk:
+awk -F':' '{print $5}' /etc/passwd
+
+Using cut:
+cut -d ':' -f 5 /etc/passwd
+
+
+2)
+sed -i -e 's/\[/\(/g' -e  's/\]/\)/g' bad.py
+
+
+
+3)
+sed -n '100,200p' alongfile.txt
+
+
+4) 
+tail -n 100 alongfile.txt
+
+5)
+
+We are asked to explain the expression 's/(.{4})/& /g;s/ $//'
+
+This expression has two replace commands: 's/(.{4})/& /g' and 's/ $//'
+
+For the first command, (.{4}) will match and capture as back references groups of 4 characters. The '& ' outputs the matched pattern and a space after it, and since everery line has 16 digits, then every line will have produce a line with groups of four characters followed by a space.
+
+The command 's/ $//' simple removes the last space at the end of every line.
+
+
+6)
+awk '{print NR " " $0}' longfile.txt
+
