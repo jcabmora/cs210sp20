@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Lab No. 11: Shell Scripts Part 3 &#8212; CS210 Introduction to Unix  documentation</title>
+    <link rel="stylesheet" href="../../_static/bootstrap-sphinx.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="../../_static/js/jquery-1.11.0.min.js"></script>
+    <script type="text/javascript" src="../../_static/js/jquery-fix.js"></script>
+    <script type="text/javascript" src="../../_static/bootstrap-3.3.7/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../../_static/bootstrap-sphinx.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+<link href="https://fonts.googleapis.com/css?family=Lusitana|Roboto|Roboto+Mono" rel="stylesheet">
+
+  </head>
+  <body>
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../../index.html">
+          CS210 Introduction to Unix</a>
+        <span class="navbar-text navbar-version pull-left"><b></b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../../index.html">Site <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><ul>
+<li class="toctree-l1"><a class="reference internal" href="../../syllabus.html">CS210 Introduction to Unix - Spring 2020</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../conv/conv.html">Conventions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../schedule.html">Course Schedule and Materials</a></li>
+</ul>
+</ul>
+</li>
+              
+                <li class="dropdown">
+  <a role="button"
+     id="dLabelLocalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="#">Page <b class="caret"></b></a>
+  <ul class="dropdown-menu localtoc"
+      role="menu"
+      aria-labelledby="dLabelLocalToc"><ul>
+<li><a class="reference internal" href="#">Lab No. 11: Shell Scripts Part 3</a><ul>
+<li><a class="reference internal" href="#shuffling-text">Shuffling text</a><ul>
+<li><a class="reference internal" href="#word-guess-game">Word Guess Game</a></li>
+<li><a class="reference internal" href="#hints">Hints</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</ul>
+</li>
+              
+            
+            
+              
+                
+              
+            
+            
+            
+            
+              <li class="hidden-sm">
+<div id="sourcelink">
+  <a href="../../_sources/labs/lab11/lab11.rst.txt"
+     rel="nofollow">Source</a>
+</div></li>
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="../../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+    <div class="col-md-12 content">
+      
+  <div class="section" id="lab-no-11-shell-scripts-part-3">
+<h1>Lab No. 11: Shell Scripts Part 3<a class="headerlink" href="#lab-no-11-shell-scripts-part-3" title="Permalink to this headline">¶</a></h1>
+<p>In this Lab we are going to learn about:</p>
+<ul class="simple">
+<li>Reading user input</li>
+<li>Flow Control with <code class="docutils literal"><span class="pre">while</span></code> loops</li>
+<li>Strings and Number operations</li>
+<li>Generating random permutation of text with <code class="docutils literal"><span class="pre">shuf</span></code></li>
+</ul>
+<p>Please read the following chapters from TLCL:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">read</span></code> command: Chapter 28</li>
+<li><code class="docutils literal"><span class="pre">while</span></code> loops: Chapter 29</li>
+<li>string and numbers: Chapter 34</li>
+</ul>
+<p>Once you have completed reading and doing the exercises presented on those chapters, come back to this document.</p>
+<div class="section" id="shuffling-text">
+<h2>Shuffling text<a class="headerlink" href="#shuffling-text" title="Permalink to this headline">¶</a></h2>
+<p>The <code class="docutils literal"><span class="pre">shuf</span></code> command can be used to generate a random permutation of text.
+For example, here we randomize several lines of text:</p>
+<pre class="literal-block">
+[user&#64;blue lab11]$ <strong class="command">echo -e &quot;one\ntwo\nthree&quot; | shuf</strong>
+three
+one
+two
+</pre>
+<p><code class="docutils literal"><span class="pre">shuf</span></code> can also work on a list of words on the same line if they are passed as an argument with the -e option:</p>
+<pre class="literal-block">
+[user&#64;blue lab11]$ <strong class="command">foo=&quot;one two three&quot; shuf -e $foo</strong>
+one
+three
+two
+</pre>
+<p><code class="docutils literal"><span class="pre">shuf</span></code> can also read from a file:</p>
+<pre class="literal-block">
+[user&#64;blue lab11]$ <strong class="command">cat &lt;&lt; EOF &gt; onefile.txt</strong>
+&gt; <strong class="command">this is line one</strong>
+&gt; <strong class="command">this is line two</strong>
+&gt; <strong class="command">this is line three</strong>
+&gt; <strong class="command">this is line four</strong>
+&gt; <strong class="command">EOF</strong>
+[user&#64;blue lab11]$ <strong class="command">shuf onefile.txt</strong>
+this is line one
+this is line four
+this is line three
+this is line two
+[user&#64;blue lab11]$ <strong class="command">shuf -n 1 onefile.txt</strong>
+this is line two
+</pre>
+<p>Notice in the last example how using the <code class="docutils literal"><span class="pre">-n</span></code> option you can have shuf output only one line.</p>
+<div class="section" id="word-guess-game">
+<h3>Word Guess Game<a class="headerlink" href="#word-guess-game" title="Permalink to this headline">¶</a></h3>
+<p>You are asked to create a script called <code class="docutils literal"><span class="pre">wordguess.sh</span></code> that implements the following locig for a word guess game:</p>
+<p>This script will first pick a random word from the linux dictionary.
+If the word has any characters that are not alphabetic (e.g air-conditioned, 3-D, 1st, 2,4-d, etc.) then a different random word will be selected.</p>
+<p>Once a random word with only alphabetic characters has been found, then it will be converted to lowercase.</p>
+<p>Next, the script will scramble the letters and will print “The shuffled word is: YYY” , where XXX corresponds to the scrambled word.</p>
+<p>Then the script will print “Please enter your guess:” and it will wait for the user to input a word.</p>
+<p>If the word matches the original word, then the script prints “Good guess!” ends with exit code 0, else it prints the message “Bad guess, correct answer is XXX” with XXX substituted with the correct unscrambled word, and exits with code 1.</p>
+</div>
+<div class="section" id="hints">
+<h3>Hints<a class="headerlink" href="#hints" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>You can use <code class="docutils literal"><span class="pre">shuf</span></code> to obtain a random word from the dictionary</li>
+<li>You can use <code class="docutils literal"><span class="pre">shuf</span></code> to shuffle a word. All you need to do is add a space between each character of the word and then pass it to <code class="docutils literal"><span class="pre">shuf</span></code> with the <code class="docutils literal"><span class="pre">-e</span></code> option..</li>
+<li>If you need to remove all instances of a character, remember that you can use <code class="docutils literal"><span class="pre">tr</span></code> or <code class="docutils literal"><span class="pre">sed</span></code> for that.</li>
+<li>Remember from Lab 1 that a new line characters is escaped as <code class="docutils literal"><span class="pre">\n</span></code>.</li>
+</ul>
+</div>
+</div>
+</div>
+
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+    </p>
+    <p>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

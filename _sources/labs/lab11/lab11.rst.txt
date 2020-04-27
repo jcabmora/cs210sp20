@@ -1,0 +1,90 @@
+:orphan:
+
+********************************
+Lab No. 11: Shell Scripts Part 3 
+********************************
+
+In this Lab we are going to learn about:
+
+- Reading user input
+- Flow Control with ``while`` loops
+- Strings and Number operations
+- Generating random permutation of text with ``shuf``
+
+Please read the following chapters from TLCL:
+
+- ``read`` command: Chapter 28
+- ``while`` loops: Chapter 29
+- string and numbers: Chapter 34
+
+Once you have completed reading and doing the exercises presented on those chapters, come back to this document.
+
+Shuffling text
+===============
+
+The ``shuf`` command can be used to generate a random permutation of text.
+For example, here we randomize several lines of text:
+
+
+.. parsed-literal::
+    [user\@blue lab11]$ :command:`echo -e "one\\ntwo\\nthree" | shuf`
+    three
+    one
+    two
+
+
+``shuf`` can also work on a list of words on the same line if they are passed as an argument with the -e option:
+
+
+.. parsed-literal::
+    [user\@blue lab11]$ :command:`foo="one two three" shuf -e $foo`
+    one
+    three
+    two
+
+
+``shuf`` can also read from a file:
+
+.. parsed-literal::
+
+    [user\@blue lab11]$ :command:`cat << EOF > onefile.txt`
+    > :command:`this is line one`
+    > :command:`this is line two`
+    > :command:`this is line three`
+    > :command:`this is line four`
+    > :command:`EOF`
+    [user\@blue lab11]$ :command:`shuf onefile.txt`
+    this is line one
+    this is line four
+    this is line three
+    this is line two
+    [user\@blue lab11]$ :command:`shuf -n 1 onefile.txt`
+    this is line two
+
+Notice in the last example how using the ``-n`` option you can have shuf output only one line.
+
+
+Word Guess Game
+---------------
+
+You are asked to create a script called ``wordguess.sh`` that implements the following locig for a word guess game:
+
+This script will first pick a random word from the linux dictionary.
+If the word has any characters that are not alphabetic (e.g air-conditioned, 3-D, 1st, 2,4-d, etc.) then a different random word will be selected.
+
+Once a random word with only alphabetic characters has been found, then it will be converted to lowercase. 
+
+Next, the script will scramble the letters and will print "The shuffled word is: YYY" , where XXX corresponds to the scrambled word.
+
+Then the script will print "Please enter your guess:" and it will wait for the user to input a word.
+
+If the word matches the original word, then the script prints "Good guess!" ends with exit code 0, else it prints the message "Bad guess, correct answer is XXX" with XXX substituted with the correct unscrambled word, and exits with code 1.
+
+
+Hints
+-----
+
+- You can use ``shuf`` to obtain a random word from the dictionary
+- You can use ``shuf`` to shuffle a word. All you need to do is add a space between each character of the word and then pass it to ``shuf`` with the ``-e`` option..
+- If you need to remove all instances of a character, remember that you can use ``tr`` or ``sed`` for that.
+- Remember from Lab 1 that a new line characters is escaped as ``\n``.
