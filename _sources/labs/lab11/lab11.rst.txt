@@ -69,7 +69,7 @@ Word Guess Game
 
 You are asked to create a script called ``wordguess.sh`` that implements the following locig for a word guess game:
 
-This script will first pick a random word from the linux dictionary.
+This script will first pick a random word from the linux dictionary, which is available under ``/usr/share/dict/linux.words``.
 If the word has any characters that are not alphabetic (e.g air-conditioned, 3-D, 1st, 2,4-d, etc.) then a different random word will be selected.
 
 Once a random word with only alphabetic characters has been found, then it will be converted to lowercase. 
