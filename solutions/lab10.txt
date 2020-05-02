@@ -1,0 +1,10 @@
+#!/bin/bash
+
+if [[ $1 =~ ^(GET|POST|DELETE) ]]
+then
+    echo 'HTTP/1.1 200 OK'
+else
+    echo 'HTTP/1.1 400 Bad Request'
+    exit 1
+fi
+
