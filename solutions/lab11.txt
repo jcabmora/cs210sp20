@@ -1,0 +1,25 @@
+#!/bin/bash
+
+
+words="/usr/share/dict/linux.words"
+
+word=$(shuf -n 1 $words | sed 's/[[:upper:]]/\L&/g')
+
+while [[ ! $word =~ ^[[:lower:]]+$ ]]; do
+    word=$(shuf -n 1 $words | sed 's/[[:upper:]]/\L&/g')
+done
+
+# next two lines could be combined on a single line, but done in this way for simplicity
+wordwithspaces=$(echo "$word" | sed 's/./& /g')
+shuffled=$(shuf -e  $wordwithspaces | tr -d '\n')
+
+echo -e "The shuffled word is:\n$shuffled\n"
+read -p "Please enter your guess:" userguess
+
+if [[ "$userguess" == "$word" ]]
+then
+    echo "Good guess!"
+else
+    echo "Bad guess! The correct answer is $word"
+    exit 1
+fi

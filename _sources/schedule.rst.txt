@@ -65,10 +65,10 @@ Course Schedule and Materials
       - TLCL, Chapters 25, 26 and 27
     * - 14 - 04/27
       - :doc:`labs/lab11/lab11`
-      -
+      - `Lab11 Solution <solutions/lab11.txt>`_ 
       - TLCL, Chapters 28, 29 and 34
     * - 15 - 05/04
-      -
+      - Review
       -
       -
     * - 16 - 05/11
